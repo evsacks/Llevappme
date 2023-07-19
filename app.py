@@ -10,3 +10,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 api = Api(app)
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def Login():
+    return "Hola prueba"
