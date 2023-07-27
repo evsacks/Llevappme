@@ -31,7 +31,8 @@ typing-extensions = "==4.7.1"
 werkzeug = "==2.3.6"
 wtf-peewee = "==3.0.4"
 wtforms = "==3.0.1"
-flask-script = "*"
+flask-script = "==2.0.6"
+psycopg2 = "*"
 
 [dev-packages]
 
