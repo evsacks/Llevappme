@@ -12,15 +12,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 api = Api(app)
 
-from models import  Usuario, EstadoUsuario, TipoUsuario, LicenciaConducir, Viaje, Tracking, \
-                    Pasajero, EstadoPasajero, Vehiculo, Conductor, CedulaConductor, TipoCedula, \
-                    SeguroVehiculo, TipoVehiculo, Marca, Modelo, Color
-
-
-@app.route('/', methods=['GET', 'POST'])
-def Home():
-    return "Hola LLEVAPPME"
-
+import models
+import routes
 
 if __name__ == '__main__':
     app.run(debug=True)
