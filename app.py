@@ -31,8 +31,6 @@ api = Api(app)
 loginManager = LoginManager(app) #Para manejar las sesiones
 loginManager.login_view = 'Login'
 
-from models import Dificultad,Favorito,Ingrediente,Ingrediente_Por_Receta,Preparacion,Receta,Unidad,Usuario
-from forms import ReseteoContrasenia, CrearUsuario,CrearAdmin,CrearDificultad,CrearUnidad,CrearIngrediente,CambiarImagen,Form_Editar_Ing_Por_Receta,BuscarPorIngrediente, BuscarPorReceta, LoginForm, Form_Ingrediente, Form_InformacionGeneral, Form_Preparacion
 from authentication import auth
 
 # CONFIGURACION IMAGENES DE LA APLICACION
