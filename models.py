@@ -125,22 +125,26 @@ class TipoUsuario(db.Model):
 
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    codigo = db.Column(db.String(3), unique = True, nullable = False)
     descripcion = db.Column(db.String(30), unique = True, nullable = False)
     usuarios = relationship('Usuario', backref = 'tipo_usuario')
     
 
-    def __init__(self, descripcion):
+    def __init__(self, codigo, descripcion):
+        self.codigo = codigo
         self.descripcion = descripcion
 
     def __repr__(self):
         id = self.id,
+        codigo = self.codigo,
         descripcion = self.descripcion
-        tipo_usu = '<Tipo Usuario(id={}, descripcion={})>'.format(id,descripcion)
+        tipo_usu = '<Tipo Usuario(id={}, codigo={}, descripcion={})>'.format(id,descripcion)
         return tipo_usu
 
     def serialize(self):
         return {
             'id': self.id,
+            'codigo': self.codigo,
             'descripcion': self.descripcion
     }
 
