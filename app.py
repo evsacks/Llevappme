@@ -28,8 +28,10 @@ ROWS_PER_PAGE = 5
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 db = SQLAlchemy(app)
 api = Api(app)
-loginManager = LoginManager(app) #Para manejar las sesiones
-loginManager.login_view = 'Login'
+
+from models import  Usuario, EstadoUsuario, TipoUsuario, LicenciaConducir, Viaje, Tracking, \
+                    Pasajero, EstadoPasajero, Vehiculo, Conductor, CedulaConductor, TipoCedula, \
+                    SeguroVehiculo, TipoVehiculo, Marca, Modelo, Color
 
 from authentication import auth
 
