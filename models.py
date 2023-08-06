@@ -721,7 +721,7 @@ class Marca(db.Model):
 
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    descripcion = db.Column(db.String(30), unique = False, nullable = False)
+    descripcion = db.Column(db.String(30), unique = True, nullable = False)
     
     vehiculo = relationship('Vehiculo', backref = 'marca')
     
@@ -755,7 +755,7 @@ class Modelo(db.Model):
 
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    descripcion = db.Column(db.String(30), unique = True, nullable = False)
+    descripcion = db.Column(db.String(30), unique = False, nullable = False)
 
     id_marca = db.Column(db.Integer, db.ForeignKey('marca.id'), nullable = False)
     
