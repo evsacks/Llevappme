@@ -1,0 +1,80 @@
+{% extends 'administrador/admin_layout.html' %}
+
+{% block contentLayoutMain %}
+<article class="post">
+    {% if session.creando %}
+        <header>
+            <div class="title" style="margin-bottom: 0px;">
+                <h2><a href="#">Crear receta - ingredientes</a></h2>
+            </div>
+            <div class="meta">
+                <ul class="actions fit">
+                    <li><a href="{{url_for('IngPorReceta',idReceta = receta.id)}}" class="button fit">Volver</a></li>
+                </ul>
+            </div>
+        </header>
+    {% else %}
+        <header>
+            <div class="title" style="margin-bottom: 0px;">
+                <h2><a href="#">Editar receta - {{ receta.titulo }}</a></h2>
+            </div>
+            <div class="meta">
+                <ul class="actions fit">
+                    <li><a href="{{url_for('EditarIngPorReceta',idReceta = receta.id)}}" class="button fit">Volver</a></li>
+                </ul>
+            </div>
+        </header>
+    {% endif %}
+    <div>
+        <h4 style="margin-bottom: 30px;"> Editar Ingrediente</h4>
+        <section>                
+            <form id="formIngredientes" method="POST" action="{{url_for('EditarIngDeReceta', idIxr = ixr.id)}}" enctype="multipart/form-data">
+                <div class="row gtr-uniform">
+                    {{ form.hidden_tag() }}
+                    {{ form.csrf_token }}
+
+                    <div class="col-3 col-12-xsmall">
+                        {{ form.descripcionIngrediente.label() }}
+                        {{ form.descripcionIngrediente(readonly=true)}}
+                    </div>
+
+                    <div class="col-3 col-12-xsmall">
+                        {{ form.unidad.label() }}
+                        {% if form.unidad.errors %}                            
+                            {{ form.unidad() }}
+                            <div>
+                                {% for error in form.unidad.errors %}
+                                    <span>{{ error }}</span> 
+                                {% endfor %}
+                            </div>
+                        {% else %}    
+                            {{ form.unidad(placeholder="Elige la unidad") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="col-3 col-12-xsmall">
+                        {{ form.cantidad.label() }}
+                        {% if form.cantidad.errors %}                
+                            {{ form.cantidad() }}
+                            <div>
+                                {% for error in form.cantidad.errors %}
+                                    <span>{{ error }}</span> 
+                                {% endfor %}
+                            </div>
+                        {% else %}            
+                            {{ form.cantidad(placeholder="cantidad")}}
+                        {% endif %}
+                    </div>                            
+
+                    <div class="col-12">
+                        <ul class="actions">
+                            <li>{{ form.submit(type="submit", value="Guardar") }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+</article>
+
+{% endblock %}

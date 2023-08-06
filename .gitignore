@@ -1,0 +1,6 @@
+
+*.bak
+*.sqlite
+*.json
+.vs/celiakia20 - version2/v17/.suo
+.vs/celiakia20 - version2/config/applicationhost.config

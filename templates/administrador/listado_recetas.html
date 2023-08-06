@@ -1,0 +1,65 @@
+{% extends 'administrador/admin_layout.html' %}
+
+{% block contentLayoutMain %}
+
+<article class="post">
+    <header>
+        <div class="title">
+            <h2>
+                <a>Listado de recetas</a>
+            </h2>
+            {% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for message in messages %}
+						<div class="alert alert-info" role="alert">
+							{{ message }}
+						</div>							
+			    	{% endfor %}
+				{% endif %}
+			{% endwith %}
+        </div>
+        <div class="meta">
+            <ul class="actions stacked">
+                <li>
+                    <a href="{{url_for('InfoGeneral')}}" class="button large fit">Nueva Receta</a>
+                </li>
+            </ul>
+        </div>
+    </header>
+                            
+    <section>
+        <div class="table-wrapper">
+            <div class="dataTable" style="width: 98.5%;">
+                <table id="table_listadoRecetas" class="table table-striped" >
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Título</th>
+                            <th scope="col">Dificultad</th>
+                            <th scope="col"># Ingredientes</th>
+                            <th scope="col">Tiempo</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                        
+                    <tbody>
+                        {% for receta in recetas %}
+                            <tr>
+                                <td> {{ receta.titulo}}</td>
+                                <td> {{ receta.dificultad.descripcion}}</td>
+                                <td> {{ receta.ingrediente|length}}</td>
+                                <td> {{ receta.tiempoPreparacion(receta.id)}}</td>
+                                <td>
+                                    <a href="{{url_for('VerRecetaAdmin', idReceta = receta.id)}}" class="icon solid fa-eye" style="color:lightseagreen"></a>
+                                    <a href="{{url_for('EditarReceta', idReceta = receta.id)}}" class="icon solid fa-pen-to-square" style="color:rgb(154, 73, 230)"></a>
+                                    <a href="{{url_for('EliminarReceta',idReceta = receta.id)}}" class="icon solid fa-trash-can" style="color:lightcoral"></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</article>
+
+{% endblock %}

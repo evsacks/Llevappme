@@ -1,0 +1,150 @@
+<!DOCTYPE HTML>
+
+<html lang="es">
+	<head>
+		<title>CeliaKIA</title>
+		<meta  charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
+		<script src="https://kit.fontawesome.com/228c5469ee.js" crossorigin="anonymous"></script>
+
+
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<!--<img class="logo" src="../static/kiasf2.png"/>-->
+						<h1><a href="{{url_for('PaginaInicio')}}"> CeliaKIA</a></h1>
+
+						<nav class="main">
+							<ul>
+								<li class="menu">
+									<a class="fa-bars" onclick="Open()" href="#menu">Menu</a>
+								</li>
+							</ul>
+						</nav>
+					</header>
+
+				<!-- Menu -->
+					<section id="menu">
+
+						<!-- Links -->
+							<section>
+								
+								<ul class="links">
+									<li>
+										<img class="logo" src="{{url_for('ImagenReceta', nombre='kiasf2.png')}}" style="width: 70px;"/>
+										<h1>Hola, {{current_user.nombre}}</h1>
+									</li>
+									<li>
+										<a href="{{url_for('PaginaInicio')}}">
+											<h3>¿Y ahora qué como?</h3>
+										</a>
+									</li>
+									<li>
+										<a href="{{url_for('MisFavoritas')}}">
+											<h3>Mis Favoritos</h3>
+										</a>
+									</li>
+									<li>
+										<a href="{{url_for('MundoCeliakia', idPagina = 1)}}">
+											<h3>El mundo de la celiaquía</h3>
+										</a>
+									</li>
+									<li>
+										<a href="{{url_for('SobreNosotros')}}">
+											<h3>KIA - Sobre Nosotros</h3>
+										</a>
+									</li>
+								</ul>
+							</section>
+
+						<!-- Actions -->
+							<section>
+								{% if session.administrador %}
+									<ul class="actions stacked">
+										<li><a href="{{url_for('PaginaInicioAdmin')}}" class="button large fit">Administrador</a></li>
+									</ul>
+								{% endif %}
+
+								<ul class="actions stacked">
+									<li><a href="{{url_for('Logout')}}" class="button large fit">Salir</a></li>
+								</ul>
+							</section>
+
+					</section>
+
+					<div id="main">
+						{% block contentLayoutMain %}   {% endblock %}
+					</div>
+					<section id="sidebar">
+						<!-- Intro -->
+						{% block contentLayoutIntro %}   {% endblock %}
+
+						<!-- Mundo CeliaKIA	 -->
+						<section>
+							<h2>El mundo de la celiaquía </h2>
+							<section class="blurb">
+								<p>
+									La enfermedad celíaca se definió en el año 2012 como un desorden sistémico con base inmunológica, causado por la ingesta de gluten en personas con predisposición genética.
+									<br>
+									Te brindamos un espacio con información y consejos sobre el mundo de la celiaquía.
+								</p>
+								<ul class="actions">
+									<li><a href="{{url_for('MundoCeliakia', idPagina = 1)}}" class="button">Leer más</a></li>
+								</ul>
+							</section>	
+						</section>
+
+						<!-- About -->
+						
+
+						<!-- Footer -->
+						<section id="footer">
+							<ul class="icons">
+								<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+								<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+								<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								<li><a href="#" class="icon solid fa-rss"><span class="label">RSS</span></a></li>
+								<li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+							</ul>
+							<p class="copyright">&copy; CELIAKIA. Aplicación diseñada y desarrollada por: Timoteo Pasinato - Nicolás Burgos - Evelyn Sacks </br> Ingeniería de Software 2022. Universidad Tecnológica Nacional, Facultad Regional Delta.</p>
+						</section>
+
+					</section>
+
+			</div>
+
+		<!-- Scripts -->
+			<link href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+		
+
+			<script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/browser.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/breakpoints.min.js') }}"></script>
+			
+			<script src="{{ url_for('static', filename='assets/js/textToSpeech.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/util.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+
+			<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" ></script>
+			<script src="{{ url_for('static', filename='assets/js/datatable.js') }}"></script>
+			<script>
+				$(function() {
+					$.ajax({
+						url: '{{ url_for("autocomplete") }}'
+						}).done(function (data){
+							$('#ingrediente_autocomplete').autocomplete({
+								source: data,
+								minLength: 2
+							});
+						});
+					});
+			</script>
+			
+		</body>
+</html>

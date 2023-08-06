@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title>CeliaKIA</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link href="{{url_for('static', filename = 'assets/css/main.css')}}" rel="stylesheet" type="text/css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+	</head>
+	<body class="cambio-bg">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+				<!-- Main -->
+					<div id="main">						
+						<article class="post">
+							<header>
+								<div class="title">
+									<h2><a>Resetear Contraseña - CeliaKIA</a></h2></br>
+									<p>Una aplicación donde encontrarás las mejores recetas ideadas especialmente para celíacos.</p>
+									{% with messages = get_flashed_messages() %}
+									{% if messages %}
+										{% for message in messages %}
+										<div class="alert alert-warning" role="alert">
+											{{ message }}
+										</div>
+											
+										{% endfor %}
+									{% endif %}
+								  {% endwith %}
+								</div>
+
+							</header>
+
+							<section>
+									<form method="post" action="{{url_for('ResetearContrasenia')}}">
+										{{ form.hidden_tag() }}
+										<div class="row gtr-uniform">
+                                            <div class="col-4 col-12-xsmall">
+                                                {{ form.emailUsuario(type="text",  id="email", value="", placeholder="email") }}
+                                                <div>
+                                                    {% for error in form.emailUsuario.errors %}
+                                                        <span>{{ error }}</span> 
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br><br>
+                                        <div class="row gtr-uniform">
+											<div class="col-12">
+												<ul class="actions">
+													<li>{{ form.submit( type="submit", value="Enviar") }}</li>
+												</ul>
+											</div>
+										</div>
+									</form>
+								</section>
+						</article>
+					</div>
+
+			</div>
+		<!-- Scripts -->
+			<script src="{{url_for('static', filename='assets/js/jquery.min.js')}}"></script>
+            <script src="{{url_for('static', filename='assets/js/browser.min.js')}}"></script>
+            <script src="{{url_for('static', filename='assets/js/breakpoints.min.js')}}"></script>
+            <script src="{{url_for('static', filename='assets/js/util.js')}}"></script>
+            <script src="{{url_for('static', filename='assets/js/main.js')}}"></script>
+	</body>
+</html>
