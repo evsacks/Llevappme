@@ -439,6 +439,40 @@ class EstadoPasajero(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+class EstadoViaje(db.Model):
+    __tablename__ = 'estado_viaje'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    descripcion = db.Column(db.String(30), unique = True, nullable = False)
+    
+    viajes = relationship('Viaje', backref = 'estado_viaje')
+    
+
+    def __init__(self, descripcion):
+        self.descripcion = descripcion
+
+    def __repr__(self):
+        id = self.id,
+        descripcion = self.descripcion
+        est_viaje = '<Estado Viaje(id={}, descripcion={})>'.format(id,descripcion)
+        return est_viaje
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'descripcion': self.descripcion
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
 # VEHICULO
 
 class Vehiculo(db.Model):
