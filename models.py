@@ -2,6 +2,7 @@ from app import db, loginManager
 from datetime import datetime
 from sqlalchemy.orm import relationship
 
+
 # USUARIO 
 
 class Usuario(db.Model):
