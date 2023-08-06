@@ -1,395 +1,44 @@
-from enum import unique
 from app import db, loginManager
 from datetime import datetime
 from sqlalchemy.orm import relationship
-from flask_login import UserMixin
 
+# USUARIO 
 
-@loginManager.user_loader
-def load_User(id_user):
-    return Usuario.query.get(int(id_user))
-
-class Dificultad(db.Model):
-    __tablename__ = 'dificultad'
-    __table_args__ = {'extend_existing': True} 
-
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    descripcion = db.Column(db.String(30), unique = True, nullable = False)
-    recetas = relationship('Receta', backref = 'dificultad')
-    
-
-    def __init__(self, descripcion):
-        self.descripcion = descripcion
-
-    def __repr__(self):
-        return '<id {}>'.format(self.id)
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'descripcion': self.descripcion
-    }
-
-    @classmethod
-    def find_by_id(cls, idDif):
-        return cls.query.filter_by(id=idDif).first()
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class Favorito(db.Model):
-    __tablename__ = 'favorito'
-    __table_args__ = {'extend_existing': True} 
-
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_receta = db.Column(db.Integer, db.ForeignKey('receta.id'))
-    id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'))
-
-    def __init__(self, id_receta, id_usuario):
-        self.id_receta = id_receta
-        self.id_usuario = id_usuario
-
-    def __repr__(self):
-        return '<id {}>'.format(self.id)
-
-    def json(self):
-        return {
-            'id': self.id,
-            'id_receta': self.id_receta,
-            'id_usuario': self.id_usuario
-    }
-
-    @classmethod
-    def find_by_id(cls, idFav):
-        return cls.query.filter_by(id=idFav).first()
-
-    @classmethod
-    def find_by_receta(cls, idReceta):
-        return cls.query.filter_by(id_receta=idReceta).first()
-
-    @classmethod
-    def find_by_receta_usuario(cls, idReceta, idUsuario):
-        return cls.query.filter((cls.id_receta==idReceta) & (cls.id_usuario==idUsuario)).first()
-
-
-    @classmethod
-    def find_favoritas_usuario(cls, idUsuario):
-        favoritos = cls.query.filter_by(id_usuario=idUsuario).all()
-        recetas = []
-        for favorito in favoritos:
-            recetas.append(Receta.find_by_id(favorito.id_receta))
-        return recetas
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class Ingrediente_Por_Receta(db.Model):
-    __tablename__ = 'ingrediente_por_receta'
-    __table_args__ = {'extend_existing': True} 
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_receta = db.Column(db.Integer, db.ForeignKey('receta.id'), nullable = False)
-    id_ingrediente = db.Column(db.Integer, db.ForeignKey('ingrediente.id'), nullable = False)
-    id_unidad = db.Column(db.Integer, db.ForeignKey('unidad.id'), nullable = False)
-    cantidad = db.Column(db.String, nullable = False)
-    
-
-    def __init__(self, id_receta, id_ingrediente, id_unidad, cantidad):
-        self.id_receta = id_receta
-        self.id_ingrediente = id_ingrediente
-        self.id_unidad = id_unidad
-        self.cantidad = cantidad
-
-    def __repr__(self):
-        return '<id {}>'.format(self.id)
-
-    def json(self):
-        return {
-            'id': self.id,
-            'id_receta': self.id_receta,
-            'id_ingrediente': self.id_ingrediente,
-            'id_unidad':self.id_unidad,
-            'cantidad': self.cantidad
-    }
-
-    @classmethod
-    def find_by_id(cls, id):
-        return cls.query.filter_by(id=id).first()
-
-    @classmethod
-    def find_by_receta(cls, idReceta):
-        return cls.query.filter_by(id_receta=idReceta).all()
-    
-    @classmethod
-    def any_ingrediente_receta(cls,idIngrediente,idReceta):
-        for ixr in cls.find_by_receta(idReceta):    
-            if idIngrediente == ixr.id_ingrediente:
-                return True
-        return False
-
-    def update_to_db(self,ingrediente,unidad,cantidad):
-        self.id_ingrediente = ingrediente
-        self.id_unidad = unidad
-        self.cantidad = cantidad
-        db.session.commit()
-    
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class Ingrediente(db.Model):
-    __tablename__ = 'ingrediente'
-    __table_args__ = {'extend_existing': True} 
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    descripcion = db.Column(db.String(), nullable = False)
-    por_receta = relationship('Ingrediente_Por_Receta', backref = 'ingredientes')
-    fecha_creacion = db.Column(db.DateTime, default = datetime.utcnow)
-    fecha_modificacion = db.Column(db.DateTime, default = datetime.utcnow)
-    nombre_imagen = db.Column(db.String(), nullable = False, default = 'sin_imagen')
-
-    def __init__(self, descripcion, fecha_creacion, fecha_modificacion, nombre_imagen):
-        self.descripcion = descripcion
-        self.nombre_imagen = nombre_imagen
-        self.fecha_modificacion = fecha_modificacion
-        self.fecha_creacion = fecha_creacion
-
-    def __repr__(self):
-        return '<id {}>'.format(self.id)
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'descripcion_ing': self.descripcion,
-            'fecha_creacion':self.fecha_creacion,
-            'fecha_modificacion':self.fecha_modificacion,
-            'nombre_imagen':self.nombre_imagen
-    }
-
-
-    @classmethod
-    def find_by_id(cls, idIngrediente):
-        return cls.query.filter_by(id=idIngrediente).first()
-
-    @classmethod
-    def find_by_list_id(cls, ingredientes_id):
-        return [cls.find_by_id(id) for id in ingredientes_id]
-
-    @classmethod
-    def find_by_descripcion(cls, ingrediente_descripcion):
-        return cls.query.filter_by(descripcion = ingrediente_descripcion).first()
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class Preparacion(db.Model):
-    __tablename__ = 'preparacion'
-    __table_args__ = {'extend_existing': True} 
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_receta = db.Column(db.Integer, db.ForeignKey('receta.id'), nullable = False)
-    orden_del_paso = db.Column(db.Integer, nullable = False)
-    descripcion = db.Column(db.String(), nullable = False)
-    tiempo_preparacion = db.Column(db.Integer, nullable = False)
-
-    def __init__(self, id_receta, orden_del_paso, descripcion,tiempo_preparacion):
-        self.id_receta = id_receta
-        self.orden_del_paso = orden_del_paso
-        self.descripcion = descripcion
-        self.tiempo_preparacion = tiempo_preparacion
-
-    def __repr__(self):
-        return '<id {}>'.format(self.id)
-
-    def json(self):
-        return {
-            'id': self.id,
-            'id_receta': self.id_receta,
-            'orden_del_paso': self.orden_del_paso,
-            'tiempo_preparacion':self.tiempo_preparacion,
-            'descripcion':self.descripcion
-    }
-
-    @classmethod
-    def find_by_id(cls, idPreparacion):
-        return cls.query.filter_by(id=idPreparacion).first()
-
-    @classmethod
-    def find_by_receta(cls, idReceta):
-        return cls.query.filter_by(id_receta=idReceta).all()
-
-    @classmethod
-    def find_by_paso_receta(cls, ordenPaso,idReceta):
-        return cls.query.filter_by(id_receta = idReceta, orden_del_paso = ordenPaso).first()
-
-    def update_to_db(self,orden,tiempo,descripcion):
-        self.orden_del_paso = orden
-        self.descripcion = descripcion
-        self.tiempo_preparacion = tiempo
-        db.session.commit()
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()        
-
-class Receta(db.Model):
-    __tablename__ = 'receta'
-    __table_args__ = {'extend_existing': True} 
-
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
-    titulo = db.Column(db.String(), nullable = False)
-    fecha_creacion = db.Column(db.DateTime, default = datetime.utcnow)
-    fecha_modificacion = db.Column(db.DateTime, default = datetime.utcnow)
-    nombre_imagen = db.Column(db.String(), nullable = False, default = 'sin_imagen')
-    descripcion = db.Column(db.Text(), nullable = False)
-    id_dificultad = db.Column(db.Integer, db.ForeignKey('dificultad.id'), nullable = False)
-    id_autor = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
-    preparacion = relationship('Preparacion', backref = 'receta')
-    ingrediente = relationship('Ingrediente_Por_Receta', backref = 'receta')
-    favorita = relationship('Favorito', backref = 'receta')
-    
-
-    def __init__(self, titulo, id_dificultad, descripcion, nombre_imagen, fecha_modificacion, fecha_creacion, id_autor):
-        self.titulo = titulo
-        self.id_dificultad = id_dificultad
-        self.descripcion = descripcion
-        self.nombre_imagen = nombre_imagen
-        self.fecha_modificacion = fecha_modificacion
-        self.fecha_creacion = fecha_creacion
-        self.id_autor = id_autor
-
-    def __repr__(self):
-        return '<id {}>'.format(self.id)
-
-    def json(self):
-        return {
-            'id': self.id,
-            'titulo': self.titulo,
-            'id_dificultad':self.id_dificultad,
-            'descripcion':self.descripcion,
-            'nombre_imagen':self.nombre_imagen,
-            'id_autor':self.id_autor,
-            'fecha_creacion':self.fecha_creacion,
-            'fecha_modificacion':self.fecha_modificacion
-    }
-
-    @classmethod
-    def find_by_id(cls, idReceta):
-        return cls.query.filter_by(id=idReceta).first()
-
-    @classmethod
-    def find_by_list_id(cls, recetas_id):
-        return [cls.find_by_id(id) for id in recetas_id]
-
-    @classmethod
-    def find_by_name(cls, nombre):
-        return cls.query.filter_by(titulo=nombre).first()
-
-    @classmethod
-    def find_like_name(cls, nombre):
-        nombre = "%{}%".format(nombre)
-        return cls.query.filter(cls.titulo.ilike(nombre)).all()
-
-    @classmethod
-    def find_by_file(cls, nombreImagen):
-        return cls.query.filter_by(nombre_imagen=nombreImagen).first()
-
-    def tiempoPreparacion(cls, idReceta):
-        receta = cls.query.get(idReceta)
-        tiempoPreparacion = 0
-        for paso in receta.preparacion:
-            tiempoPreparacion = tiempoPreparacion + paso.tiempo_preparacion
-        return tiempoPreparacion
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class Unidad(db.Model):
-    __tablename__ = 'unidad'
-    __table_args__ = {'extend_existing': True} 
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    descripcion = db.Column(db.String(30), unique = True, nullable = False)
-    ingredientes = relationship('Ingrediente_Por_Receta', backref = 'unidad')
-
-    def __init__(self, descripcion):
-        self.descripcion = descripcion
-
-    def __repr__(self):
-        return '<id {}>'.format(self.id)
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'descripcion': self.descripcion
-    }
-
-    @classmethod
-    def find_by_id(cls, idUnidad):
-        return cls.query.filter_by(id=idUnidad).first()
-
-    @classmethod
-    def find_by_descripcion(cls, unidad_descripcion):
-        return cls.query.filter_by(descripcion=unidad_descripcion).first()
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class Usuario(db.Model, UserMixin):
-
+class Usuario(db.Model):
     __tablename__ = 'usuario'
     __table_args__ = {'extend_existing': True} 
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    nombre = db.Column(db.String())
-    apellido = db.Column(db.String())
-    email = db.Column(db.String())
-    id_token = db.Column(db.String())
-    favoritos = relationship('Favorito', backref = 'usuario')
-    administrador = db.Column(db.Boolean())
-    recetas = relationship('Receta', backref = 'receta_autor', lazy = True)
-    
-    
-    def __init__(self, nombre, apellido, email, id_token):
+    nombre = db.Column(db.String(), unique = False, nullable = False)
+    apellido = db.Column(db.String(), unique = False, nullable = False)
+    email = db.Column(db.String(), unique = True, nullable = False)
+    contrasenia = db.Column(db.String(), unique = False, nullable = False)
+    telefono = db.Column(db.String(), unique = True, nullable = False)
+    dni = db.Column(db.Integer, unique = True, nullable = False)
+    fecha_nacimiento = db.Column(db.DateTime, unique = False, nullable = False)
+    fecha_creacion = db.Column(db.DateTime, default = datetime.utcnow)
+    fecha_actualizacion = db.Column(db.DateTime, default = datetime.utcnow)
+
+    tipo = db.Column(db.Integer, db.ForeignKey('tipo_usuario.id'), nullable = False)
+    estado = db.Column(db.Integer, db.ForeignKey('estado_usuario.id'), nullable = False)
+
+    licenia_conducir =  relationship('LicenciaConducir', backref = 'usuario')
+    pasajero =  relationship('Pasajero', backref = 'usuario')
+    conductor =  relationship('Conductor', backref = 'usuario')
+    viaje =  relationship('Viaje', backref = 'usuario')
+
+    def __init__(self, nombre, apellido, email, contrasenia, telefono, dni, fecha_nacimiento, fecha_creacion, fecha_actualizacion, tipo, estado):
         self.nombre = nombre
         self.apellido = apellido
         self.email = email
-        self.id_token = id_token
+        self.contrasenia = contrasenia
+        self.telefono = telefono
+        self.dni = dni
+        self.fecha_nacimiento = fecha_nacimiento
+        self.fecha_creacion = fecha_creacion
+        self.fecha_actualizacion = fecha_actualizacion
+        self.estado = estado
+        self.tipo = tipo
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -399,25 +48,16 @@ class Usuario(db.Model, UserMixin):
             'id': self.id,
             'nombre': self.nombre,
             'apellido': self.apellido,
-            'email':self.email,
-            'id_token':self.id_token
+            'email': self.email,
+            'contrasenia': self.contrasenia,
+            'telefono': self.telefono,
+            'dni': self.dni,
+            'fecha_nacimiento': self.fecha_nacimiento,
+            'fecha_creacion': self.fecha_creacion,
+            'fecha_actualizacion': self.fecha_actualizacion,
+            'estado': self.estado,
+            'tipo': self.tipo
     }
-
-    @classmethod
-    def find_by_id(cls, idUsuario):
-        return cls.query.filter_by(id=idUsuario).first()
-
-    @classmethod
-    def find_by_email(cls, mail):
-        return cls.query.filter_by(email=mail).first()
-
-    @classmethod
-    def find_admin(cls):
-        return cls.query.filter_by(administrador=True).all()
-
-    @classmethod
-    def find_users(cls):
-        return cls.query.filter((cls.administrador==False) | (cls.administrador == None)).all()
 
     def save_to_db(self):
         db.session.add(self)
@@ -427,3 +67,639 @@ class Usuario(db.Model, UserMixin):
         db.session.delete(self)
         db.session.commit()
 
+class EstadoUsuario(db.Model):
+    __tablename__ = 'estado_usuario'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    descripcion = db.Column(db.String(30), unique = True, nullable = False)
+    usuarios = relationship('Usuario', backref = 'estado_usuario')
+    
+
+    def __init__(self, descripcion):
+        self.descripcion = descripcion
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'descripcion': self.descripcion
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class TipoUsuario(db.Model):
+    __tablename__ = 'tipo_usuario'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    descripcion = db.Column(db.String(30), unique = True, nullable = False)
+    usuarios = relationship('Usuario', backref = 'tipo_usuario')
+    
+
+    def __init__(self, descripcion):
+        self.descripcion = descripcion
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'descripcion': self.descripcion
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class LicenciaConducir(db.Model):
+    __tablename__ = 'licencia_conducir'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    numero_licencia = db.Column(db.String, unique = True, nullable = False)
+    fecha_otorgamiento = db.Column(db.DateTime, unique = False, nullable = False)
+    fecha_vencimiento = db.Column(db.DateTime, unique = False, nullable = False)
+    imagen = db.Column(db.String(30), unique = True, nullable = False)
+    
+    id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
+    
+
+    def __init__(self, numero_licencia, fecha_otorgamiento, fecha_vencimiento, imagen, id_usuario):
+        self.numero_licencia = numero_licencia
+        self.fecha_otorgamiento = fecha_otorgamiento
+        self.fecha_vencimiento = fecha_vencimiento
+        self.imagen = imagen
+        self.id_usuario = id_usuario
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'numero_licencia': self.numero_licencia,
+            'fecha_otorgamiento': self.fecha_otorgamiento,
+            'fecha_vencimiento': self.fecha_vencimiento,
+            'imagen': self.imagen,
+            'id_usuario': self.id_usuario
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+
+# VIAJE
+
+class Viaje(db.Model):
+    __tablename__ = 'viaje'
+    __table_args__ = {'extend_existing': True} 
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    cantidad_pasajeros = db.Column(db.Integer, unique = False, nullable = False)
+    distancia = db.Column(db.Integer, unique = False, nullable = False)
+    costo_total = db.Column(db.Float, unique = False, nullable = False)
+
+    direccion_inicial = db.Column(db.String, unique = False, nullable = False)
+    direccion_final = db.Column(db.String, unique = False, nullable = False)
+
+    latitud_inicial = db.Column(db.String, unique = False, nullable = False)
+    latitud_final = db.Column(db.String, unique = True, nullable = False)
+    longitud_inicial = db.Column(db.String, unique = False, nullable = False)
+    longitud_final = db.Column(db.String, unique = True, nullable = False)
+    
+    fecha_inicio = db.Column(db.DateTime, unique = False, nullable = False)
+    fecha_inicio_real = db.Column(db.DateTime, unique = False, nullable = False)
+    fecha_final = db.Column(db.DateTime, unique = False, nullable = False)
+    fecha_final_real = db.Column(db.DateTime, unique = False, nullable = False)
+
+    conductor = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
+    vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = False)
+
+    tracking = relationship('Tracking', backref = 'viaje')
+    pasajero = relationship('Pasajero', backref = 'viaje')
+
+    def __init__(self, cantidad_pasajeros, distancia, costo_total, direccion_inicial, direccion_final, latitud_inicial, latitud_final, longitud_inicial, longitud_final, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, conductor, vehiculo):
+        self.cantidad_pasajeros = cantidad_pasajeros
+        self.distancia = distancia
+        self.costo_total = costo_total
+        self.direccion_inicial = direccion_inicial
+        self.direccion_final = direccion_final
+        self.latitud_inicial = latitud_inicial
+        self.latitud_final = latitud_final
+        self.longitud_inicial = longitud_inicial
+        self.longitud_final = longitud_final
+        self.fecha_inicio = fecha_inicio
+        self.fecha_inicio_real = fecha_inicio_real
+        self.fecha_final = fecha_final
+        self.fecha_final_real = fecha_final_real
+        self.conductor = conductor
+        self.vehiculo = vehiculo
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'cantidad_pasajeros': self.cantidad_pasajeros,
+            'distancia': self.distancia,
+            'costo_total': self.costo_total,
+            'direccion_inicial': self.direccion_inicial,
+            'direccion_final': self.direccion_final,
+            'latitud_inicial': self.latitud_inicial,
+            'latitud_final': self.latitud_final,
+            'longitud_inicial': self.longitud_inicial,
+            'longitud_final': self.longitud_final,
+            'fecha_inicio': self.fecha_inicio,
+            'fecha_inicio_real': self.fecha_inicio_real,
+            'fecha_final': self.fecha_final,
+            'fecha_final_real': self.fecha_final_real,
+            'conductor': self.conductor,
+            'vehiculo': self.vehiculo
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class Tracking(db.Model):
+    __tablename__ = 'tracking'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    latitud = db.Column(db.String, unique = False, nullable = False)
+    longitud = db.Column(db.String, unique = False, nullable = False)
+    fecha = db.Column(db.DateTime, default = datetime.utcnow)
+
+    id_viaje = db.Column(db.Integer, db.ForeignKey('viaje.id'), nullable = False)
+    
+
+    def __init__(self, latitud, longitud, fecha, id_viaje):
+        self.latitud = latitud
+        self.longitud = longitud
+        self.fecha = fecha
+        self.id_viaje = id_viaje
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'latitud': self.latitud,
+            'longitud': self.longitud,
+            'fecha': self.fecha,
+            'id_viaje': self.id_viaje
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class Pasajero(db.Model):
+    __tablename__ = 'pasajero'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    fecha_solicitud = db.Column(db.DateTime, default = datetime.utcnow)
+    fecha_actualizacion = db.Column(db.DateTime, default = datetime.utcnow)
+    
+    id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
+    id_viaje = db.Column(db.Integer, db.ForeignKey('viaje.id'), nullable = False)
+    estado_pasajero = db.Column(db.Integer, db.ForeignKey('estado_pasajero.id'), nullable = False)
+
+    def __init__(self, fecha_solicitud, fecha_actualizacion, id_usuario, id_viaje, estado_pasajero):
+        self.fecha_solicitud = fecha_solicitud
+        self.fecha_actualizacion = fecha_actualizacion
+        self.id_usuario = id_usuario
+        self.id_viaje = id_viaje
+        self.estado_pasajero = estado_pasajero
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'fecha_solicitud': self.fecha_solicitud,
+            'fecha_actualizacion': self.fecha_actualizacion,
+            'id_usuario': self.id_usuario,
+            'id_viaje': self.id_viaje,
+            'estado_pasajero': self.estado_pasajero
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class EstadoPasajero(db.Model):
+    __tablename__ = 'estado_pasajero'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    descripcion = db.Column(db.String(30), unique = True, nullable = False)
+    
+    pasajeros = relationship('Pasajero', backref = 'estado_pasajero')
+    
+
+    def __init__(self, descripcion):
+        self.descripcion = descripcion
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'descripcion': self.descripcion
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+# VEHICULO
+
+class Vehiculo(db.Model):
+    __tablename__ = 'vehiculo'
+    __table_args__ = {'extend_existing': True} 
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    patente = db.Column(db.Integer, unique = False, nullable = False)
+    cantidad_asientos = db.Column(db.String, unique = False, nullable = False)
+    
+    fecha_creacion = db.Column(db.DateTime, default = datetime.utcnow)
+    fecha_actualizacion = db.Column(db.DateTime, default = datetime.utcnow)
+
+    tipo_vehiculo = db.Column(db.Integer, db.ForeignKey('tipo_vehiculo.id'), nullable = False)
+    marca = db.Column(db.Integer, db.ForeignKey('marca.id'), nullable = False)
+    modelo = db.Column(db.Integer, db.ForeignKey('modelo.id'), nullable = False)
+    color = db.Column(db.Integer, db.ForeignKey('color.id'), nullable = False)
+
+    viaje =  relationship('Viaje', backref = 'vehiculo')
+    conductor =  relationship('Conductor', backref = 'vehiculo')
+    seguro_vehiculo =  relationship('SeguroVehiculo', backref = 'vehiculo')
+
+    def __init__(self, cantidad_pasajeros, distancia, costo_total, direccion_inicial, direccion_final, latitud_inicial, latitud_final, longitud_inicial, longitud_final, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, conductor, vehiculo):
+        self.cantidad_pasajeros = cantidad_pasajeros
+        self.distancia = distancia
+        self.costo_total = costo_total
+        self.direccion_inicial = direccion_inicial
+        self.direccion_final = direccion_final
+        self.latitud_inicial = latitud_inicial
+        self.latitud_final = latitud_final
+        self.longitud_inicial = longitud_inicial
+        self.longitud_final = longitud_final
+        self.fecha_inicio = fecha_inicio
+        self.fecha_inicio_real = fecha_inicio_real
+        self.fecha_final = fecha_final
+        self.fecha_final_real = fecha_final_real
+        self.conductor = conductor
+        self.vehiculo = vehiculo
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'cantidad_pasajeros': self.cantidad_pasajeros,
+            'distancia': self.distancia,
+            'costo_total': self.costo_total,
+            'direccion_inicial': self.direccion_inicial,
+            'direccion_final': self.direccion_final,
+            'latitud_inicial': self.latitud_inicial,
+            'latitud_final': self.latitud_final,
+            'longitud_inicial': self.longitud_inicial,
+            'longitud_final': self.longitud_final,
+            'fecha_inicio': self.fecha_inicio,
+            'fecha_inicio_real': self.fecha_inicio_real,
+            'fecha_final': self.fecha_final,
+            'fecha_final_real': self.fecha_final_real,
+            'conductor': self.conductor,
+            'vehiculo': self.vehiculo
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class Conductor(db.Model):
+    __tablename__ = 'conductor'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    
+    id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
+    id_vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = False)
+    cedula = db.Column(db.Integer, db.ForeignKey('cedula_conductor.id'), nullable = False)
+    
+
+    def __init__(self, id_usuario, id_vehiculo, cedula):
+        self.id_usuario = id_usuario
+        self.id_vehiculo = id_vehiculo
+        self.cedula = cedula
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'id_usuario': self.id_usuario,
+            'id_vehiculo': self.id_vehiculo,
+            'cedula': self.cedula
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class CedulaConductor(db.Model):
+    __tablename__ = 'cedula_conductor'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    numero = db.Column(db.String, unique = True, nullable = False)
+    imagen = db.Column(db.String, unique = True, nullable = False)
+    fecha_otorgamiento = db.Column(db.DateTime, unique = False, nullable = False)
+    fecha_vencimiento = db.Column(db.DateTime, unique = False, nullable = False)
+    
+    tipo_cedula = db.Column(db.Integer, db.ForeignKey('tipo_cedula.id'), nullable = False)
+
+    def __init__(self, numero, imagen, fecha_otorgamiento, fecha_vencimiento, tipo_cedula):
+        self.numero = numero
+        self.imagen = imagen
+        self.fecha_otorgamiento = fecha_otorgamiento
+        self.fecha_vencimiento = fecha_vencimiento
+        self.tipo_cedula = tipo_cedula
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'numero': self.numero,
+            'imagen': self.imagen,
+            'fecha_otorgamiento': self.fecha_otorgamiento,
+            'fecha_vencimiento': self.fecha_vencimiento,
+            'tipo_cedula': self.tipo_cedula
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class TipoCedula(db.Model):
+    __tablename__ = 'tipo_cedula'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    descripcion = db.Column(db.String(30), unique = True, nullable = False)
+    
+    cedula = relationship('CedulaConductor', backref = 'tipo_cedula')
+    
+
+    def __init__(self, descripcion):
+        self.descripcion = descripcion
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'descripcion': self.descripcion
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class SeguroVehiculo(db.Model):
+    __tablename__ = 'seguro_vehiculo'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    numero = db.Column(db.String, unique = True, nullable = False)
+    imagen = db.Column(db.String, unique = True, nullable = False)
+    fecha_otorgamiento = db.Column(db.DateTime, unique = False, nullable = False)
+    fecha_vencimiento = db.Column(db.DateTime, unique = False, nullable = False)
+    
+    id_vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = False)
+
+    def __init__(self, numero, imagen, fecha_otorgamiento, fecha_vencimiento, id_vehiculo):
+        self.numero = numero
+        self.imagen = imagen
+        self.fecha_otorgamiento = fecha_otorgamiento
+        self.fecha_vencimiento = fecha_vencimiento
+        self.id_vehiculo = id_vehiculo
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'numero': self.numero,
+            'imagen': self.imagen,
+            'fecha_otorgamiento': self.fecha_otorgamiento,
+            'fecha_vencimiento': self.fecha_vencimiento,
+            'id_vehiculo': self.id_vehiculo
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class TipoVehiculo(db.Model):
+    __tablename__ = 'tipo_vehiculo'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    descripcion = db.Column(db.String(30), unique = True, nullable = False)
+    
+    vehiculo = relationship('Vehiculo', backref = 'tipo_vehiculo')
+    
+
+    def __init__(self, descripcion):
+        self.descripcion = descripcion
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'descripcion': self.descripcion
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class Marca(db.Model):
+    __tablename__ = 'marca'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    descripcion = db.Column(db.String(30), unique = True, nullable = False)
+    
+    vehiculo = relationship('Vehiculo', backref = 'marca')
+    
+
+    def __init__(self, descripcion):
+        self.descripcion = descripcion
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'descripcion': self.descripcion
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class Modelo(db.Model):
+    __tablename__ = 'modelo'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    descripcion = db.Column(db.String(30), unique = True, nullable = False)
+
+    id_marca = db.Column(db.Integer, db.ForeignKey('marca.id'), nullable = False)
+    
+    vehiculo = relationship('Vehiculo', backref = 'modelo')
+    
+
+    def __init__(self, descripcion):
+        self.descripcion = descripcion
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'descripcion': self.descripcion
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class Color(db.Model):
+    __tablename__ = 'color'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    descripcion = db.Column(db.String(30), unique = True, nullable = False)
+    
+    vehiculo = relationship('Vehiculo', backref = 'color')
+    
+
+    def __init__(self, descripcion):
+        self.descripcion = descripcion
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'descripcion': self.descripcion
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
