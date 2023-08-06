@@ -8,3 +8,9 @@ from models import  Usuario, EstadoUsuario, TipoUsuario, LicenciaConducir, Viaje
 def Home():
     
     return "Hola LLEVAPPME"
+
+@app.route('/viajes', methods=['GET', 'POST'])
+def Viajes():
+    viajes = Viaje.query.all()
+    print(viajes)
+    return viajes
