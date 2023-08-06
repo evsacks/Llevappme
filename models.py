@@ -20,8 +20,8 @@ class Usuario(db.Model):
     fecha_creacion = db.Column(db.DateTime, default = datetime.utcnow)
     fecha_actualizacion = db.Column(db.DateTime, default = datetime.utcnow)
 
-    tipo = db.Column(db.Integer, db.ForeignKey('tipo_usuario.id'), nullable = False)
-    estado = db.Column(db.Integer, db.ForeignKey('estado_usuario.id'), nullable = False)
+    id_tipo_usuario = db.Column(db.Integer, db.ForeignKey('tipo_usuario.id'), nullable = False)
+    id_estado_usuario = db.Column(db.Integer, db.ForeignKey('estado_usuario.id'), nullable = False)
 
     licencias_conducir =  relationship('LicenciaConducir', backref = 'usuario')
     pasajeros =  relationship('Pasajero', backref = 'usuario')
@@ -233,8 +233,9 @@ class Viaje(db.Model):
     fecha_final = db.Column(db.DateTime, unique = False, nullable = False)
     fecha_final_real = db.Column(db.DateTime, unique = False, nullable = False)
 
-    conductor = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
-    vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = False)
+    id_conductor = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
+    id_vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = False)
+    id_estado_viaje = db.Column(db.Integer, db.ForeignKey('estado_viaje.id'), nullable = False)
 
     tracking = relationship('Tracking', backref = 'viaje')
     pasajeros = relationship('Pasajero', backref = 'viaje')
@@ -366,7 +367,7 @@ class Pasajero(db.Model):
     
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
     id_viaje = db.Column(db.Integer, db.ForeignKey('viaje.id'), nullable = False)
-    estado_pasajero = db.Column(db.Integer, db.ForeignKey('estado_pasajero.id'), nullable = False)
+    id_estado_pasajero = db.Column(db.Integer, db.ForeignKey('estado_pasajero.id'), nullable = False)
 
     def __init__(self, fecha_solicitud, fecha_actualizacion, id_usuario, id_viaje, estado_pasajero):
         self.fecha_solicitud = fecha_solicitud
@@ -413,7 +414,7 @@ class EstadoPasajero(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     descripcion = db.Column(db.String(30), unique = True, nullable = False)
     
-    pasajeros = relationship('Pasajero', backref = 'estado_pasajero')
+    pasajeros = relationship('Pasajero', backref = 'estado')
     
 
     def __init__(self, descripcion):
@@ -447,7 +448,7 @@ class EstadoViaje(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     descripcion = db.Column(db.String(30), unique = True, nullable = False)
     
-    viajes = relationship('Viaje', backref = 'estado_viaje')
+    viajes = relationship('Viaje', backref = 'estado')
     
 
     def __init__(self, descripcion):
@@ -487,10 +488,10 @@ class Vehiculo(db.Model):
     fecha_creacion = db.Column(db.DateTime, default = datetime.utcnow)
     fecha_actualizacion = db.Column(db.DateTime, default = datetime.utcnow)
 
-    tipo_vehiculo = db.Column(db.Integer, db.ForeignKey('tipo_vehiculo.id'), nullable = False)
-    marca = db.Column(db.Integer, db.ForeignKey('marca.id'), nullable = False)
-    modelo = db.Column(db.Integer, db.ForeignKey('modelo.id'), nullable = False)
-    color = db.Column(db.Integer, db.ForeignKey('color.id'), nullable = False)
+    id_tipo_vehiculo = db.Column(db.Integer, db.ForeignKey('tipo_vehiculo.id'), nullable = False)
+    id_marca = db.Column(db.Integer, db.ForeignKey('marca.id'), nullable = False)
+    id_modelo = db.Column(db.Integer, db.ForeignKey('modelo.id'), nullable = False)
+    id_color = db.Column(db.Integer, db.ForeignKey('color.id'), nullable = False)
 
     viajes =  relationship('Viaje', backref = 'vehiculo')
     conductores =  relationship('Conductor', backref = 'vehiculo')
@@ -552,7 +553,7 @@ class Conductor(db.Model):
     
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
     id_vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = False)
-    cedula = db.Column(db.Integer, db.ForeignKey('cedula_conductor.id'), nullable = False)
+    id_cedula = db.Column(db.Integer, db.ForeignKey('cedula_conductor.id'), nullable = False)
     
 
     def __init__(self, id_usuario, id_vehiculo, cedula):
@@ -596,7 +597,7 @@ class CedulaConductor(db.Model):
     fecha_otorgamiento = db.Column(db.DateTime, unique = False, nullable = False)
     fecha_vencimiento = db.Column(db.DateTime, unique = False, nullable = False)
     
-    tipo_cedula = db.Column(db.Integer, db.ForeignKey('tipo_cedula.id'), nullable = False)
+    id_tipo_cedula = db.Column(db.Integer, db.ForeignKey('tipo_cedula.id'), nullable = False)
 
     def __init__(self, numero, imagen, fecha_otorgamiento, fecha_vencimiento, tipo_cedula):
         self.numero = numero
@@ -643,7 +644,7 @@ class TipoCedula(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     descripcion = db.Column(db.String(30), unique = True, nullable = False)
     
-    cedula = relationship('CedulaConductor', backref = 'tipo_cedula')
+    cedula = relationship('CedulaConductor', backref = 'tipo')
     
 
     def __init__(self, descripcion):
@@ -727,7 +728,7 @@ class TipoVehiculo(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     descripcion = db.Column(db.String(30), unique = True, nullable = False)
     
-    vehiculo = relationship('Vehiculo', backref = 'tipo_vehiculo')
+    vehiculo = relationship('Vehiculo', backref = 'tipo')
     
 
     def __init__(self, descripcion):
