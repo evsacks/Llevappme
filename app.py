@@ -3,7 +3,7 @@ from flask import Flask, render_template, redirect, url_for, flash
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+#basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
