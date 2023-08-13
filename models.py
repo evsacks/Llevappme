@@ -28,7 +28,7 @@ class Usuario(db.Model):
     conductores =  relationship('Conductor', backref = 'usuario')
     viajes =  relationship('Viaje', backref = 'usuario')
 
-    def __init__(self, nombre, apellido, email, contrasenia, telefono, dni, fecha_nacimiento, fecha_creacion, fecha_actualizacion, tipo, estado):
+    def __init__(self, nombre, apellido, email, contrasenia, telefono, dni, fecha_nacimiento, fecha_creacion, fecha_actualizacion, id_tipo_usuario, id_estado_usuario):
         self.nombre = nombre
         self.apellido = apellido
         self.email = email
@@ -38,8 +38,8 @@ class Usuario(db.Model):
         self.fecha_nacimiento = fecha_nacimiento
         self.fecha_creacion = fecha_creacion
         self.fecha_actualizacion = fecha_actualizacion
-        self.estado = estado
-        self.tipo = tipo
+        self.id_estado_usuario = id_estado_usuario
+        self.id_tipo_usuario = id_tipo_usuario
 
     def __repr__(self):
         id = self.id
@@ -52,14 +52,15 @@ class Usuario(db.Model):
         fecha_nacimiento = self.fecha_nacimiento
         fecha_creacion = self.fecha_creacion
         fecha_actualizacion = self.fecha_actualizacion
-        estado = self.estado
-        tipo = self.tipo
+        id_estado_usuario = self.id_estado_usuario
+        id_tipo_usuario = self.id_tipo_usuario
         usu = ('<Usuario(id={}, nombre={}, apellido={}, email={}, \
                          contrasenia={}, telefono={}, dni={}, \
                          fecha nacimiento={}, fecha creacion={}, \
-                         fecha actualizacion={}, estado={}, tipo={})>'
+                         fecha actualizacion={}, estado usuario={}, tipo usuario={})>'
                .format(id, nombre, apellido, email, contrasenia, telefono,\
-                       dni, fecha_nacimiento, fecha_creacion, fecha_actualizacion, estado, tipo))
+                       dni, fecha_nacimiento, fecha_creacion, fecha_actualizacion, \
+                       id_estado_usuario, id_tipo_usuario))
         return usu
 
     def serialize(self):
@@ -74,8 +75,8 @@ class Usuario(db.Model):
             'fecha_nacimiento': self.fecha_nacimiento,
             'fecha_creacion': self.fecha_creacion,
             'fecha_actualizacion': self.fecha_actualizacion,
-            'estado': self.estado,
-            'tipo': self.tipo
+            'id_estado_usuario': self.id_estado_usuario,
+            'id_tipo_usuario': self.id_tipo_usuario
     }
 
     def save_to_db(self):
@@ -240,7 +241,7 @@ class Viaje(db.Model):
     tracking = relationship('Tracking', backref = 'viaje')
     pasajeros = relationship('Pasajero', backref = 'viaje')
 
-    def __init__(self, cantidad_pasajeros, distancia, costo_total, direccion_inicial, direccion_final, latitud_inicial, latitud_final, longitud_inicial, longitud_final, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, conductor, vehiculo):
+    def __init__(self, cantidad_pasajeros, distancia, costo_total, direccion_inicial, direccion_final, latitud_inicial, latitud_final, longitud_inicial, longitud_final, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, id_conductor, id_vehiculo, id_estado_viaje):
         self.cantidad_pasajeros = cantidad_pasajeros
         self.distancia = distancia
         self.costo_total = costo_total
@@ -254,8 +255,9 @@ class Viaje(db.Model):
         self.fecha_inicio_real = fecha_inicio_real
         self.fecha_final = fecha_final
         self.fecha_final_real = fecha_final_real
-        self.conductor = conductor
-        self.vehiculo = vehiculo
+        self.id_conductor = id_conductor
+        self.id_vehiculo = id_vehiculo
+        self.id_estado_viaje = id_estado_viaje
 
     def __repr__(self):
         cantidad_pasajeros = self.cantidad_pasajeros
@@ -271,16 +273,17 @@ class Viaje(db.Model):
         fecha_inicio_real = self.fecha_inicio_real
         fecha_final = self.fecha_final
         fecha_final_real = self.fecha_final_real
-        conductor = self.conductor
-        vehiculo = self.vehiculo
+        id_conductor = self.id_conductor
+        id_vehiculo = self.id_vehiculo
+        id_estado_viaje = self.id_estado_viaje
         viaje = '<Viaje(id={}, cantidad pasajeros={}, distancia={}, costo total={}\
                         direccion inicial={}, direccion final={}, latitud inicial={}, \
                         latitud final={}, longitud inicial={}, longitud final={}, \
                         fecha inicio={}, fecha inicio real={}, fecha final={}, \
-                        fecha final real={}, conductor={}, vehiculo={})>'\
+                        fecha final real={}, conductor={}, vehiculo={}, estado viaje={})>'\
                 .format(id,cantidad_pasajeros,distancia,costo_total,direccion_inicial,direccion_final,\
                         latitud_inicial,latitud_final,longitud_inicial,longitud_final,fecha_inicio,\
-                        fecha_inicio_real,fecha_final,fecha_final_real,conductor,vehiculo)
+                        fecha_inicio_real,fecha_final,fecha_final_real,id_conductor,id_vehiculo, id_estado_viaje)
         return viaje
 
     def serialize(self):
@@ -298,8 +301,9 @@ class Viaje(db.Model):
             'fecha_inicio_real': self.fecha_inicio_real,
             'fecha_final': self.fecha_final,
             'fecha_final_real': self.fecha_final_real,
-            'conductor': self.conductor,
-            'vehiculo': self.vehiculo
+            'id_conductor': self.id_conductor,
+            'id_vehiculo': self.id_vehiculo,
+            'id_estado_viaje': self.id_estado_viaje
     }
 
     def save_to_db(self):
@@ -369,12 +373,12 @@ class Pasajero(db.Model):
     id_viaje = db.Column(db.Integer, db.ForeignKey('viaje.id'), nullable = False)
     id_estado_pasajero = db.Column(db.Integer, db.ForeignKey('estado_pasajero.id'), nullable = False)
 
-    def __init__(self, fecha_solicitud, fecha_actualizacion, id_usuario, id_viaje, estado_pasajero):
+    def __init__(self, fecha_solicitud, fecha_actualizacion, id_usuario, id_viaje, id_estado_pasajero):
         self.fecha_solicitud = fecha_solicitud
         self.fecha_actualizacion = fecha_actualizacion
         self.id_usuario = id_usuario
         self.id_viaje = id_viaje
-        self.estado_pasajero = estado_pasajero
+        self.id_estado_pasajero = id_estado_pasajero
 
     def __repr__(self):
         id = self.id
@@ -382,10 +386,10 @@ class Pasajero(db.Model):
         fecha_actualizacion = self.fecha_actualizacion
         id_usuario = self.id_usuario
         id_viaje = self.id_viaje
-        estado_pasajero = self.estado_pasajero
+        id_estado_pasajero = self.id_estado_pasajero
         pasajero = '<Tracking(id={}, fecha solicitud={}, fecha actualizacion={}, \
                               pasajero={}, viaje={}, estado pasajero={})>'\
-                    .format(id,fecha_solicitud, fecha_actualizacion,id_usuario,id_viaje,estado_pasajero)
+                    .format(id,fecha_solicitud, fecha_actualizacion,id_usuario,id_viaje,id_estado_pasajero)
         return pasajero
 
     def serialize(self):
@@ -395,7 +399,7 @@ class Pasajero(db.Model):
             'fecha_actualizacion': self.fecha_actualizacion,
             'id_usuario': self.id_usuario,
             'id_viaje': self.id_viaje,
-            'estado_pasajero': self.estado_pasajero
+            'id_estado_pasajero': self.id_estado_pasajero
     }
 
     def save_to_db(self):
@@ -497,15 +501,15 @@ class Vehiculo(db.Model):
     conductores =  relationship('Conductor', backref = 'vehiculo')
     seguros_vehiculo =  relationship('SeguroVehiculo', backref = 'vehiculo')
 
-    def __init__(self, patente, cantidad_asientos, fecha_creacion, fecha_actualizacion, tipo_vehiculo, marca, modelo, color):
+    def __init__(self, patente, cantidad_asientos, fecha_creacion, fecha_actualizacion, id_tipo_vehiculo, id_marca, id_modelo, id_color):
         self.patente = patente
         self.cantidad_asientos = cantidad_asientos
         self.fecha_creacion = fecha_creacion
         self.fecha_actualizacion = fecha_actualizacion
-        self.tipo_vehiculo = tipo_vehiculo
-        self.marca = marca
-        self.modelo = modelo
-        self.color = color
+        self.id_tipo_vehiculo = id_tipo_vehiculo
+        self.id_marca = id_marca
+        self.id_modelo = id_modelo
+        self.id_color = id_color
 
     def __repr__(self):
         id = self.id,
@@ -513,15 +517,15 @@ class Vehiculo(db.Model):
         cantidad_asientos = self.cantidad_asientos
         fecha_creacion = self.fecha_creacion
         fecha_actualizacion = self.fecha_actualizacion
-        tipo_vehiculo = self.tipo_vehiculo
-        marca = self.marca
-        modelo = self.modelo
-        color = self.color
+        id_tipo_vehiculo = self.id_tipo_vehiculo
+        id_marca = self.id_marca
+        id_modelo = self.id_modelo
+        id_color = self.id_color
         vehiculo = '<Vehiculo(id={},patente={}, cantidad asientos={}, fecha creacion={}, \
                              fecha actualizacion={}, tipo vehiculo={}, marca={}, modelo={}, \
                              color={})>'\
                    .format(id,patente, cantidad_asientos, fecha_creacion, fecha_actualizacion, \
-                          tipo_vehiculo, marca, modelo, color)
+                          id_tipo_vehiculo, id_marca, id_modelo, id_color)
         return vehiculo
 
     def serialize(self):
@@ -530,10 +534,10 @@ class Vehiculo(db.Model):
             'cantidad_asientos': self.cantidad_asientos,
             'fecha_creacion': self.fecha_creacion,
             'fecha_actualizacion': self.fecha_actualizacion,
-            'tipo_vehiculo': self.tipo_vehiculo,
-            'marca': self.marca,
-            'modelo': self.modelo,
-            'color': self.color
+            'id_tipo_vehiculo': self.id_tipo_vehiculo,
+            'id_marca': self.id_marca,
+            'id_modelo': self.id_modelo,
+            'id_color': self.id_color
     }
 
     def save_to_db(self):
@@ -556,18 +560,18 @@ class Conductor(db.Model):
     id_cedula = db.Column(db.Integer, db.ForeignKey('cedula_conductor.id'), nullable = False)
     
 
-    def __init__(self, id_usuario, id_vehiculo, cedula):
+    def __init__(self, id_usuario, id_vehiculo, id_cedula):
         self.id_usuario = id_usuario
         self.id_vehiculo = id_vehiculo
-        self.cedula = cedula
+        self.id_cedula = id_cedula
 
     def __repr__(self):
         id = self.id
         id_usuario = self.id_usuario
         id_vehiculo = self.id_vehiculo
-        cedula = self.cedula
+        id_cedula = self.id_cedula
         conductor = '<Conductor(id={}, conductor={}, vehiculo={}, cedula={})>'\
-                    .format(id, id_usuario, id_vehiculo, cedula)
+                    .format(id, id_usuario, id_vehiculo, id_cedula)
         return conductor
 
     def serialize(self):
@@ -575,7 +579,7 @@ class Conductor(db.Model):
             'id': self.id,
             'id_usuario': self.id_usuario,
             'id_vehiculo': self.id_vehiculo,
-            'cedula': self.cedula
+            'id_cedula': self.id_cedula
     }
 
     def save_to_db(self):
@@ -599,12 +603,12 @@ class CedulaConductor(db.Model):
     
     id_tipo_cedula = db.Column(db.Integer, db.ForeignKey('tipo_cedula.id'), nullable = False)
 
-    def __init__(self, numero, imagen, fecha_otorgamiento, fecha_vencimiento, tipo_cedula):
+    def __init__(self, numero, imagen, fecha_otorgamiento, fecha_vencimiento, id_tipo_cedula):
         self.numero = numero
         self.imagen = imagen
         self.fecha_otorgamiento = fecha_otorgamiento
         self.fecha_vencimiento = fecha_vencimiento
-        self.tipo_cedula = tipo_cedula
+        self.id_tipo_cedula = id_tipo_cedula
 
     def __repr__(self):
         id = self.id
@@ -612,10 +616,10 @@ class CedulaConductor(db.Model):
         imagen = self.imagen
         fecha_otorgamiento = self.fecha_otorgamiento
         fecha_vencimiento = self.fecha_vencimiento
-        tipo_cedula = self.tipo_cedula
+        id_tipo_cedula = self.id_tipo_cedula
         cedula_cond = '<Cedula(numero={}, imagen={}, fecha_otorgamiento={}, \
                         fecha_vencimiento={}, tipo_cedula={})>'\
-                    .format(id, numero, imagen, fecha_otorgamiento, fecha_vencimiento, tipo_cedula)
+                    .format(id, numero, imagen, fecha_otorgamiento, fecha_vencimiento, id_tipo_cedula)
         return cedula_cond
 
     def serialize(self):
@@ -625,7 +629,7 @@ class CedulaConductor(db.Model):
             'imagen': self.imagen,
             'fecha_otorgamiento': self.fecha_otorgamiento,
             'fecha_vencimiento': self.fecha_vencimiento,
-            'tipo_cedula': self.tipo_cedula
+            'id_tipo_cedula': self.id_tipo_cedula
     }
 
     def save_to_db(self):
