@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
@@ -12,8 +12,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 api = Api(app)
 
-import models
-import routes
+import models as modelo
+import routes as rutas
 
 if __name__ == '__main__':
     app.run(debug=True)

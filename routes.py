@@ -3,9 +3,7 @@ from Usuario.routes import usuario_bp
 from Viaje.routes import viaje_bp
 from Vehiculo.routes import vehiculo_bp
 
-from models import  Usuario, EstadoUsuario, TipoUsuario, LicenciaConducir, Viaje, Tracking, \
-                    Pasajero, EstadoPasajero, Vehiculo, Conductor, CedulaConductor, TipoCedula, \
-                    SeguroVehiculo, TipoVehiculo, Marca, Modelo, Color
+import models as modelo
 
 #Blueprints
 app.register_blueprint(usuario_bp)
