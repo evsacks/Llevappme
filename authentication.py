@@ -1,14 +1,13 @@
 import pyrebase
 
 firebaseConfig = {
-  'apiKey': "AIzaSyD-B7yqtSByylMaf3v7QMjHD8IYu-vl7W4",
-  'authDomain': "celiakia.firebaseapp.com",
-  'databaseURL': "https://celiakia.firebaseio.com",
-  'projectId': "celiakia",
-  'storageBucket': "celiakia.appspot.com",
-  'messagingSenderId': "1009814857697",
-  'appId': "1:1009814857697:web:b0ab52f46bc2c17df894a0",
-  'measurementId': "G-GGGN2P426M"
+  'apiKey': "AIzaSyAuYV0KQbzAs9VNnTwKEOP8Uv0Q29xkiZE",
+  'authDomain': "llevappme-jetl.firebaseapp.com",
+  'projectId': "llevappme-jetl",
+  'storageBucket': "llevappme-jetl.appspot.com",
+  'messagingSenderId': "938379616472",
+  'appId': "1:938379616472:web:11469ab6236530c8d937ad",
+  'measurementId': "G-66J8QC1B3Q"
 }
 
 firebase = pyrebase.initialize_app(firebaseConfig)
