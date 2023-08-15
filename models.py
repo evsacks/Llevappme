@@ -1,11 +1,12 @@
 from app import db
 from datetime import datetime
 from sqlalchemy.orm import relationship
-
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # USUARIO 
 
-class Usuario(db.Model):
+class Usuario(db.Model, UserMixin):
     __tablename__ = 'usuario'
     __table_args__ = {'extend_existing': True} 
 
@@ -32,7 +33,7 @@ class Usuario(db.Model):
         self.nombre = nombre
         self.apellido = apellido
         self.email = email
-        self.contrasenia = contrasenia
+        self.contrasenia = generate_password_hash(contrasenia)
         self.telefono = telefono
         self.dni = dni
         self.fecha_nacimiento = fecha_nacimiento
@@ -79,6 +80,16 @@ class Usuario(db.Model):
             'id_tipo_usuario': self.id_tipo_usuario
     }
 
+    @classmethod
+    def find_by_email(cls, mail):
+        return cls.query.filter_by(email=mail).first()
+    
+    def set_contrasenia(self, contrasenia):
+        self.contrasenia = generate_password_hash(contrasenia)
+    
+    def validar_contrasenia(self, contrasenia):
+        return check_password_hash(self.contrasenia, contrasenia)
+    
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
@@ -225,9 +236,9 @@ class Viaje(db.Model):
     direccion_final = db.Column(db.String, unique = False, nullable = False)
 
     latitud_inicial = db.Column(db.String, unique = False, nullable = False)
-    latitud_final = db.Column(db.String, unique = True, nullable = False)
+    latitud_final = db.Column(db.String, unique = False, nullable = False)
     longitud_inicial = db.Column(db.String, unique = False, nullable = False)
-    longitud_final = db.Column(db.String, unique = True, nullable = False)
+    longitud_final = db.Column(db.String, unique = False, nullable = False)
     
     fecha_inicio = db.Column(db.DateTime, unique = False, nullable = False)
     fecha_inicio_real = db.Column(db.DateTime, unique = False, nullable = False)

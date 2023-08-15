@@ -1,0 +1,11 @@
+<html>
+    <a>VIAJES POR USUARIO</a><br><br>
+    {% for viaje in viajes %}
+        <a>{{viaje}}</a><br><br>
+    {% endfor %}
+
+    {% if mensaje %}
+        <a>{{mensaje}}</a>
+    {% endif %}
+    <a href="{{url_for('usuario_bp.Logout')}}">Salir</a>
+</html>

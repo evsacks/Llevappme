@@ -1,0 +1,22 @@
+<html>
+	<head>
+		<title>LLEVAPPME</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    </head>
+	<body>
+        <section>
+            {% from "_formhelpers.html" import render_field %}
+            <form method="post" action="{{url_for('usuario_bp.Login')}}">
+                {{ form.hidden_tag() }}
+            <dl>
+                {{ render_field(form.nombreUsuario) }}
+                {{ render_field(form.contrasenia) }}
+            </dl>
+            {{ render_field(form.submit) }}
+            </form>
+        </section>						
+
+        <a href="{{url_for('usuario_bp.Registro')}}">Registrarse</a>
+	</body>
+</html>
