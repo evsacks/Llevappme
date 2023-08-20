@@ -21,7 +21,6 @@ def Registro():
         apellido = form.apellidoUsuario.data
         email = form.email.data.strip()
         telefono = form.telefono.data
-        dni = form.dni.data
         fecha_nacimiento = form.fecha_nacimiento.data
         passw = form.password.data
 
@@ -36,11 +35,10 @@ def Registro():
                 email=email,
                 contrasenia=passw,
                 telefono=telefono,
-                dni=dni,
                 fecha_nacimiento=fecha_nacimiento,
                 fecha_actualizacion=datetime.now(),
                 fecha_creacion= datetime.now(),
-                id_tipo_usuario=4,
+                id_tipo_usuario=1,
                 id_estado_usuario=1
             )
             print(model.Usuario.serialize(nuevoUsuario))

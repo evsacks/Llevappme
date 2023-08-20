@@ -23,8 +23,11 @@ import routes as rutas
 
 maps = googlemaps.Client(API_KEY)
 
-#direccion = 'Pilar, Buenos Aires'
-#response = maps.geocode(direccion)
+origen = 'Pilar, Buenos Aires'
+#response = maps.geocode(origen)
+#pprint(response)
+#destino = 'Campana, Buenos Aires'
+#response = maps.distance_matrix(origen,destino)
 #pprint(response)
 
 if __name__ == '__main__':

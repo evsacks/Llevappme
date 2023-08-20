@@ -16,18 +16,6 @@ class RegistroUsuario(FlaskForm):
     apellidoUsuario = StringField('Apellido', validators=[DataRequired(), Length(min=2, max=100)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     telefono = IntegerField('Telefono', validators=[DataRequired()])
-    dni = IntegerField('DNI', validators=[DataRequired()])
-    fecha_nacimiento = StringField('Fecha de Nacimiento', validators=[DataRequired()])
-    password = PasswordField('Contraseña', [DataRequired(), EqualTo('confirm', message='Las contraseñas deben coincidir')])
-    confirm = PasswordField('Repite la contraseña')
-    submit = SubmitField('Registrarse')
-
-class NuevoViaje(FlaskForm):
-    nombreUsuario = StringField('Nombre', validators=[DataRequired(), Length(min=2, max=100)])
-    apellidoUsuario = StringField('Apellido', validators=[DataRequired(), Length(min=2, max=100)])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    telefono = IntegerField('Telefono', validators=[DataRequired()])
-    dni = IntegerField('DNI', validators=[DataRequired()])
     fecha_nacimiento = StringField('Fecha de Nacimiento', validators=[DataRequired()])
     password = PasswordField('Contraseña', [DataRequired(), EqualTo('confirm', message='Las contraseñas deben coincidir')])
     confirm = PasswordField('Repite la contraseña')

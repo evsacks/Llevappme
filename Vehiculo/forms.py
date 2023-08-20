@@ -8,9 +8,7 @@ from wtforms_sqlalchemy.fields import QuerySelectField
 import models as model
 
 class CrearVehiculo(FlaskForm):
-    patente = StringField('Patente', validators=[DataRequired(), Length(min=7, max=7)])
+    patente = StringField('Patente', validators=[DataRequired(), Length(min=6, max=7)])
     cantidad_asientos = IntegerField('Cantidad de asientos', validators=[DataRequired()])
-    descripcion = StringField('Descripcion', validators=[DataRequired(), Length(min=30, max=200)])
+    descripcion = StringField('Descripcion', validators=[DataRequired(), Length(min=10, max=100)])
     submit = SubmitField('Agregar Vehiculo')
-
-

@@ -11,6 +11,12 @@ def AltaConductor(idUsuario,idVehiculo):
         id_vehiculo=idVehiculo
     )
     model.Conductor.save_to_db(nuevoConductor)
+
+    usuario = model.Usuario.query.get(idUsuario)
+    usuario.id_tipo_usuario = 2
+    
+    model.Usuario.save_to_db(usuario)
+
     return nuevoConductor
 
 #VIAJE SEGUN ESTADO
@@ -20,7 +26,7 @@ def Vehiculo():
     form = formulario.CrearVehiculo()
     if form.validate_on_submit():
 
-        patente = form.patente.data
+        patente = form.patente.data.upper()
         cantidad_asientos = form.cantidad_asientos.data
         descripcion = form.descripcion.data
 
@@ -33,7 +39,7 @@ def Vehiculo():
         )
         model.Vehiculo.save_to_db(nuevoVehiculo)
 
-        vehiculo = model.Vehiculo.get(nuevoVehiculo.id)
+        vehiculo = model.Vehiculo.query.get(nuevoVehiculo.id)
         
         if vehiculo:
             idUsuario = current_user.get_id()
@@ -48,6 +54,8 @@ def Vehiculo():
 @vehiculo_bp.route('/listado', methods=['GET', 'POST'])
 @login_required
 def ListadoVehiculos():
-    vehiculos = model.Conductor.query.filter_by(id_usuario=current_user.get_id())
+    idUsuario = current_user.get_id()
+    vehiculos = model.Conductor.query.filter_by(id_usuario=idUsuario)
+    print(vehiculos)
     return render_template('listado_vehiculos.html', vehiculos = vehiculos)
     
