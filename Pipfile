@@ -86,6 +86,8 @@ wrapt = "==1.15.0"
 wtforms = "==2.3.1"
 zipp = "==3.15.0"
 python-dotenv = "*"
+wtforms-sqlalchemy = "*"
+googlemaps = "*"
 
 [requires]
 python_version = "3.7"
