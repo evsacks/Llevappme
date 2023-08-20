@@ -1,0 +1,33 @@
+<html>
+	<head>
+		<title>LLEVAPPME</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    </head>
+	<body>
+        <section>
+            <table>
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Usuario</th>
+                        <th scope="col">Vehiculo</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                    
+                <tbody>
+                    {% for vehiculo in vehiculos %}
+                        <tr>
+                            <td> {{ vehiculo.id_usuario.email}}</td>
+                            <td> {{ vehiculo.patente}}</td>
+                            <td>
+                                <a href="{{url_for('vehiculo_bp.CrearCedula',idVehiculo=vehiculo.id)}}"></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>						
+
+        <a href="{{url_for('usuario_bp.Logout')}}">Salir</a>
+	</body>
+</html>

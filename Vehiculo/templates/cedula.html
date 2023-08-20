@@ -1,0 +1,24 @@
+<html>
+	<head>
+		<title>LLEVAPPME</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    </head>
+	<body>
+        <section>
+            {% from "_formhelpers.html" import render_field %}
+            <form method="post" action="{{url_for('vehiculo_bp.CrearCedula', idVehiculo = 3)}}">
+                {{ form.hidden_tag() }}
+            <dl>
+                {{ render_field(form.numero) }}
+                {{ render_field(form.imagen) }}
+                {{ render_field(form.fecha_otorgamiento) }}
+                {{ render_field(form.fecha_vencimiento) }}
+            </dl>
+            {{ render_field(form.submit) }}
+            </form>
+        </section>						
+
+        <a href="{{url_for('usuario_bp.Logout')}}">Salir</a>
+	</body>
+</html>

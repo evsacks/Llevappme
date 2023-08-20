@@ -6,29 +6,9 @@ from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationE
 
 import models as modelo
 
-class Login(FlaskForm):
-    nombreUsuario = StringField('Nombre de usuario', validators=[DataRequired(), Length(min=2, max=100)])
-    contrasenia = PasswordField('Contrasenia',validators=[DataRequired()])
-    submit = SubmitField('Ingresar')
-
-class RegistroUsuario(FlaskForm):
-    nombreUsuario = StringField('Nombre', validators=[DataRequired(), Length(min=2, max=100)])
-    apellidoUsuario = StringField('Apellido', validators=[DataRequired(), Length(min=2, max=100)])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    telefono = IntegerField('Telefono', validators=[DataRequired()])
-    dni = IntegerField('DNI', validators=[DataRequired()])
-    fecha_nacimiento = StringField('Fecha de Nacimiento', validators=[DataRequired()])
-    password = PasswordField('Contraseña', [DataRequired(), EqualTo('confirm', message='Las contraseñas deben coincidir')])
-    confirm = PasswordField('Repite la contraseña')
-    submit = SubmitField('Registrarse')
-
 class NuevoViaje(FlaskForm):
-    nombreUsuario = StringField('Nombre', validators=[DataRequired(), Length(min=2, max=100)])
-    apellidoUsuario = StringField('Apellido', validators=[DataRequired(), Length(min=2, max=100)])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    telefono = IntegerField('Telefono', validators=[DataRequired()])
-    dni = IntegerField('DNI', validators=[DataRequired()])
-    fecha_nacimiento = StringField('Fecha de Nacimiento', validators=[DataRequired()])
-    password = PasswordField('Contraseña', [DataRequired(), EqualTo('confirm', message='Las contraseñas deben coincidir')])
-    confirm = PasswordField('Repite la contraseña')
-    submit = SubmitField('Registrarse')
+    origen = StringField('Origen', validators=[DataRequired(), Length(min=2, max=100)])
+    destino = StringField('Destino', validators=[DataRequired(), Length(min=2, max=100)])
+    cantidad_asientos = IntegerField('Cantidad de asientos disponibles', validators=[DataRequired()])
+    fecha_inicio = DateField('Fecha de viaje', validators=[DataRequired()])
+    submit = SubmitField('Finalizar')

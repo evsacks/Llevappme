@@ -46,7 +46,7 @@ def Registro():
             print(modelo.Usuario.serialize(nuevoUsuario))
             modelo.Usuario.save_to_db(nuevoUsuario)
 
-            return redirect(url_for('viaje_bp.Viajes', estado =3))
+            return redirect(url_for('viaje_bp.ViajesEstado', estado =3))
         
     return render_template('registro.html', form=form)
 
