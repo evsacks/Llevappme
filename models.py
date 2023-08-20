@@ -491,21 +491,17 @@ class Conductor(db.Model):
     
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
     id_vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = False)
-    id_cedula = db.Column(db.Integer, db.ForeignKey('cedula_conductor.id'), nullable = False)
-    
 
-    def __init__(self, id_usuario, id_vehiculo, id_cedula):
+    def __init__(self, id_usuario, id_vehiculo):
         self.id_usuario = id_usuario
         self.id_vehiculo = id_vehiculo
-        self.id_cedula = id_cedula
 
     def __repr__(self):
         id = self.id
         id_usuario = self.id_usuario
         id_vehiculo = self.id_vehiculo
-        id_cedula = self.id_cedula
-        conductor = '<Conductor(id={}, conductor={}, vehiculo={}, cedula={})>'\
-                    .format(id, id_usuario, id_vehiculo, id_cedula)
+        conductor = '<Conductor(id={}, conductor={}, vehiculo={})>'\
+                    .format(id, id_usuario, id_vehiculo)
         return conductor
 
     def serialize(self):
@@ -513,7 +509,6 @@ class Conductor(db.Model):
             'id': self.id,
             'id_usuario': self.id_usuario,
             'id_vehiculo': self.id_vehiculo,
-            'id_cedula': self.id_cedula
     }
 
     def save_to_db(self):
