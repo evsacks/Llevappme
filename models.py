@@ -177,15 +177,15 @@ class Viaje(db.Model):
     direccion_inicial = db.Column(db.String, unique = False, nullable = False)
     direccion_final = db.Column(db.String, unique = False, nullable = False)
 
-    latitud_inicial = db.Column(db.String, unique = False, nullable = True)
-    latitud_final = db.Column(db.String, unique = False, nullable = True)
-    longitud_inicial = db.Column(db.String, unique = False, nullable = True)
-    longitud_final = db.Column(db.String, unique = False, nullable = True)
+    latitud_inicial = db.Column(db.String, unique = False, nullable = False)
+    latitud_final = db.Column(db.String, unique = False, nullable = False)
+    longitud_inicial = db.Column(db.String, unique = False, nullable = False)
+    longitud_final = db.Column(db.String, unique = False, nullable = False)
     
     fecha_inicio = db.Column(db.DateTime, unique = False, nullable = False)
-    fecha_inicio_real = db.Column(db.DateTime, unique = False, nullable = False)
-    fecha_final = db.Column(db.DateTime, unique = False, nullable = False)
-    fecha_final_real = db.Column(db.DateTime, unique = False, nullable = False)
+    fecha_inicio_real = db.Column(db.DateTime, unique = False, nullable = True)
+    fecha_final = db.Column(db.Date, unique = False, nullable = False)
+    fecha_final_real = db.Column(db.DateTime, unique = False, nullable = True)
 
     id_conductor = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
     id_vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = True)
@@ -508,7 +508,7 @@ class Conductor(db.Model):
         return {
             'id': self.id,
             'id_usuario': self.id_usuario,
-            'id_vehiculo': self.id_vehiculo,
+            'id_vehiculo': self.id_vehiculo
     }
 
     def save_to_db(self):
