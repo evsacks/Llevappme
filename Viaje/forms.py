@@ -4,7 +4,7 @@ from wtforms.fields.core import BooleanField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError
 
-import models as modelo
+import models as model
 
 class NuevoViaje(FlaskForm):
     origen = StringField('Origen', validators=[DataRequired(), Length(min=2, max=100)])

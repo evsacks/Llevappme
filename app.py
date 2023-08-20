@@ -18,7 +18,7 @@ api = Api(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "usuario_bp.Login"
 
-import models as modelo
+import models as model
 import routes as rutas
 
 maps = googlemaps.Client(API_KEY)

@@ -5,7 +5,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError
 from wtforms_sqlalchemy.fields import QuerySelectField
 
-import models as modelo
+import models as model
 
 class CrearVehiculo(FlaskForm):
     patente = StringField('Patente', validators=[DataRequired(), Length(min=7, max=7)])

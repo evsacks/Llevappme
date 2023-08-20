@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect,url_for,flash
 from flask_login import login_user,logout_user,login_required,current_user
 from datetime import datetime, timedelta
 
-import models as modelo
+import models as model
 import Usuario.forms as formulario
 
 usuario_bp = Blueprint('usuario_bp', __name__, url_prefix='/usuario', template_folder='templates', static_folder='static')
@@ -25,12 +25,12 @@ def Registro():
         fecha_nacimiento = form.fecha_nacimiento.data
         passw = form.password.data
 
-        usuario = modelo.Usuario.find_by_email(email)
+        usuario = model.Usuario.find_by_email(email)
 
         if usuario:
             return "Ya existe usuario con ese email"
         else:
-            nuevoUsuario = modelo.Usuario(
+            nuevoUsuario = model.Usuario(
                 nombre=nombre,
                 apellido=apellido,
                 email=email,
@@ -43,8 +43,8 @@ def Registro():
                 id_tipo_usuario=4,
                 id_estado_usuario=1
             )
-            print(modelo.Usuario.serialize(nuevoUsuario))
-            modelo.Usuario.save_to_db(nuevoUsuario)
+            print(model.Usuario.serialize(nuevoUsuario))
+            model.Usuario.save_to_db(nuevoUsuario)
 
             return redirect(url_for('viaje_bp.ViajesEstado', estado =3))
         
@@ -62,7 +62,7 @@ def Login():
         passw = form.contrasenia.data
         email = form.nombreUsuario.data.strip()
         
-        usuario = modelo.Usuario.find_by_email(email)
+        usuario = model.Usuario.find_by_email(email)
 
         if usuario:
             contrasenia = usuario.validar_contrasenia(passw)

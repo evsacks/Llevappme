@@ -1,16 +1,16 @@
 from flask import Blueprint, render_template, redirect,url_for,flash
 from flask_login import login_user,logout_user,login_required,current_user
 from datetime import datetime, timedelta
-import models as modelo
+import models as model
 import Vehiculo.forms as formulario
 vehiculo_bp = Blueprint('vehiculo_bp', __name__, url_prefix='/vehiculo', template_folder='templates', static_folder='static')
 
 def AltaConductor(idUsuario,idVehiculo):
-    nuevoConductor = modelo.Conductor(
+    nuevoConductor = model.Conductor(
         id_usuario=idUsuario,
         id_vehiculo=idVehiculo
     )
-    modelo.Conductor.save_to_db(nuevoConductor)
+    model.Conductor.save_to_db(nuevoConductor)
     return nuevoConductor
 
 #VIAJE SEGUN ESTADO
@@ -24,16 +24,16 @@ def Vehiculo():
         cantidad_asientos = form.cantidad_asientos.data
         descripcion = form.descripcion.data
 
-        nuevoVehiculo = modelo.Vehiculo(
+        nuevoVehiculo = model.Vehiculo(
             patente=patente,
             cantidad_asientos=cantidad_asientos,
             descripcion = descripcion,
             fecha_actualizacion=datetime.now(),
             fecha_creacion=datetime.now()
         )
-        modelo.Vehiculo.save_to_db(nuevoVehiculo)
+        model.Vehiculo.save_to_db(nuevoVehiculo)
 
-        vehiculo = modelo.Vehiculo.get(nuevoVehiculo.id)
+        vehiculo = model.Vehiculo.get(nuevoVehiculo.id)
         
         if vehiculo:
             idUsuario = current_user.get_id()
@@ -48,6 +48,6 @@ def Vehiculo():
 @vehiculo_bp.route('/listado', methods=['GET', 'POST'])
 @login_required
 def ListadoVehiculos():
-    vehiculos = modelo.Conductor.query.filter_by(id_usuario=current_user.get_id())
+    vehiculos = model.Conductor.query.filter_by(id_usuario=current_user.get_id())
     return render_template('listado_vehiculos.html', vehiculos = vehiculos)
     
