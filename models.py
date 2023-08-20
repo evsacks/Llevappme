@@ -16,7 +16,6 @@ class Usuario(db.Model, UserMixin):
     email = db.Column(db.String(), unique = True, nullable = False)
     contrasenia = db.Column(db.String(), unique = False, nullable = False)
     telefono = db.Column(db.Integer, unique = True, nullable = False)
-    dni = db.Column(db.Integer, unique = True, nullable = False)
     fecha_nacimiento = db.Column(db.DateTime, unique = False, nullable = False)
     fecha_creacion = db.Column(db.DateTime, default = datetime.utcnow)
     fecha_actualizacion = db.Column(db.DateTime, default = datetime.utcnow)
@@ -24,18 +23,16 @@ class Usuario(db.Model, UserMixin):
     id_tipo_usuario = db.Column(db.Integer, db.ForeignKey('tipo_usuario.id'), nullable = False)
     id_estado_usuario = db.Column(db.Integer, db.ForeignKey('estado_usuario.id'), nullable = False)
 
-    licencias_conducir =  relationship('LicenciaConducir', backref = 'usuario')
     pasajeros =  relationship('Pasajero', backref = 'usuario')
     conductores =  relationship('Conductor', backref = 'usuario')
     viajes =  relationship('Viaje', backref = 'usuario')
 
-    def __init__(self, nombre, apellido, email, contrasenia, telefono, dni, fecha_nacimiento, fecha_creacion, fecha_actualizacion, id_tipo_usuario, id_estado_usuario):
+    def __init__(self, nombre, apellido, email, contrasenia, telefono, fecha_nacimiento, fecha_creacion, fecha_actualizacion, id_tipo_usuario, id_estado_usuario):
         self.nombre = nombre
         self.apellido = apellido
         self.email = email
         self.contrasenia = generate_password_hash(contrasenia)
         self.telefono = telefono
-        self.dni = dni
         self.fecha_nacimiento = fecha_nacimiento
         self.fecha_creacion = fecha_creacion
         self.fecha_actualizacion = fecha_actualizacion
@@ -49,18 +46,16 @@ class Usuario(db.Model, UserMixin):
         email = self.email
         contrasenia = self.contrasenia
         telefono = self.telefono
-        dni = self.dni
         fecha_nacimiento = self.fecha_nacimiento
         fecha_creacion = self.fecha_creacion
         fecha_actualizacion = self.fecha_actualizacion
         id_estado_usuario = self.id_estado_usuario
         id_tipo_usuario = self.id_tipo_usuario
         usu = ('<Usuario(id={}, nombre={}, apellido={}, email={}, \
-                         contrasenia={}, telefono={}, dni={}, \
-                         fecha nacimiento={}, fecha creacion={}, \
+                         contrasenia={}, telefono={}, fecha nacimiento={}, fecha creacion={}, \
                          fecha actualizacion={}, estado usuario={}, tipo usuario={})>'
                .format(id, nombre, apellido, email, contrasenia, telefono,\
-                       dni, fecha_nacimiento, fecha_creacion, fecha_actualizacion, \
+                       fecha_nacimiento, fecha_creacion, fecha_actualizacion, \
                        id_estado_usuario, id_tipo_usuario))
         return usu
 
@@ -72,7 +67,6 @@ class Usuario(db.Model, UserMixin):
             'email': self.email,
             'contrasenia': self.contrasenia,
             'telefono': self.telefono,
-            'dni': self.dni,
             'fecha_nacimiento': self.fecha_nacimiento,
             'fecha_creacion': self.fecha_creacion,
             'fecha_actualizacion': self.fecha_actualizacion,
@@ -168,57 +162,6 @@ class TipoUsuario(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-class LicenciaConducir(db.Model):
-    __tablename__ = 'licencia_conducir'
-    __table_args__ = {'extend_existing': True} 
-
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    numero_licencia = db.Column(db.Integer, unique = True, nullable = False)
-    fecha_otorgamiento = db.Column(db.DateTime, unique = False, nullable = False)
-    fecha_vencimiento = db.Column(db.DateTime, unique = False, nullable = False)
-    imagen = db.Column(db.String(30), unique = True, nullable = False)
-    
-    id_conductor = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
-    
-
-    def __init__(self, numero_licencia, fecha_otorgamiento, fecha_vencimiento, imagen, id_conductor):
-        self.numero_licencia = numero_licencia
-        self.fecha_otorgamiento = fecha_otorgamiento
-        self.fecha_vencimiento = fecha_vencimiento
-        self.imagen = imagen
-        self.id_conductor = id_conductor
-
-    def __repr__(self):
-        id = self.id
-        numero_licencia = self.numero_licencia
-        fecha_otorgamiento = self.fecha_otorgamiento
-        fecha_vencimiento = self.fecha_vencimiento
-        imagen = self.imagen
-        id_conductor = self.id_conductor
-        lic_conduc = '<Licencia Conducir(id={}, numero licencia={}, fecha otorgamiento={}, \
-                                         fecha vencimiento={}, imagen={}, conductor={})>'\
-                      .format(id,numero_licencia, fecha_otorgamiento, fecha_vencimiento, imagen, id_conductor)
-        return lic_conduc
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'numero_licencia': self.numero_licencia,
-            'fecha_otorgamiento': self.fecha_otorgamiento,
-            'fecha_vencimiento': self.fecha_vencimiento,
-            'imagen': self.imagen,
-            'id_conductor': self.id_conductor
-    }
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
 
 # VIAJE
 
@@ -230,15 +173,14 @@ class Viaje(db.Model):
 
     cantidad_pasajeros = db.Column(db.Integer, unique = False, nullable = False)
     distancia = db.Column(db.Integer, unique = False, nullable = False)
-    costo_total = db.Column(db.Float, unique = False, nullable = False)
 
     direccion_inicial = db.Column(db.String, unique = False, nullable = False)
     direccion_final = db.Column(db.String, unique = False, nullable = False)
 
-    latitud_inicial = db.Column(db.String, unique = False, nullable = False)
-    latitud_final = db.Column(db.String, unique = False, nullable = False)
-    longitud_inicial = db.Column(db.String, unique = False, nullable = False)
-    longitud_final = db.Column(db.String, unique = False, nullable = False)
+    latitud_inicial = db.Column(db.String, unique = False, nullable = True)
+    latitud_final = db.Column(db.String, unique = False, nullable = True)
+    longitud_inicial = db.Column(db.String, unique = False, nullable = True)
+    longitud_final = db.Column(db.String, unique = False, nullable = True)
     
     fecha_inicio = db.Column(db.DateTime, unique = False, nullable = False)
     fecha_inicio_real = db.Column(db.DateTime, unique = False, nullable = False)
@@ -246,16 +188,15 @@ class Viaje(db.Model):
     fecha_final_real = db.Column(db.DateTime, unique = False, nullable = False)
 
     id_conductor = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
-    id_vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = False)
+    id_vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = True)
     id_estado_viaje = db.Column(db.Integer, db.ForeignKey('estado_viaje.id'), nullable = False)
 
     tracking = relationship('Tracking', backref = 'viaje')
     pasajeros = relationship('Pasajero', backref = 'viaje')
 
-    def __init__(self, cantidad_pasajeros, distancia, costo_total, direccion_inicial, direccion_final, latitud_inicial, latitud_final, longitud_inicial, longitud_final, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, id_conductor, id_vehiculo, id_estado_viaje):
+    def __init__(self, cantidad_pasajeros, distancia, direccion_inicial, direccion_final, latitud_inicial, latitud_final, longitud_inicial, longitud_final, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, id_conductor, id_vehiculo, id_estado_viaje):
         self.cantidad_pasajeros = cantidad_pasajeros
         self.distancia = distancia
-        self.costo_total = costo_total
         self.direccion_inicial = direccion_inicial
         self.direccion_final = direccion_final
         self.latitud_inicial = latitud_inicial
@@ -273,7 +214,6 @@ class Viaje(db.Model):
     def __repr__(self):
         cantidad_pasajeros = self.cantidad_pasajeros
         distancia = self.distancia
-        costo_total = self.costo_total
         direccion_inicial = self.direccion_inicial
         direccion_final = self.direccion_final
         latitud_inicial = self.latitud_inicial
@@ -287,12 +227,12 @@ class Viaje(db.Model):
         id_conductor = self.id_conductor
         id_vehiculo = self.id_vehiculo
         id_estado_viaje = self.id_estado_viaje
-        viaje = '<Viaje(id={}, cantidad pasajeros={}, distancia={}, costo total={}\
+        viaje = '<Viaje(id={}, cantidad pasajeros={}, distancia={}, \
                         direccion inicial={}, direccion final={}, latitud inicial={}, \
                         latitud final={}, longitud inicial={}, longitud final={}, \
                         fecha inicio={}, fecha inicio real={}, fecha final={}, \
                         fecha final real={}, conductor={}, vehiculo={}, estado viaje={})>'\
-                .format(id,cantidad_pasajeros,distancia,costo_total,direccion_inicial,direccion_final,\
+                .format(id,cantidad_pasajeros,distancia,direccion_inicial,direccion_final,\
                         latitud_inicial,latitud_final,longitud_inicial,longitud_final,fecha_inicio,\
                         fecha_inicio_real,fecha_final,fecha_final_real,id_conductor,id_vehiculo, id_estado_viaje)
         return viaje
@@ -301,7 +241,6 @@ class Viaje(db.Model):
         return {
             'cantidad_pasajeros': self.cantidad_pasajeros,
             'distancia': self.distancia,
-            'costo_total': self.costo_total,
             'direccion_inicial': self.direccion_inicial,
             'direccion_final': self.direccion_final,
             'latitud_inicial': self.latitud_inicial,
@@ -498,57 +437,41 @@ class Vehiculo(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     patente = db.Column(db.String, unique = False, nullable = False)
-    cantidad_asientos = db.Column(db.String, unique = False, nullable = False)
+    cantidad_asientos = db.Column(db.Integer, unique = False, nullable = False)
+    descripcion = db.Column(db.String, unique = False, nullable = False)
     
     fecha_creacion = db.Column(db.DateTime, default = datetime.utcnow)
     fecha_actualizacion = db.Column(db.DateTime, default = datetime.utcnow)
 
-    id_tipo_vehiculo = db.Column(db.Integer, db.ForeignKey('tipo_vehiculo.id'), nullable = False)
-    id_marca = db.Column(db.Integer, db.ForeignKey('marca.id'), nullable = False)
-    id_modelo = db.Column(db.Integer, db.ForeignKey('modelo.id'), nullable = False)
-    id_color = db.Column(db.Integer, db.ForeignKey('color.id'), nullable = False)
-
     viajes =  relationship('Viaje', backref = 'vehiculo')
     conductores =  relationship('Conductor', backref = 'vehiculo')
-    seguros_vehiculo =  relationship('SeguroVehiculo', backref = 'vehiculo')
 
-    def __init__(self, patente, cantidad_asientos, fecha_creacion, fecha_actualizacion, id_tipo_vehiculo, id_marca, id_modelo, id_color):
+    def __init__(self, patente, cantidad_asientos, descripcion, fecha_creacion, fecha_actualizacion):
         self.patente = patente
         self.cantidad_asientos = cantidad_asientos
+        self.descripcion = descripcion
         self.fecha_creacion = fecha_creacion
         self.fecha_actualizacion = fecha_actualizacion
-        self.id_tipo_vehiculo = id_tipo_vehiculo
-        self.id_marca = id_marca
-        self.id_modelo = id_modelo
-        self.id_color = id_color
 
     def __repr__(self):
         id = self.id,
         patente = self.patente
         cantidad_asientos = self.cantidad_asientos
+        descripcion = self.descripcion
         fecha_creacion = self.fecha_creacion
         fecha_actualizacion = self.fecha_actualizacion
-        id_tipo_vehiculo = self.id_tipo_vehiculo
-        id_marca = self.id_marca
-        id_modelo = self.id_modelo
-        id_color = self.id_color
-        vehiculo = '<Vehiculo(id={},patente={}, cantidad asientos={}, fecha creacion={}, \
-                             fecha actualizacion={}, tipo vehiculo={}, marca={}, modelo={}, \
-                             color={})>'\
-                   .format(id,patente, cantidad_asientos, fecha_creacion, fecha_actualizacion, \
-                          id_tipo_vehiculo, id_marca, id_modelo, id_color)
+        vehiculo = '<Vehiculo(id={},patente={}, cantidad asientos={}, descripcion={}\
+                             fecha creacion={}, fecha actualizacion={})>'\
+                   .format(id,patente, cantidad_asientos, descripcion, fecha_creacion, fecha_actualizacion)
         return vehiculo
 
     def serialize(self):
         return {
             'patente': self.patente,
             'cantidad_asientos': self.cantidad_asientos,
+            'descripcion':self.descripcion,
             'fecha_creacion': self.fecha_creacion,
-            'fecha_actualizacion': self.fecha_actualizacion,
-            'id_tipo_vehiculo': self.id_tipo_vehiculo,
-            'id_marca': self.id_marca,
-            'id_modelo': self.id_modelo,
-            'id_color': self.id_color
+            'fecha_actualizacion': self.fecha_actualizacion
     }
 
     def save_to_db(self):
@@ -591,281 +514,6 @@ class Conductor(db.Model):
             'id_usuario': self.id_usuario,
             'id_vehiculo': self.id_vehiculo,
             'id_cedula': self.id_cedula
-    }
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class CedulaConductor(db.Model):
-    __tablename__ = 'cedula_conductor'
-    __table_args__ = {'extend_existing': True} 
-
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    numero = db.Column(db.String, unique = True, nullable = False)
-    imagen = db.Column(db.String, unique = True, nullable = False)
-    fecha_otorgamiento = db.Column(db.DateTime, unique = False, nullable = False)
-    fecha_vencimiento = db.Column(db.DateTime, unique = False, nullable = False)
-    
-    id_tipo_cedula = db.Column(db.Integer, db.ForeignKey('tipo_cedula.id'), nullable = False)
-
-    def __init__(self, numero, imagen, fecha_otorgamiento, fecha_vencimiento, id_tipo_cedula):
-        self.numero = numero
-        self.imagen = imagen
-        self.fecha_otorgamiento = fecha_otorgamiento
-        self.fecha_vencimiento = fecha_vencimiento
-        self.id_tipo_cedula = id_tipo_cedula
-
-    def __repr__(self):
-        id = self.id
-        numero = self.numero
-        imagen = self.imagen
-        fecha_otorgamiento = self.fecha_otorgamiento
-        fecha_vencimiento = self.fecha_vencimiento
-        id_tipo_cedula = self.id_tipo_cedula
-        cedula_cond = '<Cedula(numero={}, imagen={}, fecha_otorgamiento={}, \
-                        fecha_vencimiento={}, tipo_cedula={})>'\
-                    .format(id, numero, imagen, fecha_otorgamiento, fecha_vencimiento, id_tipo_cedula)
-        return cedula_cond
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'numero': self.numero,
-            'imagen': self.imagen,
-            'fecha_otorgamiento': self.fecha_otorgamiento,
-            'fecha_vencimiento': self.fecha_vencimiento,
-            'id_tipo_cedula': self.id_tipo_cedula
-    }
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class TipoCedula(db.Model):
-    __tablename__ = 'tipo_cedula'
-    __table_args__ = {'extend_existing': True} 
-
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    descripcion = db.Column(db.String(30), unique = True, nullable = False)
-    
-    cedula = relationship('CedulaConductor', backref = 'tipo')
-    
-
-    def __init__(self, descripcion):
-        self.descripcion = descripcion
-
-    def __repr__(self):
-        id = self.id,
-        descripcion = self.descripcion
-        tipo_cedula = '<Tipo Cedula(id={}, descripcion={})>'.format(id,descripcion)
-        return tipo_cedula
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'descripcion': self.descripcion
-    }
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class SeguroVehiculo(db.Model):
-    __tablename__ = 'seguro_vehiculo'
-    __table_args__ = {'extend_existing': True} 
-
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    numero = db.Column(db.String, unique = True, nullable = False)
-    imagen = db.Column(db.String, unique = True, nullable = False)
-    fecha_otorgamiento = db.Column(db.DateTime, unique = False, nullable = False)
-    fecha_vencimiento = db.Column(db.DateTime, unique = False, nullable = False)
-    
-    id_vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = False)
-
-    def __init__(self, numero, imagen, fecha_otorgamiento, fecha_vencimiento, id_vehiculo):
-        self.numero = numero
-        self.imagen = imagen
-        self.fecha_otorgamiento = fecha_otorgamiento
-        self.fecha_vencimiento = fecha_vencimiento
-        self.id_vehiculo = id_vehiculo
-
-    def __repr__(self):
-        id = self.id
-        numero = self.numero
-        imagen = self.imagen
-        fecha_otorgamiento = self.fecha_otorgamiento
-        fecha_vencimiento = self.fecha_vencimiento
-        id_vehiculo = self.id_vehiculo
-        seguro_vehi = '<Seguro Vehiculo(id={}, numero={}, imagen={}, fecha otorgamiento={}, \
-                        fecha vencimiento={}, vehiculo={})>'\
-                      .format(id,numero, imagen, fecha_otorgamiento, fecha_vencimiento, id_vehiculo)
-        return seguro_vehi
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'numero': self.numero,
-            'imagen': self.imagen,
-            'fecha_otorgamiento': self.fecha_otorgamiento,
-            'fecha_vencimiento': self.fecha_vencimiento,
-            'id_vehiculo': self.id_vehiculo
-    }
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class TipoVehiculo(db.Model):
-    __tablename__ = 'tipo_vehiculo'
-    __table_args__ = {'extend_existing': True} 
-
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    descripcion = db.Column(db.String(30), unique = True, nullable = False)
-    
-    vehiculo = relationship('Vehiculo', backref = 'tipo')
-    
-
-    def __init__(self, descripcion):
-        self.descripcion = descripcion
-
-    def __repr__(self):
-        id = self.id,
-        descripcion = self.descripcion
-        tipo_vehi = '<Tipo Vehiculo(id={}, descripcion={})>'.format(id,descripcion)
-        return tipo_vehi
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'descripcion': self.descripcion
-    }
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class Marca(db.Model):
-    __tablename__ = 'marca'
-    __table_args__ = {'extend_existing': True} 
-
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    descripcion = db.Column(db.String(30), unique = True, nullable = False)
-    
-    vehiculo = relationship('Vehiculo', backref = 'marca')
-    
-
-    def __init__(self, descripcion):
-        self.descripcion = descripcion
-
-    def __repr__(self):
-        id = self.id,
-        descripcion = self.descripcion
-        marca = '<Marca(id={}, descripcion={})>'.format(id,descripcion)
-        return marca
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'descripcion': self.descripcion
-    }
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class Modelo(db.Model):
-    __tablename__ = 'modelo'
-    __table_args__ = {'extend_existing': True} 
-
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    descripcion = db.Column(db.String(30), unique = False, nullable = False)
-
-    id_marca = db.Column(db.Integer, db.ForeignKey('marca.id'), nullable = False)
-    
-    vehiculos = relationship('Vehiculo', backref = 'modelo')
-    
-
-    def __init__(self, descripcion, id_marca):
-        self.descripcion = descripcion
-        self.id_marca = id_marca
-
-    def __repr__(self):
-        id = self.id,
-        descripcion = self.descripcion
-        id_marca = self.id_marca
-        modelo = '<Modelo(id={}, descripcion={}, marca={})>'.format(id,descripcion,id_marca)
-        return modelo
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'descripcion': self.descripcion,
-            'id_marca': self.id_marca
-    }
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-class Color(db.Model):
-    __tablename__ = 'color'
-    __table_args__ = {'extend_existing': True} 
-
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    descripcion = db.Column(db.String(30), unique = True, nullable = False)
-    
-    vehiculos = relationship('Vehiculo', backref = 'color')
-    
-
-    def __init__(self, descripcion):
-        self.descripcion = descripcion
-
-    def __repr__(self):
-        id = self.id,
-        descripcion = self.descripcion
-        color = '<Color(id={}, descripcion={})>'.format(id,descripcion)
-        return color
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'descripcion': self.descripcion
     }
 
     def save_to_db(self):
