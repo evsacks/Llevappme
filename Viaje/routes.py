@@ -120,11 +120,11 @@ def VerViaje(idViaje):
 
     #Busco viajes que estan pendientes 
     viaje = model.Viaje.query.get(1)
-    print(viaje)
+
     if viaje:
         return render_template('ver_viaje.html',
                                viaje=viaje)
     else: 
         mensaje = "No existe ese viaje"
-        return render_template('listado_viajes.html', mensaje = mensaje)
+        return render_template('ver_viaje.html', mensaje = mensaje)
 
