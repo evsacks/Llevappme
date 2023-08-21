@@ -171,7 +171,7 @@ class Viaje(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    cantidad_pasajeros = db.Column(db.Integer, unique = False, nullable = False)
+    asientos_disponibles = db.Column(db.Integer, unique = False, nullable = False)
     distancia = db.Column(db.Integer, unique = False, nullable = False)
 
     direccion_inicial = db.Column(db.String, unique = False, nullable = False)
@@ -194,8 +194,8 @@ class Viaje(db.Model):
     tracking = relationship('Tracking', backref = 'viaje')
     pasajeros = relationship('Pasajero', backref = 'viaje')
 
-    def __init__(self, cantidad_pasajeros, distancia, direccion_inicial, direccion_final, latitud_inicial, latitud_final, longitud_inicial, longitud_final, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, id_conductor, id_vehiculo, id_estado_viaje):
-        self.cantidad_pasajeros = cantidad_pasajeros
+    def __init__(self, asientos_disponibles, distancia, direccion_inicial, direccion_final, latitud_inicial, latitud_final, longitud_inicial, longitud_final, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, id_conductor, id_vehiculo, id_estado_viaje):
+        self.asientos_disponibles = asientos_disponibles
         self.distancia = distancia
         self.direccion_inicial = direccion_inicial
         self.direccion_final = direccion_final
@@ -212,7 +212,7 @@ class Viaje(db.Model):
         self.id_estado_viaje = id_estado_viaje
 
     def __repr__(self):
-        cantidad_pasajeros = self.cantidad_pasajeros
+        asientos_disponibles = self.asientos_disponibles
         distancia = self.distancia
         direccion_inicial = self.direccion_inicial
         direccion_final = self.direccion_final
@@ -232,14 +232,14 @@ class Viaje(db.Model):
                         latitud final={}, longitud inicial={}, longitud final={}, \
                         fecha inicio={}, fecha inicio real={}, fecha final={}, \
                         fecha final real={}, conductor={}, vehiculo={}, estado viaje={})>'\
-                .format(id,cantidad_pasajeros,distancia,direccion_inicial,direccion_final,\
+                .format(id,asientos_disponibles,distancia,direccion_inicial,direccion_final,\
                         latitud_inicial,latitud_final,longitud_inicial,longitud_final,fecha_inicio,\
                         fecha_inicio_real,fecha_final,fecha_final_real,id_conductor,id_vehiculo, id_estado_viaje)
         return viaje
 
     def serialize(self):
         return {
-            'cantidad_pasajeros': self.cantidad_pasajeros,
+            'asientos_disponibles': self.asientos_disponibles,
             'distancia': self.distancia,
             'direccion_inicial': self.direccion_inicial,
             'direccion_final': self.direccion_final,
@@ -259,7 +259,8 @@ class Viaje(db.Model):
     @classmethod
     def viajes_pendientes_usuario(cls,idUsuario):
         viajes = cls.query.filter((cls.id_conductor==idUsuario) & \
-                                  (cls.id_estado_viaje == 3)) 
+                                  (cls.id_estado_viaje == 3)).all() 
+        
         return viajes
     
     def save_to_db(self):
@@ -362,9 +363,18 @@ class Pasajero(db.Model):
     def viajes_activos_pasajero(cls,idUsuario):
         pasajeros = cls.query.filter((cls.id_usuario==idUsuario) & \
                                   ((cls.id_estado_pasajero == 1) | \
-                                   (cls.id_estado_pasajero == 2))) 
+                                   (cls.id_estado_pasajero == 2))).all() 
         viajes = [ Viaje.query.get(idViaje) for idViaje in pasajeros]
         return viajes
+    
+    @classmethod
+    def solicitud_activa(cls,idUsuario,idViaje):
+        pasajeros = cls.query.filter((cls.id_usuario == idUsuario)  & \
+                                     (cls.id_viaje == idViaje)      & \
+                                    ((cls.id_estado_pasajero == 1)  | \
+                                     (cls.id_estado_pasajero == 2))).first() 
+        return pasajeros
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
