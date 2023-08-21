@@ -114,12 +114,12 @@ def ViajesDisponibles():
         mensaje = "No hay viajes disponibles."
         return render_template('listado_viajes.html', mensaje = mensaje)
 
-@viaje_bp.route('/solicitar/<idViaje>', methods=['GET', 'POST'])
+@viaje_bp.route('/detalle/<idViaje>', methods=['GET', 'POST'])
 @login_required
 def VerViaje(idViaje):
 
     #Busco viajes que estan pendientes 
-    viaje = model.Viaje.query.get(1)
+    viaje = model.Viaje.query.get(idViaje)
 
     if viaje:
         return render_template('ver_viaje.html',
@@ -127,4 +127,29 @@ def VerViaje(idViaje):
     else: 
         mensaje = "No existe ese viaje"
         return render_template('ver_viaje.html', mensaje = mensaje)
+    
 
+@viaje_bp.route('/solicitar/<idViaje>', methods=['GET', 'POST'])
+@login_required
+def SolicitarViaje(idViaje):
+
+    #Busco viajes que estan pendientes 
+    viaje = model.Viaje.query.get(idViaje)
+    idUsuario = current_user.get_id()
+
+    if viaje:
+
+        soyConductor = model.Viaje.viajes_pendientes_usuario(idUsuario) 
+        soyPasajero = model.Pasajero.viajes_activos_pasajero(idUsuario)
+        print(soyConductor)
+        print(soyPasajero)
+        misViajes = soyConductor + soyPasajero
+        print(misViajes)
+        #for viaje in misViajes:
+            #if viaje.fecha_inicio 
+
+        return render_template('ver_viaje.html',
+                               viaje=viaje)
+    else: 
+        mensaje = "No existe ese viaje"
+        return render_template('ver_viaje.html', mensaje = mensaje)
