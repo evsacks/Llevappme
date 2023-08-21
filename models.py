@@ -255,7 +255,13 @@ class Viaje(db.Model):
             'id_vehiculo': self.id_vehiculo,
             'id_estado_viaje': self.id_estado_viaje
     }
-
+    
+    @classmethod
+    def viajes_pendientes_usuario(cls,idUsuario):
+        viajes = cls.query.filter((cls.id_conductor==idUsuario) & \
+                                  (cls.id_estado_viaje == 3)) 
+        return viajes
+    
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
@@ -352,6 +358,13 @@ class Pasajero(db.Model):
             'id_estado_pasajero': self.id_estado_pasajero
     }
 
+    @classmethod
+    def viajes_activos_pasajero(cls,idUsuario):
+        pasajeros = cls.query.filter((cls.id_usuario==idUsuario) & \
+                                  ((cls.id_estado_pasajero == 1) | \
+                                   (cls.id_estado_pasajero == 2))) 
+        viajes = [ Viaje.query.get(idViaje) for idViaje in pasajeros]
+        return viajes
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
