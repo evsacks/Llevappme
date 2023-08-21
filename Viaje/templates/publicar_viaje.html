@@ -7,13 +7,14 @@
 	<body>
         <section>
             {% from "_formhelpers.html" import render_field %}
-            <form method="post" action="{{url_for('vehiculo_bp.CrearCedula', idVehiculo = 3)}}">
+            <form method="post" action="{{url_for('viaje_bp.PublicarViaje')}}">
                 {{ form.hidden_tag() }}
             <dl>
-                {{ render_field(form.numero) }}
-                {{ render_field(form.imagen) }}
-                {{ render_field(form.fecha_otorgamiento) }}
-                {{ render_field(form.fecha_vencimiento) }}
+                {{ render_field(form.origen) }}
+                {{ render_field(form.destino) }}
+                {{ render_field(form.cantidad_asientos) }}
+                {{ render_field(form.fecha_inicio) }}
+                {{ render_field(form.hora_inicio) }}
             </dl>
             {{ render_field(form.submit) }}
             </form>

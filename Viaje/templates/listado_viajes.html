@@ -1,0 +1,44 @@
+<html>
+	<head>
+		<title>LLEVAPPME</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    </head>
+	<body>
+        {% if mensaje %}
+            <a>{{mensaje}}</a>
+        {% else %}
+            <section>
+                <table>
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Conductor</th>
+                            <th scope="col">Origen</th>
+                            <th scope="col">Destino</th>
+                            <th scope="col">Fecha Salida</th>
+                            <th scope="col">Hora Salida</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                        
+                    <tbody>
+                        {% for viaje in viajes %}
+                            <tr>
+                                <td> {{ viaje.usuario.email}}</td>
+                                <td> {{ viaje.direccion_inicial}}</td>
+                                <td> {{ viaje.direccion_final}}</td>
+                                <td> {{ viaje.fecha_inicio.date()}}</td>
+                                <td> {{ viaje.fecha_inicio.time()}}</td>
+                                <td> 
+                                    <a href="url_for('viaje_bp.VerViaje', idViaje=viaje.id)">Ver viaje</a>
+                                    <a href="url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)">Solicitar viaje</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>						
+            </section>
+        {% endif %}
+        <a href="{{url_for('usuario_bp.Logout')}}">Salir</a>
+	</body>
+</html>

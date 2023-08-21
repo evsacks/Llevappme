@@ -1,5 +1,5 @@
 from app import app, login_manager
-
+from app import maps
 
 from Usuario.routes import usuario_bp
 from Viaje.routes import viaje_bp

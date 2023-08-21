@@ -14,14 +14,14 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 api = Api(app)
-
+maps = googlemaps.Client(API_KEY)
 login_manager = LoginManager(app)
 login_manager.login_view = "usuario_bp.Login"
 
 import models as model
 import routes as rutas
 
-maps = googlemaps.Client(API_KEY)
+
 
 origen = 'Pilar, Buenos Aires'
 #response = maps.geocode(origen)

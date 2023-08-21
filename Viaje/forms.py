@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, DateField ,PasswordField, SubmitField, IntegerField, SelectField, TextAreaField, RadioField
-from wtforms.fields.core import BooleanField
+from wtforms import StringField ,PasswordField, SubmitField, IntegerField, SelectField, TextAreaField, RadioField
+from wtforms.fields.html5 import DateField, TimeField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError
 
@@ -11,4 +11,5 @@ class NuevoViaje(FlaskForm):
     destino = StringField('Destino', validators=[DataRequired(), Length(min=2, max=100)])
     cantidad_asientos = IntegerField('Cantidad de asientos disponibles', validators=[DataRequired()])
     fecha_inicio = DateField('Fecha de viaje', validators=[DataRequired()])
+    hora_inicio = TimeField('Hora Inicio', validators=[DataRequired()])
     submit = SubmitField('Finalizar')
