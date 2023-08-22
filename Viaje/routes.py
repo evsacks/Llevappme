@@ -157,7 +157,7 @@ def VerViaje(idViaje):
         if pasajero:
             return render_template('ver_viaje.html', viaje=viaje)
         else:
-            return render_template('ver_viaje.html', viaje=viaje, activarSolicitud=True)
+            return render_template('ver_viaje.html', viaje=viaje, solicitud = True)
     else: 
         mensaje = "No existe ese viaje"
         return render_template('ver_viaje.html', mensaje = mensaje)
@@ -219,120 +219,106 @@ def VerSolicitudesViaje():
 
     return render_template('listado_solicitudes.html', solicitudesPasajero=solicitudesPasajero)
 
-
 @viaje_bp.route('/buscar', methods=['GET', 'POST'])
 @login_required
 def BuscarViaje():
     form = formulario.BuscarViaje()
-    idUsuario = current_user.get_id()
-    viajes = model.Viaje.query.all()
-    
-
     if form.validate_on_submit():
-        
-        origen = form.origen.data
-        destino = form.destino.data
-        fechaInicio = form.fecha_inicio.data
-        horaInicio = form.hora_inicio.data
+        return buscar_viaje()
+    return render_template('buscar_viaje.html', form=form)
 
-        if destino:
-            if origen:
-                if fechaInicio: #DOF
-                    comparacionFecha = comparacion_fecha(fechaInicio, horaInicio)
-                    fechaInicio0000 = comparacionFecha[0]
-                    fechaInicio2359 = comparacionFecha[1]
-                    origen = "%{}%".format(form.origen.data)
-                    destino = "%{}%".format(form.destino.data)
-                    viajes = model.Viaje.query.filter(
-                         (model.Viaje.direccion_inicial.ilike(origen)) & \
-                         (model.Viaje.direccion_final.ilike(destino)) & \
-                         (model.Viaje.fecha_inicio.between(fechaInicio0000,fechaInicio2359))
-                     ).all()
-                    resultado = [model.Viaje.serialize(viaje) for viaje in viajes]
-                    return render_template('buscar_viaje.html', resultado = resultado)
-                else: #DO
-                    origen = "%{}%".format(form.origen.data)
-                    destino = "%{}%".format(form.destino.data)
-                    viajes = model.Viaje.query.filter(
-                        (model.Viaje.direccion_inicial.ilike(origen)) & \
-                        (model.Viaje.direccion_final.ilike(destino))
-                    ).all()
-                    resultado = [model.Viaje.serialize(viaje) for viaje in viajes]
-                    return render_template('buscar_viaje.html', resultado = resultado)
-            else: 
-                if fechaInicio: #DF
-                    destino = "%{}%".format(form.destino.data)
-                    comparacionFecha = comparacion_fecha(fechaInicio, horaInicio)
-                    fechaInicio0000 = comparacionFecha[0]
-                    fechaInicio2359 = comparacionFecha[1]
-                    
-                    viajes = model.Viaje.query.filter(
-                        (model.Viaje.direccion_final.ilike(destino)) & \
-                        (model.Viaje.fecha_inicio.between(fechaInicio0000,fechaInicio2359))
-                    ).all()
-                    resultado = [model.Viaje.serialize(viaje) for viaje in viajes]
-                    return render_template('buscar_viaje.html', resultado = resultado)
-                else: #D
-                    destino = "%{}%".format(form.destino.data)
-                    viajes = model.Viaje.query.filter(
-                        (model.Viaje.direccion_final.ilike(destino))
-                    ).all()
-                    resultado = [model.Viaje.serialize(viaje) for viaje in viajes]
-                    return render_template('buscar_viaje.html', resultado = resultado)
-        else:
-            if origen:
-                if fechaInicio: #OF
-                    origen = "%{}%".format(form.origen.data)
-                    comparacionFecha = comparacion_fecha(fechaInicio, horaInicio)
-                    fechaInicio0000 = comparacionFecha[0]
-                    fechaInicio2359 = comparacionFecha[1]
-                    
-                    viajes = model.Viaje.query.filter(
-                        (model.Viaje.direccion_inicial.ilike(origen)) & \
-                        (model.Viaje.fecha_inicio.between(fechaInicio0000,fechaInicio2359))
-                    ).all()
-                    resultado = [model.Viaje.serialize(viaje) for viaje in viajes]
-                    return render_template('buscar_viaje.html', resultado = resultado)
-                else: #O
-                    origen = "%{}%".format(form.origen.data)
-                    viajes = model.Viaje.query.filter(
-                        (model.Viaje.direccion_inicial.ilike(origen))
-                    ).all()
-                    resultado = [model.Viaje.serialize(viaje) for viaje in viajes]
-                    return render_template('buscar_viaje.html', resultado = resultado)
-            else:
-                if fechaInicio: #F
-                    comparacionFecha = comparacion_fecha(fechaInicio, horaInicio)
-                    fechaInicio0000 = comparacionFecha[0]
-                    fechaInicio2359 = comparacionFecha[1]
+def buscar_viaje():
+    form = formulario.BuscarViaje()
+    idUsuario = current_user.get_id()
+    
+    origen = form.origen.data
+    destino = form.destino.data
+    fechaInicio = form.fecha_inicio.data
+    horaInicio = form.hora_inicio.data
 
-                    viajes = model.Viaje.query.filter(
-                        (model.Viaje.fecha_inicio.between(fechaInicio0000,fechaInicio2359))
-                    ).all()
-                    resultado = [model.Viaje.serialize(viaje) for viaje in viajes]
-                    return render_template('buscar_viaje.html', resultado = resultado)
-                else:
-                    resultado = "No hay coincidencias"
-                    return render_template('buscar_viaje.html', resultado = resultado)
+    viajes_query = model.Viaje.query
 
-        # if fechaInicio:
-            
-            
-        #     fechaInicio2359 = datetime.combine(fechaInicio,datetime.strptime('23:59:59', '%H:%M:%S').time())
+    if origen:
+        viajes_query = viajes_query.filter(model.Viaje.direccion_inicial.ilike(f"%{origen}%"))
+    
+    if destino:
+        viajes_query = viajes_query.filter(model.Viaje.direccion_final.ilike(f"%{destino}%"))
 
-        #     viajes = model.Viaje.query.filter(
-        #                 (model.Viaje.direccion_inicial.ilike(origen)) & \
-        #                 (model.Viaje.direccion_final.ilike(destino)) & \
-        #                 (model.Viaje.fecha_inicio.between(fechaInicio0000,fechaInicio2359))
-        #             ).all()
-        #     resultado = [model.Viaje.serialize(viaje) for viaje in viajes]
-        #     return render_template('buscar_viaje.html', resultado = resultado)
-        # else:
-        #     viajes = model.Viaje.query.filter(
-        #                 (model.Viaje.direccion_inicial.ilike(origen)) | \
-        #                 (model.Viaje.direccion_final.ilike(destino))
-        #             ).all()
-        #     print(viajes)
-        #     resultado = [model.Viaje.serialize(viaje) for viaje in viajes]
-        #     return render_template('buscar_viaje.html', resultado = resultado)
-    return render_template('buscar_viaje.html', form = form)
+    if fechaInicio:
+        comparacionFecha = comparacion_fecha(fechaInicio, horaInicio)
+        fechaInicio0000 = comparacionFecha[0]
+        fechaInicio2359 = comparacionFecha[1]
+        viajes_query = viajes_query.filter(model.Viaje.fecha_inicio.between(fechaInicio0000, fechaInicio2359))
+
+    viajes = viajes_query.all()
+    if viajes:
+        resultado = [model.Viaje.serialize(viaje) for viaje in viajes]
+    else:
+        resultado = "No se encontraron coincidencias"
+    return render_template('buscar_viaje.html', resultado=resultado)
+
+
+@viaje_bp.route('/publicados', methods=['GET', 'POST'])
+@login_required
+def ViajesPublicados():
+    idUsuario = current_user.get_id()
+    #Busco viajes publicados por ese usuario, es decir siendo conductor.
+    viajes = model.Viaje.query.filter_by(id_conductor=idUsuario)
+
+    if viajes:
+        return render_template('listado_viajes.html', viajes=viajes)
+    else: 
+        mensaje = "No hay viajes Publicados."
+        return render_template('listado_viajes.html', mensaje = mensaje)
+    
+@viaje_bp.route('/<idViaje>/pasajeros', methods=['GET', 'POST'])
+@login_required
+def VerPasajeros(idViaje):
+    viaje = model.Viaje.query.get(idViaje)
+    return render_template('listado_pasajero_viaje.html', viaje = viaje)
+
+@viaje_bp.route('/<idViaje>/pasajero/<idPasajero>/confirmar', methods=['GET', 'POST'])
+@login_required
+def AceptarPasajero(idPasajero, idViaje):
+    #Busco el pasajero a modificar
+    pasajero = model.Pasajero.query.get(idPasajero)
+    
+    if pasajero.estado.descripcion == 'Rechazado' or pasajero.estado.descripcion == 'Confirmado':
+        viaje = model.Viaje.query.get(idViaje)
+        mensaje = "No puede modificar el estado del pasajero. Ya fue {}".format(pasajero.estado.descripcion)
+        return render_template('listado_pasajero_viaje.html', viaje = viaje, mensaje=mensaje)  
+    else:
+        #Busco el ID del estado CONFIRMADO
+        estado = model.EstadoPasajero.query.filter_by(descripcion = 'Confirmado').first()
+        #Modifico el estado del pasajero
+        pasajero.id_estado_pasajero = estado.id
+        pasajero.fecha_actualizacion = datetime.now()
+        #Disminuir en 1 asiento disponible del viaje
+        viaje = model.Viaje.query.get(pasajero.id_viaje)
+        asientosActuales = viaje.asientos_disponibles
+        viaje.asientos_disponibles = asientosActuales - 1
+
+        model.Pasajero.save_to_db(pasajero)
+        model.Viaje.save_to_db(viaje)
+
+    return redirect(url_for('viaje_bp.VerPasajeros', idViaje=viaje.id))
+
+@viaje_bp.route('/<idViaje>/pasajero/<idPasajero>/rechazar', methods=['GET', 'POST'])
+@login_required
+def RechazarPasajero(idPasajero, idViaje):
+    #Busco el pasajero a modificar
+    pasajero = model.Pasajero.query.get(idPasajero)
+
+    if pasajero.estado.descripcion == 'Rechazado' or pasajero.estado.descripcion == 'Confirmado':
+        viaje = model.Viaje.query.get(idViaje)
+        mensaje = "No puede modificar el estado del pasajero. Ya fue {}".format(pasajero.estado.descripcion)
+        return render_template('listado_pasajero_viaje.html', viaje = viaje, mensaje=mensaje)  
+    else:
+        #Busco el ID del estado RECHAZADO
+        estado = model.EstadoPasajero.query.filter_by(descripcion = 'Rechazado').first()
+        #Modifico el estado del pasajero
+        pasajero.id_estado_pasajero = estado.id
+        pasajero.fecha_actualizacion = datetime.now()
+        model.Pasajero.save_to_db(pasajero)
+
+    return redirect(url_for('viaje_bp.VerPasajeros', idViaje=idViaje))

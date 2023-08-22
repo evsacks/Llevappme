@@ -344,7 +344,7 @@ class Pasajero(db.Model):
         id_usuario = self.id_usuario
         id_viaje = self.id_viaje
         id_estado_pasajero = self.id_estado_pasajero
-        pasajero = '<Tracking(id={}, fecha solicitud={}, fecha actualizacion={}, \
+        pasajero = '<Pasajero(id={}, fecha solicitud={}, fecha actualizacion={}, \
                               pasajero={}, viaje={}, estado pasajero={})>'\
                     .format(id,fecha_solicitud, fecha_actualizacion,id_usuario,id_viaje,id_estado_pasajero)
         return pasajero

@@ -41,8 +41,10 @@
             <a>Asientos Disponibles: {{viaje.asientos_disponibles}}</a>
             <br>
         
-            {% if activarSolicitud %}
+            {% if ((solicitud) and (current_user.id != viaje.usuario.id)) %}
                 <a href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}">Solicitar Viaje</a>
+            {% elif current_user.id == viaje.usuario.id %}
+                <a href="{{url_for('viaje_bp.VerPasajeros', idViaje=viaje.id)}}">Ver Pasajeros</a>
             {% endif %}
         {% endif %}
         {% if mensaje %}

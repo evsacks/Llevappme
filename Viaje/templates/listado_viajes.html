@@ -8,7 +8,7 @@
         {% if mensaje %}
             <a>{{mensaje}}</a>
         {% endif %}
-        {% if viaje %}
+        {% if viajes %}
             <section>
                 <table>
                     <thead class="thead-dark">
@@ -32,7 +32,9 @@
                                 <td> {{ viaje.fecha_inicio.time()}}</td>
                                 <td> 
                                     <a href="{{url_for('viaje_bp.VerViaje', idViaje=viaje.id)}}">Ver viaje</a>
-                                    <a href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}">Solicitar viaje</a>
+                                    {% if current_user.id != viaje.usuario.id %}
+                                        <a href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}">Solicitar viaje</a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
