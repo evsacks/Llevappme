@@ -11,7 +11,7 @@ usuario_bp = Blueprint('usuario_bp', __name__, url_prefix='/usuario', template_f
 @usuario_bp.route('/registro', methods=['GET', 'POST'])
 def Registro():
     if current_user.is_authenticated:
-        return redirect(url_for('viaje_bp.Viajes', estado =3))
+        return redirect(url_for('viaje_bp.ViajesEstado', estado =3))
     
     form = formulario.RegistroUsuario()
     print("Cargo formulario")
@@ -51,7 +51,7 @@ def Registro():
 @usuario_bp.route('/login', methods=['GET', 'POST'])
 def Login():
     if current_user.is_authenticated:
-        return redirect(url_for('viaje_bp.Viajes', estado =3))
+        return redirect(url_for('viaje_bp.ViajesEstado', estado =3))
 
     form = formulario.Login()
 
@@ -66,7 +66,7 @@ def Login():
             contrasenia = usuario.validar_contrasenia(passw)
             if contrasenia:
                 login_user(usuario)
-                return redirect(url_for('viaje_bp.ViajesEstado', estado='3'))
+                return redirect(url_for('viaje_bp.ViajesEstado', estado=3))
             else: 
                 return "Usuario {}: contraseña incorrecta".format(email)
         else: 
@@ -78,7 +78,6 @@ def Login():
 def Logout():
     logout_user()
     return redirect(url_for('usuario_bp.Login'))
-
 
 
     

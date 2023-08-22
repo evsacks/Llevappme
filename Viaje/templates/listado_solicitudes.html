@@ -7,8 +7,9 @@
 	<body>
         {% if mensaje %}
             <a>{{mensaje}}</a>
+        
         {% endif %}
-        {% if viaje %}
+        {% if solicitudesPasajero %}
             <section>
                 <table>
                     <thead class="thead-dark">
@@ -18,21 +19,22 @@
                             <th scope="col">Destino</th>
                             <th scope="col">Fecha Salida</th>
                             <th scope="col">Hora Salida</th>
+                            <th scope="col">Estado Solicitud</th>
                             <th scope="col">Acciones</th>
                         </tr>
                     </thead>
                         
                     <tbody>
-                        {% for viaje in viajes %}
+                        {% for solicitud in solicitudesPasajero %}
                             <tr>
-                                <td> {{ viaje.usuario.email}}</td>
-                                <td> {{ viaje.direccion_inicial}}</td>
-                                <td> {{ viaje.direccion_final}}</td>
-                                <td> {{ viaje.fecha_inicio.date()}}</td>
-                                <td> {{ viaje.fecha_inicio.time()}}</td>
+                                <td> {{ solicitud.viaje.usuario.email}}</td>
+                                <td> {{ solicitud.viaje.direccion_inicial}}</td>
+                                <td> {{ solicitud.viaje.direccion_final}}</td>
+                                <td> {{ solicitud.viaje.fecha_inicio.date()}}</td>
+                                <td> {{ solicitud.viaje.fecha_inicio.time()}}</td>
+                                <td> {{ solicitud.estado.descripcion}}</td>
                                 <td> 
-                                    <a href="{{url_for('viaje_bp.VerViaje', idViaje=viaje.id)}}">Ver viaje</a>
-                                    <a href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}">Solicitar viaje</a>
+                                    <a href="{{url_for('viaje_bp.VerViaje', idViaje=solicitud.id_viaje)}}">Ver viaje</a>
                                 </td>
                             </tr>
                         {% endfor %}

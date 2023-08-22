@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<title>LLEVAPPME</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    </head>
+	<body>
+        {% if form %}
+        <section>
+            {% from "_formhelpers.html" import render_field %}
+            <form method="post" action="{{url_for('viaje_bp.BuscarViaje')}}">
+                {{ form.hidden_tag() }}
+            <dl>
+                {{ render_field(form.origen) }}
+                {{ render_field(form.destino) }}
+                {{ render_field(form.fecha_inicio) }}
+                {{ render_field(form.hora_inicio) }}
+            </dl>
+            {{ render_field(form.submit) }}
+            </form>
+        </section>						
+        {% endif %}
+        {% if resultado %}
+            <a> {{resultado}} </a>
+        {% endif%}
+        <a href="{{url_for('usuario_bp.Logout')}}">Salir</a>
+	</body>
+</html>

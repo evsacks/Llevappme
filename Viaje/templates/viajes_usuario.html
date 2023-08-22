@@ -7,7 +7,14 @@
     {% if mensaje %}
         <a>{{mensaje}}</a>
     {% endif %}
+    <br>
     <a href="{{url_for('usuario_bp.Logout')}}">Salir</a>
+    <br>
     <a href="{{url_for('vehiculo_bp.Vehiculo')}}">Nuevo Vehiculo</a>
+    <br>
     <a href="{{url_for('viaje_bp.PublicarViaje')}}">Publicar viaje</a>
+    <br>
+    <a href="{{url_for('viaje_bp.ViajesDisponibles')}}">Ver viajes disponibles para solicitar</a>
+    <br>
+    <a href="{{url_for('viaje_bp.VerSolicitudesViaje')}}">Ver solicitudes</a>
 </html>

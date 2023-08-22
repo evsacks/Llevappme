@@ -23,24 +23,28 @@
         </style>
     </head>
 	<body>
-        <a>DETALLE DE VIAJE</a><br><br>
-        <a id="lat_inicial" style="display: none;" value="{{viaje.latitud_inicial}}">{{viaje.latitud_inicial}}</a>
-        <a id="lng_inicial" style="display: none;" value="{{viaje.longitud_inicial}}">{{viaje.longitud_inicial}}</a>
-        <a id="lat_final" style="display: none;" value="{{viaje.latitud_inicial}}">{{viaje.latitud_final}}</a>
-        <a id="lng_final" style="display: none;" value="{{viaje.longitud_inicial}}">{{viaje.longitud_final}}</a>
+        {% if viaje %}
+            <a>DETALLE DE VIAJE</a><br><br>
+            <a id="lat_inicial" style="display: none;" value="{{viaje.latitud_inicial}}">{{viaje.latitud_inicial}}</a>
+            <a id="lng_inicial" style="display: none;" value="{{viaje.longitud_inicial}}">{{viaje.longitud_inicial}}</a>
+            <a id="lat_final" style="display: none;" value="{{viaje.latitud_inicial}}">{{viaje.latitud_final}}</a>
+            <a id="lng_final" style="display: none;" value="{{viaje.longitud_inicial}}">{{viaje.longitud_final}}</a>
+            
+            <a>Origen: {{viaje.direccion_inicial}}</a>
+            <br>
+            <a>Destino: {{viaje.direccion_final}}</a>
+            <br>
+            <a>Tiempo estimado: </a>
+            <br>
+            <a>Distancia: {{viaje.distancia}} KM.</a>
+            <br>
+            <a>Asientos Disponibles: {{viaje.asientos_disponibles}}</a>
+            <br>
         
-        <a>Origen: {{viaje.direccion_inicial}}</a>
-        <br>
-        <a>Destino: {{viaje.direccion_final}}</a>
-        <br>
-        <a>Tiempo estimado: </a>
-        <br>
-        <a>Distancia: {{viaje.distancia}} KM.</a>
-        <br>
-        <a>Asientos Disponibles: {{viaje.cantidad_pasajeros}}</a>
-        <br>
-        <a>Solicitar Viaje</a>
-
+            {% if activarSolicitud %}
+                <a href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}">Solicitar Viaje</a>
+            {% endif %}
+        {% endif %}
         {% if mensaje %}
             <a>{{mensaje}}</a>
         {% endif %}

@@ -262,7 +262,7 @@ class Viaje(db.Model):
                                   (cls.id_estado_viaje == 3)).all() 
         
         return viajes
-    
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
