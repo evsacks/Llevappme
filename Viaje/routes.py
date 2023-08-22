@@ -55,23 +55,7 @@ def ViajesEstado(estado):
                 format(model.Usuario.query.get(idUsuario).nombre,\
                        model.EstadoViaje.query.get(estado).descripcion)
         return render_template('viajes_usuario.html', mensaje = mensaje)
-    
-#VIAJES USUARIO
-@viaje_bp.route('/todos', methods=['GET', 'POST'])
-@login_required
-def Viajes():
-
-    idUsuario = current_user.get_id()
-    viajes_usuario = model.Viaje.query.filter_by(id_conductor=idUsuario)
-
-    if viajes_usuario:
-        return render_template('viajes_usuario.html',
-                               viajes=viajes_usuario)
-    else: 
-        mensaje = "No hay viajes para el usuario {}.".\
-                format(model.Usuario.query.get(idUsuario).nombre)
-        return render_template('viajes_usuario.html', mensaje = mensaje)
-    
+       
 #PUBLICAR VIAJE - CONDUCTOR
 @viaje_bp.route('/publicar', methods=['GET', 'POST'])
 @login_required
@@ -173,8 +157,8 @@ def SolicitarViaje(idViaje):
     
     pasajero = model.Pasajero.solicitud_activa(idUsuario,idViaje)
     if pasajero:
-        mensaje = "Ya solicitaste ese viaje"
-        return redirect(url_for('viaje_bp.ViajesDisponibles'))
+        mensaje = "Ya solicitaste ese viaje, por favor busca uno nuevo"
+        return redirect(url_for('viaje_bp.BuscarViaje'))
 
     if viaje:
 
@@ -212,11 +196,9 @@ def SolicitarViaje(idViaje):
 
 @viaje_bp.route('/ver/solicitudes', methods=['GET', 'POST'])
 @login_required
-def VerSolicitudesViaje():
+def MisSolicitudes():
     idUsuario = current_user.get_id()
-
     solicitudesPasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario)
-
     return render_template('listado_solicitudes.html', solicitudesPasajero=solicitudesPasajero)
 
 @viaje_bp.route('/buscar', methods=['GET', 'POST'])
@@ -257,7 +239,6 @@ def buscar_viaje():
         resultado = "No se encontraron coincidencias"
     return render_template('buscar_viaje.html', resultado=resultado)
 
-
 @viaje_bp.route('/publicados', methods=['GET', 'POST'])
 @login_required
 def ViajesPublicados():
@@ -277,48 +258,34 @@ def VerPasajeros(idViaje):
     viaje = model.Viaje.query.get(idViaje)
     return render_template('listado_pasajero_viaje.html', viaje = viaje)
 
+def modificar_estado_pasajero(idPasajero, idViaje, nuevo_estado):
+    pasajero = model.Pasajero.query.get(idPasajero)
+
+    if pasajero.estado.descripcion in ['Rechazado', 'Confirmado']:
+        viaje = model.Viaje.query.get(idViaje)
+        
+        mensaje = "No puede modificar el estado del pasajero. Ya fue {}".format(pasajero.estado.descripcion)
+        return render_template('listado_pasajero_viaje.html', viaje=viaje, mensaje=mensaje)
+    
+    else:
+        estado = model.EstadoPasajero.query.filter_by(descripcion=nuevo_estado).first()
+        pasajero.id_estado_pasajero = estado.id
+        pasajero.fecha_actualizacion = datetime.now()
+        model.Pasajero.save_to_db(pasajero)
+        return True
+
 @viaje_bp.route('/<idViaje>/pasajero/<idPasajero>/confirmar', methods=['GET', 'POST'])
 @login_required
 def AceptarPasajero(idPasajero, idViaje):
-    #Busco el pasajero a modificar
-    pasajero = model.Pasajero.query.get(idPasajero)
-    
-    if pasajero.estado.descripcion == 'Rechazado' or pasajero.estado.descripcion == 'Confirmado':
+    if modificar_estado_pasajero(idPasajero, idViaje, 'Confirmado'):
         viaje = model.Viaje.query.get(idViaje)
-        mensaje = "No puede modificar el estado del pasajero. Ya fue {}".format(pasajero.estado.descripcion)
-        return render_template('listado_pasajero_viaje.html', viaje = viaje, mensaje=mensaje)  
-    else:
-        #Busco el ID del estado CONFIRMADO
-        estado = model.EstadoPasajero.query.filter_by(descripcion = 'Confirmado').first()
-        #Modifico el estado del pasajero
-        pasajero.id_estado_pasajero = estado.id
-        pasajero.fecha_actualizacion = datetime.now()
-        #Disminuir en 1 asiento disponible del viaje
-        viaje = model.Viaje.query.get(pasajero.id_viaje)
         asientosActuales = viaje.asientos_disponibles
         viaje.asientos_disponibles = asientosActuales - 1
-
-        model.Pasajero.save_to_db(pasajero)
         model.Viaje.save_to_db(viaje)
-
     return redirect(url_for('viaje_bp.VerPasajeros', idViaje=viaje.id))
 
 @viaje_bp.route('/<idViaje>/pasajero/<idPasajero>/rechazar', methods=['GET', 'POST'])
 @login_required
 def RechazarPasajero(idPasajero, idViaje):
-    #Busco el pasajero a modificar
-    pasajero = model.Pasajero.query.get(idPasajero)
-
-    if pasajero.estado.descripcion == 'Rechazado' or pasajero.estado.descripcion == 'Confirmado':
-        viaje = model.Viaje.query.get(idViaje)
-        mensaje = "No puede modificar el estado del pasajero. Ya fue {}".format(pasajero.estado.descripcion)
-        return render_template('listado_pasajero_viaje.html', viaje = viaje, mensaje=mensaje)  
-    else:
-        #Busco el ID del estado RECHAZADO
-        estado = model.EstadoPasajero.query.filter_by(descripcion = 'Rechazado').first()
-        #Modifico el estado del pasajero
-        pasajero.id_estado_pasajero = estado.id
-        pasajero.fecha_actualizacion = datetime.now()
-        model.Pasajero.save_to_db(pasajero)
-
+    modificar_estado_pasajero(idPasajero, idViaje, 'Rechazado')
     return redirect(url_for('viaje_bp.VerPasajeros', idViaje=idViaje))
