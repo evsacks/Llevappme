@@ -4,7 +4,7 @@
 <section id="banner">
     <div class="content">
         <header>
-            <h1>Bienvenido.</h1>
+            <h1>Ingresar</h1>
         </header>
         {% if resultado %}
             <a> {{resultado}} </a>
@@ -40,7 +40,7 @@
         {% endif %}
         <a href="{{url_for('usuario_bp.Registro')}}">Registrarse</a>
     </div>
-    <span class="image object">
+    <span class="image fit">
         <img src="{{url_for('static', filename = 'images/logo.png')}}" alt="" />
     </span>
     

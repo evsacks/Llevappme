@@ -46,7 +46,7 @@ def Registro():
 
             return redirect(url_for('viaje_bp.BuscarViaje'))
         
-    return render_template('registro.html', form=form)
+    return render_template('registr.html', form=form)
 
 @usuario_bp.route('/login', methods=['GET', 'POST'])
 def Login():
