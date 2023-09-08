@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>LlevAPPme</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{{url_for('static', filename = 'assets/css/main.css')}}" />
+		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<header id="header">
+								<a href="index.html" class="logo"><strong>LOGIN</strong></a>
+							</header>
+							<!-- Banner -->
+								{% block banner %}   
+								{% endblock %}
+
+							<!-- Section -->
+								{% block section %}   
+								{% endblock %}							
+						</div>
+					</div>
+			</div>
+
+		<!-- Scripts -->
+			<script src="{{url_for('static', filename = 'assets/js/jquery.min.js')}}"></script>
+			<script src="{{url_for('static', filename = 'assets/js/browser.min.js')}}"></script>
+			<script src="{{url_for('static', filename = 'assets/js/breakpoints.min.js')}}"></script>
+			<script src="{{url_for('static', filename = 'assets/js/util.js')}}"></script>
+			<script src="{{url_for('static', filename = 'assets/js/main.js')}}"></script>
+	</body>
+</html>

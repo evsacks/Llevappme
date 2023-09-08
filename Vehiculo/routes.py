@@ -45,9 +45,9 @@ def Vehiculo():
             idUsuario = current_user.get_id()
             AltaConductor(idUsuario, vehiculo.id)
             
-            return redirect(url_for('viaje_bp.ViajesEstado', estado =3))
+            return redirect(url_for('viaje_bp.BuscarViaje'))
             
-        return redirect(url_for('viaje_bp.ViajesEstado', estado =3))
+        return redirect(url_for('viaje_bp.BuscarViaje'))
     
     return render_template('vehiculo.html', form = form)
 
