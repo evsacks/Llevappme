@@ -7,6 +7,8 @@ from Vehiculo.routes import vehiculo_bp
 
 import models as model
 
+from flask import Blueprint, render_template, url_for, redirect
+
 #Blueprints
 app.register_blueprint(usuario_bp)
 app.register_blueprint(vehiculo_bp)
@@ -19,5 +21,4 @@ def CargarUsuario(idUsuario):
 #Home
 @app.route('/', methods=['GET', 'POST'])
 def Home():
-    
-    return "Hola LLEVAPPME"
+    return redirect(url_for('usuario_bp.Login'))
