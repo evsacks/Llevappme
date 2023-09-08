@@ -206,6 +206,7 @@ def MisSolicitudes():
 def BuscarViaje():
     form = formulario.BuscarViaje()
     if form.validate_on_submit():
+        print("validado, dispara buscar_viaje()")
         return buscar_viaje()
     return render_template('buscar_viaje.html', form=form)
 

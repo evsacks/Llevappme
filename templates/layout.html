@@ -1,0 +1,146 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>LlevAPPme</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{{url_for('static', filename = 'assets/css/main.css')}}" />
+		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+								<header id="header">
+									<a href="index.html" class="logo"><strong>LLEVAPPME</strong></a>
+									<ul class="icons">
+										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+										<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+										<li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
+									</ul>
+								</header>
+
+							<!-- Banner -->
+								{% block banner %}   
+								{% endblock %}
+
+							<!-- Section -->
+								{% block section %}   
+								{% endblock %}
+								
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										<li><a href="{{url_for('viaje_bp.BuscarViaje')}}">Inicio</a></li>
+										<li>
+											<span class="opener">Mis viajes</span>
+											<ul>
+												<li><a href="{{url_for('viaje_bp.MisSolicitudes')}}">Suscripciones</a></li>
+												<li><a href="{{url_for('viaje_bp.ViajesPublicados')}}">Viajes Publicados</a></li>
+												<li><a href="#">Viajes realizados</a></li>
+											</ul>
+										</li>
+										<li><a href="#">Perfil</a></li>
+										<li><a href="{{url_for('usuario_bp.Logout')}}">Salir</a></li>
+									</ul>
+								</nav>
+
+							<!-- Footer -->
+								<footer id="footer">
+									<p class="copyright">
+										&copy; LlevAPPme. All rights reserved. 
+										<br/> UTN - FRD - Proyecto final
+										<br/> Ingeniería en Sistemas de Información.
+										<br/> Timoteo, Jonathan, Leonardo, Evelyn.
+									</p>
+								</footer>
+
+						</div>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="{{url_for('static', filename = 'assets/js/jquery.min.js')}}"></script>
+			<script src="{{url_for('static', filename = 'assets/js/browser.min.js')}}"></script>
+			<script src="{{url_for('static', filename = 'assets/js/breakpoints.min.js')}}"></script>
+			<script src="{{url_for('static', filename = 'assets/js/util.js')}}"></script>
+			<script src="{{url_for('static', filename = 'assets/js/main.js')}}"></script>
+			<script>
+				function initMap() {
+				  lat_inicial = parseFloat(document.getElementById('lat_inicial').innerHTML);
+				  lng_inicial = parseFloat(document.getElementById('lng_inicial').innerHTML);
+				  lat_final = parseFloat(document.getElementById('lat_final').innerHTML);
+				  lng_final = parseFloat(document.getElementById('lng_final').innerHTML);
+				  console.log(lat_inicial, lng_inicial);
+				  console.log(lat_final, lng_final);
+	  
+				  var pointA = new google.maps.LatLng(lat_inicial, lng_inicial),
+					  pointB = new google.maps.LatLng(lat_final, lng_final),
+					  myOptions = {
+						  zoom: 7,
+						  center: pointA
+					  },
+					 
+					  map = new google.maps.Map(document.getElementById('map'), myOptions),
+					  // Instantiate a directions service.
+					  directionsService = new google.maps.DirectionsService,
+					  directionsDisplay = new google.maps.DirectionsRenderer({
+						  map: map
+					  }),
+					  markerA = new google.maps.Marker({
+						  position: pointA,
+						  title: "Origen",
+						  map: map
+					  }),
+					  markerB = new google.maps.Marker({
+						  position: pointB,
+						  title: "Destino",
+						  map: map
+					  });
+	  
+					  // get route from A to B
+				  calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB);
+	  
+			  }
+	  
+			  function calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB) {
+				  directionsService.route({
+					  origin: pointA,
+					  destination: pointB,
+					  avoidTolls: true,
+					  avoidHighways: false,
+					  travelMode: google.maps.TravelMode.DRIVING
+				  }, function (response, status) {
+					  if (status == google.maps.DirectionsStatus.OK) {
+						  directionsDisplay.setDirections(response);
+					  } else {
+						  window.alert('Directions request failed due to ' + status);
+					  }
+				  });
+			  }
+			  
+			  window.initMap = initMap;
+					  
+			</script>
+			<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDt5KdV_gWgU2L_W7yNsJucH5XvQ_dcHq0&callback=initMap&v=weekly" defer></script>
+	</body>
+</html>

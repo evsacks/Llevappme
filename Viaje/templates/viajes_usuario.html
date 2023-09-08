@@ -1,22 +1,111 @@
-<html>
-    <a>VIAJES POR USUARIO</a><br><br>
-    {% for viaje in viajes %}
-        <a>{{viaje}}</a><br><br>
-    {% endfor %}
+{% extends 'layout.html' %}
+{% block banner %}
+<!-- Banner -->
+<section id="banner">
+    <div class="content">
+        <header>
+            <h1>Encuentra un viaje hacia tu destino.</h1>
+        </header>
+        <form method="post" action="#">
+            <div class="row gtr-uniform">
+                <div class="col-6 col-12-xsmall">
+                    <input type="text" name="demo-name" id="demo-name" value="" placeholder="Origen" />
+                </div>
+                <div class="col-6 col-12-xsmall">
+                    <input type="email" name="demo-email" id="demo-email" value="" placeholder="Destino" />
+                </div>
+                <div class="col-6 col-12-xsmall">
+                    <input type="text" name="demo-name" id="demo-name" value="" placeholder="Fecha" />
+                </div>
+                <div class="col-6 col-12-xsmall">
+                    <input type="email" name="demo-email" id="demo-email" value="" placeholder="Hora" />
+                </div>
+                <!-- Break -->
+                <div class="col-12">
+                    <ul class="actions">
+                        <li><input type="submit" value="Buscar viaje" class="primary" /></li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+    </div>
+    <span class="image object">
+        <img src="{{url_for('static', filename = 'images/logo.png')}}" alt="" />
+    </span>
+</section>
+{% endblock %}
+{% block section %}
+<!-- Section -->
+<section>
+    <header class="major">
+        <h2>¿Compartir coche? Por qué no...</h2>
+    </header>
+    <div class="features">
+        <article>
+            <span class="icon fa-gem"></span>
+            <div class="content">
+                <h3>Ahorrás</h3>
+                <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
+            </div>
+        </article>
+        <article>
+            <span class="icon solid fa-paper-plane"></span>
+            <div class="content">
+                <h3>Socializás</h3>
+                <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
+            </div>
+        </article>
+        <article>
+            <span class="icon solid fa-rocket"></span>
+            <div class="content">
+                <h3>Cuidas el planeta</h3>
+                <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
+            </div>
+        </article>
+        <article>
+            <span class="icon solid fa-signal"></span>
+            <div class="content">
+                <h3>y muchas cosas mas...</h3>
+                <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
+            </div>
+        </article>
+    </div>
+</section>
 
-    {% if mensaje %}
-        <a>{{mensaje}}</a>
-    {% endif %}
-    <br>
-    <a href="{{url_for('usuario_bp.Logout')}}">Salir</a>
-    <br>
-    <a href="{{url_for('vehiculo_bp.Vehiculo')}}">Nuevo Vehiculo</a>
-    <br>
-    <a href="{{url_for('viaje_bp.PublicarViaje')}}">Publicar viaje</a>
-    <br>
-    <a href="{{url_for('viaje_bp.BuscarViaje')}}">Buscar Viaje</a>
-    <br>
-    <a href="{{url_for('viaje_bp.MisSolicitudes')}}">Ver mis solicitudes</a>
-    <br>
-    <a href="{{url_for('viaje_bp.ViajesPublicados')}}">Viajes Publicados</a>
-</html>
+<!-- Section -->
+<section>
+    <header class="major">
+        <h2>Últimos viajes agregados.</h2>
+    </header>
+    <div class="posts">
+        <article>
+            <h3>Interdum aenean</h3>
+            <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
+            <ul class="actions">
+                <li><a href="#" class="button">Ver</a></li>
+            </ul>
+        </article>
+        <article>
+            <h3>Nulla amet dolore</h3>
+            <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
+            <ul class="actions">
+                <li><a href="#" class="button">Ver</a></li>
+            </ul>
+        </article>
+    </div>
+</section>
+                
+<h2 class="major">ACCIONES</h2>
+<a class="special" href="{{url_for('usuario_bp.Logout')}}">Salir</a>
+<a class="special" href="{{url_for('vehiculo_bp.Vehiculo')}}">Nuevo Vehiculo</a>
+<a class="special" href="{{url_for('viaje_bp.PublicarViaje')}}">Publicar viaje</a>
+<a class="special" href="{{url_for('viaje_bp.BuscarViaje')}}">Buscar Viaje</a>
+<a class="special" href="{{url_for('viaje_bp.MisSolicitudes')}}">Ver mis solicitudes</a>
+<a class="special" href="{{url_for('viaje_bp.ViajesPublicados')}}">Viajes Publicados</a>
+{% if mensaje %}
+    <a>{{mensaje}}</a>
+{% endif %}
+
+{% endblock %}
+
+

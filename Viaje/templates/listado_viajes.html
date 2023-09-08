@@ -1,17 +1,13 @@
-<html>
-	<head>
-		<title>LLEVAPPME</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    </head>
-	<body>
-        {% if mensaje %}
-            <a>{{mensaje}}</a>
-        {% endif %}
+{% extends 'layout.html' %}
+{% block section %}
+<section>
+    <!-- Elements -->
+    <h2 id="elements">Viajes Publicados</h2>
+
         {% if viajes %}
-            <section>
-                <table>
-                    <thead class="thead-dark">
+            <div class="table-wrapper">
+                <table class="alt">
+                    <thead>
                         <tr>
                             <th scope="col">Conductor</th>
                             <th scope="col">Origen</th>
@@ -21,7 +17,6 @@
                             <th scope="col">Acciones</th>
                         </tr>
                     </thead>
-                        
                     <tbody>
                         {% for viaje in viajes %}
                             <tr>
@@ -39,9 +34,12 @@
                             </tr>
                         {% endfor %}
                     </tbody>
-                </table>						
-            </section>
+                </table>
+            </div>
         {% endif %}
-        <a href="{{url_for('usuario_bp.Logout')}}">Salir</a>
-	</body>
-</html>
+
+    {% if mensaje %}
+        <a>{{mensaje}}</a>
+    {% endif %}
+</section>
+{% endblock %}
