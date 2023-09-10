@@ -9,6 +9,8 @@ from app import maps
 from pprint import pprint
 viaje_bp = Blueprint('viaje_bp', __name__, url_prefix='/viaje', template_folder='templates', static_folder='static')
 
+
+
 def solicitar_viaje(idUsuario,idViaje):
     
     nuevoPasajero = model.Pasajero(
@@ -235,10 +237,13 @@ def buscar_viaje():
 
     viajes = viajes_query.all()
     if viajes:
-        resultado = [model.Viaje.serialize(viaje) for viaje in viajes]
+        return resultados_busqueda(viajes)
     else:
         resultado = "No se encontraron coincidencias"
     return render_template('buscar_viaje.html', resultado=resultado)
+
+def resultados_busqueda(viajes):
+    return render_template('resultado_busqueda.html', viajes = viajes)
 
 @viaje_bp.route('/publicados', methods=['GET', 'POST'])
 @login_required

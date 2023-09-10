@@ -1,38 +1,38 @@
 function initMap() {
-    lat_inicial = parseFloat(document.getElementById('lat_inicial').innerHTML);
-    lng_inicial = parseFloat(document.getElementById('lng_inicial').innerHTML);
-    lat_final = parseFloat(document.getElementById('lat_final').innerHTML);
-    lng_final = parseFloat(document.getElementById('lng_final').innerHTML);
-    console.log(lat_inicial, lng_inicial);
-    console.log(lat_final, lng_final);
+    var lat_inicial = parseFloat(document.getElementById('lat_inicial').textContent);
+    var lng_inicial = parseFloat(document.getElementById('lng_inicial').textContent);
+    var lat_final = parseFloat(document.getElementById('lat_final').textContent);
+    var lng_final = parseFloat(document.getElementById('lng_final').textContent);
 
-    var pointA = new google.maps.LatLng(lat_inicial, lng_inicial),
-        pointB = new google.maps.LatLng(lat_final, lng_final),
-        myOptions = {
-            zoom: 7,
-            center: pointA
-        },
-       
-        map = new google.maps.Map(document.getElementById('map'), myOptions),
-        // Instantiate a directions service.
-        directionsService = new google.maps.DirectionsService,
-        directionsDisplay = new google.maps.DirectionsRenderer({
-            map: map
-        }),
-        markerA = new google.maps.Marker({
-            position: pointA,
-            title: "Origen",
-            map: map
-        }),
-        markerB = new google.maps.Marker({
-            position: pointB,
-            title: "Destino",
-            map: map
-        });
+    var pointA = new google.maps.LatLng(lat_inicial, lng_inicial);
+    var pointB = new google.maps.LatLng(lat_final, lng_final);
+    var myOptions = {
+        zoom: 7,
+        center: pointA
+    };
 
-        // get route from A to B
+    var map = new google.maps.Map(document.getElementById('map'), myOptions);
+
+    // Instantiate a directions service.
+    var directionsService = new google.maps.DirectionsService;
+    var directionsDisplay = new google.maps.DirectionsRenderer({
+        map: map
+    });
+
+    var markerA = new google.maps.Marker({
+        position: pointA,
+        title: "Origen",
+        map: map
+    });
+    
+    var markerB = new google.maps.Marker({
+        position: pointB,
+        title: "Destino",
+        map: map
+    });
+
+    // Obtener la ruta desde A hasta B
     calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB);
-
 }
 
 function calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB) {
@@ -46,7 +46,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, 
         if (status == google.maps.DirectionsStatus.OK) {
             directionsDisplay.setDirections(response);
         } else {
-            window.alert('Directions request failed due to ' + status);
+            window.alert('La solicitud de direcciones falló debido a ' + status);
         }
     });
 }
