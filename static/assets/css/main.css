@@ -2277,6 +2277,7 @@ button,
   /* Ajusta el ancho del formulario */
   #form-container {
     width: 100%;
+    height: 50vh;
   }
 
   /* Ajusta el ancho de la imagen */
@@ -2288,5 +2289,10 @@ button,
   /* Cambia la disposición de la imagen y el formulario */
   #banner {
     flex-direction: column-reverse; /* Coloca la imagen encima del formulario */
+    padding: 10vh 0 5vh 0;
   }
+  /* Agrega espacio inferior para el teclado */
+#main {
+  padding-bottom: 200px; /* Ajusta el valor según sea necesario */
+}
 }
