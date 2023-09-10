@@ -1,18 +1,23 @@
 function initMap() {
-    var lat_inicial = parseFloat(document.getElementById('lat_inicial').textContent);
-    var lng_inicial = parseFloat(document.getElementById('lng_inicial').textContent);
-    var lat_final = parseFloat(document.getElementById('lat_final').textContent);
-    var lng_final = parseFloat(document.getElementById('lng_final').textContent);
+    
+    var mapContainer = document.getElementById('map');
+    var latInicial = parseFloat(mapContainer.getAttribute('data-lat-inicial'));
+    var lngInicial = parseFloat(mapContainer.getAttribute('data-lng-inicial'));
+    var latFinal = parseFloat(mapContainer.getAttribute('data-lat-final'));
+    var lngFinal = parseFloat(mapContainer.getAttribute('data-lng-final'));
 
-    var pointA = new google.maps.LatLng(lat_inicial, lng_inicial);
-    var pointB = new google.maps.LatLng(lat_final, lng_final);
+
+    var pointA = new google.maps.LatLng(latInicial, lngInicial);
+    var pointB = new google.maps.LatLng(latFinal, lngFinal);
     var myOptions = {
         zoom: 7,
-        center: pointA
+        center: pointA,
+        mapTypeId: google.maps.MapTypeId.ROADMAP, // Establece el tipo de mapa predeterminado a ROADMAP
+        mapTypeControl: false, // Deshabilita el control de tipo de mapa
     };
 
     var map = new google.maps.Map(document.getElementById('map'), myOptions);
-
+    
     // Instantiate a directions service.
     var directionsService = new google.maps.DirectionsService;
     var directionsDisplay = new google.maps.DirectionsRenderer({
