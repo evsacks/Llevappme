@@ -2271,3 +2271,22 @@ button,
     border-top: 0;
     margin-top: 0;
     padding-top: 0; }
+
+    /* Ajustes para dispositivos móviles */
+@media screen and (max-width: 736px) {
+  /* Ajusta el ancho del formulario */
+  #form-container {
+    width: 100%;
+  }
+
+  /* Ajusta el ancho de la imagen */
+  #banner .image {
+    width: 100%;
+    margin: 2em 0; /* Añade margen superior e inferior para separar la imagen del formulario */
+  }
+
+  /* Cambia la disposición de la imagen y el formulario */
+  #banner {
+    flex-direction: column-reverse; /* Coloca la imagen encima del formulario */
+  }
+}
