@@ -3,11 +3,6 @@
 
         {% if viaje %}
             <a>DETALLE DE VIAJE</a><br><br>
-            <a id="lat_inicial" style="display: none;" value="{{viaje.latitud_inicial}}">{{viaje.latitud_inicial}}</a>
-            <a id="lng_inicial" style="display: none;" value="{{viaje.longitud_inicial}}">{{viaje.longitud_inicial}}</a>
-            <a id="lat_final" style="display: none;" value="{{viaje.latitud_inicial}}">{{viaje.latitud_final}}</a>
-            <a id="lng_final" style="display: none;" value="{{viaje.longitud_inicial}}">{{viaje.longitud_final}}</a>
-            
             <a>Origen: {{viaje.direccion_inicial}}</a>
             <br>
             <a>Destino: {{viaje.direccion_final}}</a>
@@ -29,7 +24,11 @@
             <a>{{mensaje}}</a>
         {% endif %}
 
-        <div id="map" style="height: 400px;"></div>
+        <div id="map" style="height: 400px;"
+             data-lat-inicial="{{ viaje.latitud_inicial }}"
+             data-lng-inicial="{{ viaje.longitud_inicial }}"
+             data-lat-final="{{ viaje.latitud_final }}"
+             data-lng-final="{{ viaje.longitud_final }}"></div>
       
           
         </article>
