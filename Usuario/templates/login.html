@@ -1,48 +1,49 @@
 {% extends 'layout_login.html' %}
 {% block banner %}
 <!-- Banner -->
-<section id="banner">
-    <div class="content">
-        <header>
+<section>
+    <div class="row gtr-200">
+        <div class="col-6 col-12-medium">
+            <span class="image main">
+                <img src="{{url_for('static', filename = 'images/logo.png')}}" alt="" />
+            </span>
+        </div>
+        <div class="col-4 col-12-medium">
             <h1>Ingresar</h1>
-        </header>
-        {% if resultado %}
-            <a> {{resultado}} </a>
-        {% endif%}    
-        {% if form %}
-            <form method="post" action="{{url_for('usuario_bp.Login')}}">
-            {{ form.hidden_tag() }}
-            <div class="row gtr-uniform">
-                <div class="col-12 col-12-xsmall">
-                    {{ form.nombreUsuario(type="text",  id="usuario_lgn", value="", placeholder="Email") }}
-                    <div>
-                        {% for error in form.nombreUsuario.errors %}
-                            <span>{{ error }}</span> 
-                        {% endfor %}
+            {% if resultado %}
+                <a> {{resultado}} </a>
+            {% endif%}    
+            {% if form %}
+                <form method="post" action="{{url_for('usuario_bp.Login')}}">
+                    {{ form.hidden_tag() }}
+                    <div class="row gtr-uniform">
+                        <div class="col-12 col-12-xsmall">
+                        {{ form.nombreUsuario(type="text",  id="usuario_lgn", value="", placeholder="Email") }}
+                        <div>
+                            {% for error in form.nombreUsuario.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                        </div>
+                        <div class="col-12 col-12-xsmall">
+                            {{ form.contrasenia(type="password",  id="contrasenia_lgn", value="", placeholder="Contraseña") }}
+                            <div>
+                                {% for error in form.contrasenia.errors %}
+                                    <span>{{ error }}</span> 
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <!-- Break -->
+                        <div class="col-12">
+                            <ul class="actions">
+                                <li>{{ form.submit(type="submit", value="Ingresar") }}</li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-                <div class="col-12 col-12-xsmall">
-                    {{ form.contrasenia(type="password",  id="contrasenia_lgn", value="", placeholder="Contraseña") }}
-                    <div>
-                        {% for error in form.contrasenia.errors %}
-                            <span>{{ error }}</span> 
-                        {% endfor %}
-                    </div>
-                </div>
-                <!-- Break -->
-                <div class="col-12">
-                    <ul class="actions">
-                        <li>{{ form.submit(type="submit", value="Ingresar") }}</li>
-                    </ul>
-                </div>
-            </div>
-        </form>
-        {% endif %}
-        <a href="{{url_for('usuario_bp.Registro')}}">Registrarse</a>
+                </form>
+            {% endif %}
+            <a href="{{url_for('usuario_bp.Registro')}}">Registrarse</a>
+        </div>
     </div>
-    <span class="image fit">
-        <img src="{{url_for('static', filename = 'images/logo.png')}}" alt="" />
-    </span>
-    
 </section>
 {% endblock %}
