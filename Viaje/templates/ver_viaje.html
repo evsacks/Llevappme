@@ -1,35 +1,61 @@
 {% extends 'layout.html' %}
 {% block section %}
 
-        {% if viaje %}
-            <a>DETALLE DE VIAJE</a><br><br>
-            <a>Origen: {{viaje.direccion_inicial}}</a>
-            <br>
-            <a>Destino: {{viaje.direccion_final}}</a>
-            <br>
-            <a>Tiempo estimado: </a>
-            <br>
-            <a>Distancia: {{viaje.distancia}} KM.</a>
-            <br>
-            <a>Asientos Disponibles: {{viaje.asientos_disponibles}}</a>
-            <br>
-        
-            {% if ((solicitud) and (current_user.id != viaje.usuario.id)) %}
-                <a href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}">Solicitar Viaje</a>
-            {% elif current_user.id == viaje.usuario.id %}
-                <a href="{{url_for('viaje_bp.VerPasajeros', idViaje=viaje.id)}}">Ver Pasajeros</a>
-            {% endif %}
-        {% endif %}
-        {% if mensaje %}
-            <a>{{mensaje}}</a>
-        {% endif %}
-
-        <div id="map" style="height: 400px;"
-             data-lat-inicial="{{ viaje.latitud_inicial }}"
-             data-lng-inicial="{{ viaje.longitud_inicial }}"
-             data-lat-final="{{ viaje.latitud_final }}"
-             data-lng-final="{{ viaje.longitud_final }}"></div>
-      
-          
-        </article>
-        {% endblock %}
+    {% if viaje %}
+        <section>
+            <div class="row gtr-200">
+                <div class="col-6 col-12-medium">
+                    <ul class="alt">
+                        <li>
+                            <h3 style="margin-bottom: 0px;">
+                                <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
+                                {{viaje.direccion_inicial}}
+                            </h3>
+                            <h3 style="margin-bottom: 0px;">
+                                <a class="fas fa-chevron-down fa-xs"></a>
+                            </h3>
+                            <h3>
+                                <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
+                                {{viaje.direccion_final}}
+                            </h3>
+                        </li>
+                        <li>
+                            Fecha Salida: {{ formato_fecha(viaje.fecha_inicio) }}
+                            <br>
+                            Hora Salida: {{ formato_hora(viaje.fecha_inicio) }}
+                        </li>
+                        <li>
+                            Disponibilidad: {{viaje.asientos_disponibles}}
+                        </li>
+                        <li>
+                            Distancia: {{viaje.distancia}} KM.
+                        </li>
+                    </ul>
+                    <ul class="actions fit">
+                        <li>
+                            {% if ((solicitud) and (current_user.id != viaje.usuario.id)) %}
+                                <a  href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}"
+                                    class="button primary fit">
+                                    Solicitar Viaje
+                                </a>
+                            {% elif current_user.id == viaje.usuario.id %}
+                                <a  href="{{url_for('viaje_bp.VerPasajeros', idViaje=viaje.id)}}"
+                                    class="button primary fit">
+                                    Ver Pasajeros
+                                </a>
+                            {% endif %}
+                    </ul>
+                    
+                </div>
+                <div class="col-6 col-12-medium">
+                    <h3>Mapa</h3>
+                    <div id="map" style="height: 300px;"
+                        data-lat-inicial="{{ viaje.latitud_inicial }}"
+                        data-lng-inicial="{{ viaje.longitud_inicial }}"
+                        data-lat-final="{{ viaje.latitud_final }}"
+                        data-lng-final="{{ viaje.longitud_final }}"></div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}
