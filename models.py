@@ -144,7 +144,7 @@ class TipoUsuario(db.Model):
         id = self.id,
         codigo = self.codigo,
         descripcion = self.descripcion
-        tipo_usu = '<Tipo Usuario(id={}, codigo={}, descripcion={})>'.format(id,descripcion)
+        tipo_usu = '<Tipo Usuario(id={}, codigo={}, descripcion={})>'.format(id,codigo,descripcion)
         return tipo_usu
 
     def serialize(self):
@@ -172,29 +172,20 @@ class Viaje(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     asientos_disponibles = db.Column(db.Integer, unique = False, nullable = False)
-    distancia = db.Column(db.Integer, unique = False, nullable = False)
 
-    direccion_inicial = db.Column(db.String, unique = False, nullable = False)
-    direccion_final = db.Column(db.String, unique = False, nullable = False)
-
-    latitud_inicial = db.Column(db.String, unique = False, nullable = False)
-    latitud_final = db.Column(db.String, unique = False, nullable = False)
-    longitud_inicial = db.Column(db.String, unique = False, nullable = False)
-    longitud_final = db.Column(db.String, unique = False, nullable = False)
-    
     fecha_inicio = db.Column(db.DateTime, unique = False, nullable = False)
     fecha_inicio_real = db.Column(db.DateTime, unique = False, nullable = True)
     fecha_final = db.Column(db.Date, unique = False, nullable = False)
     fecha_final_real = db.Column(db.DateTime, unique = False, nullable = True)
 
-    id_conductor = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
-    id_vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = True)
+    id_conductor = db.Column(db.Integer, db.ForeignKey('conductor.id'), nullable = False)
     id_estado_viaje = db.Column(db.Integer, db.ForeignKey('estado_viaje.id'), nullable = False)
+    id_ubicacion = db.Column(db.Integer, db.ForeignKey('ubicacion.id'), nullable = False)
 
     tracking = relationship('Tracking', backref = 'viaje')
     pasajeros = relationship('Pasajero', backref = 'viaje')
 
-    def __init__(self, asientos_disponibles, distancia, direccion_inicial, direccion_final, latitud_inicial, latitud_final, longitud_inicial, longitud_final, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, id_conductor, id_vehiculo, id_estado_viaje):
+    def __init__(self, asientos_disponibles, distancia, direccion_inicial, direccion_final, latitud_inicial, latitud_final, longitud_inicial, longitud_final, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, id_conductor, id_estado_viaje, id_ubicacion):
         self.asientos_disponibles = asientos_disponibles
         self.distancia = distancia
         self.direccion_inicial = direccion_inicial
@@ -208,10 +199,11 @@ class Viaje(db.Model):
         self.fecha_final = fecha_final
         self.fecha_final_real = fecha_final_real
         self.id_conductor = id_conductor
-        self.id_vehiculo = id_vehiculo
         self.id_estado_viaje = id_estado_viaje
+        self.id_ubicacion = id_ubicacion
 
     def __repr__(self):
+        id = self.id
         asientos_disponibles = self.asientos_disponibles
         distancia = self.distancia
         direccion_inicial = self.direccion_inicial
@@ -225,20 +217,21 @@ class Viaje(db.Model):
         fecha_final = self.fecha_final
         fecha_final_real = self.fecha_final_real
         id_conductor = self.id_conductor
-        id_vehiculo = self.id_vehiculo
         id_estado_viaje = self.id_estado_viaje
+        id_ubicacion = self.id_ubicacion
         viaje = '<Viaje(id={}, cantidad pasajeros={}, distancia={}, \
                         direccion inicial={}, direccion final={}, latitud inicial={}, \
                         latitud final={}, longitud inicial={}, longitud final={}, \
                         fecha inicio={}, fecha inicio real={}, fecha final={}, \
-                        fecha final real={}, conductor={}, vehiculo={}, estado viaje={})>'\
+                        fecha final real={}, conductor={}, estado viaje={}, ubicacion={})>'\
                 .format(id,asientos_disponibles,distancia,direccion_inicial,direccion_final,\
                         latitud_inicial,latitud_final,longitud_inicial,longitud_final,fecha_inicio,\
-                        fecha_inicio_real,fecha_final,fecha_final_real,id_conductor,id_vehiculo, id_estado_viaje)
+                        fecha_inicio_real,fecha_final,fecha_final_real,id_conductor, id_estado_viaje, id_ubicacion)
         return viaje
 
     def serialize(self):
         return {
+            'id': self.id,
             'asientos_disponibles': self.asientos_disponibles,
             'distancia': self.distancia,
             'direccion_inicial': self.direccion_inicial,
@@ -252,17 +245,10 @@ class Viaje(db.Model):
             'fecha_final': self.fecha_final,
             'fecha_final_real': self.fecha_final_real,
             'id_conductor': self.id_conductor,
-            'id_vehiculo': self.id_vehiculo,
-            'id_estado_viaje': self.id_estado_viaje
+            'id_estado_viaje': self.id_estado_viaje,
+            'id_ubicacion': self.id_ubicacion
     }
     
-    @classmethod
-    def viajes_pendientes_usuario(cls,idUsuario):
-        viajes = cls.query.filter((cls.id_conductor==idUsuario) & \
-                                  (cls.id_estado_viaje == 3)).all() 
-        
-        return viajes
-
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
@@ -451,6 +437,63 @@ class EstadoViaje(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+class Ubicacion(db.Model):
+    __tablename__ = 'ubicacion'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    direccion_inicial = db.Column(db.String, unique = False, nullable = False)
+    direccion_final = db.Column(db.String, unique = False, nullable = False)
+
+    latitud_inicial = db.Column(db.String, unique = False, nullable = False)
+    latitud_final = db.Column(db.String, unique = False, nullable = False)
+    longitud_inicial = db.Column(db.String, unique = False, nullable = False)
+    longitud_final = db.Column(db.String, unique = False, nullable = False)
+
+    viajes = relationship('Viaje', backref = 'ubicacion')
+
+    def __init__(self, direccion_inicial, direccion_final, latitud_inicial, latitud_final, longitud_inicial, longitud_final):
+        self.direccion_inicial = direccion_inicial
+        self.direccion_final = direccion_final
+        self.latitud_inicial = latitud_inicial
+        self.latitud_final = latitud_final
+        self.longitud_inicial = longitud_inicial
+        self.longitud_final = longitud_final
+
+    def __repr__(self):
+        id = self.id
+        direccion_inicial = self.direccion_inicial
+        direccion_final = self.direccion_final
+        latitud_inicial = self.latitud_inicial
+        latitud_final = self.latitud_final
+        longitud_inicial = self.longitud_inicial
+        longitud_final = self.longitud_final
+        ubicacion = '<Ubicacion(id={}, direccion inicial={}, direccion final={}, \
+                                latitud inicial={}, latitud final={}, \
+                                longitud inicial={}, longitud final={})>' \
+                    .format(id,direccion_inicial,direccion_final,latitud_inicial,latitud_final,longitud_inicial,longitud_final)
+        return ubicacion
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'direccion_inicial': self.direccion_inicial,
+            'direccion_final': self.direccion_final,
+            'latitud_inicial': self.latitud_inicial,
+            'latitud_final': self.latitud_final,
+            'longitud_inicial': self.longitud_inicial,
+            'longitud_final': self.longitud_final,
+    }
+    
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
 # VEHICULO
 
 class Vehiculo(db.Model):
@@ -466,7 +509,6 @@ class Vehiculo(db.Model):
     fecha_creacion = db.Column(db.DateTime, default = datetime.utcnow)
     fecha_actualizacion = db.Column(db.DateTime, default = datetime.utcnow)
 
-    viajes =  relationship('Viaje', backref = 'vehiculo')
     conductores =  relationship('Conductor', backref = 'vehiculo')
 
     def __init__(self, patente, cantidad_asientos, descripcion, fecha_creacion, fecha_actualizacion):
@@ -490,6 +532,7 @@ class Vehiculo(db.Model):
 
     def serialize(self):
         return {
+            'id': self.id,
             'patente': self.patente,
             'cantidad_asientos': self.cantidad_asientos,
             'descripcion':self.descripcion,
@@ -514,6 +557,8 @@ class Conductor(db.Model):
     
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable = False)
     id_vehiculo = db.Column(db.Integer, db.ForeignKey('vehiculo.id'), nullable = False)
+
+    viajes =  relationship('Viaje', backref = 'conductor')
 
     def __init__(self, id_usuario, id_vehiculo):
         self.id_usuario = id_usuario
