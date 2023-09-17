@@ -541,8 +541,8 @@ class Adicional(db.Model):
     viajes = relationship('Viaje', backref = 'adicional')
 
     def __init__(self, mascota, equipaje, alimentos):
-        self.mascota = mascota,
-        self.equipaje = equipaje,
+        self.mascota = mascota
+        self.equipaje = equipaje
         self.alimentos = alimentos
 
     def __repr__(self):

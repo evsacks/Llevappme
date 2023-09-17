@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, url_for, redirect
+from flask import Blueprint, render_template, url_for, redirect, flash
 import models as model
 from flask_login import login_user,logout_user,login_required,current_user
 from datetime import datetime, timedelta
@@ -62,59 +62,84 @@ def ViajesEstado(estado):
 @viaje_bp.route('/publicar', methods=['GET', 'POST'])
 @login_required
 def PublicarViaje():
-    form = formulario.NuevoViaje()
-    idUsuario = current_user.get_id()
-    
-    if form.validate_on_submit():
+    try:
+        idUsuario = current_user.get_id()
+        conductor = model.Conductor.query.filter_by(id_usuario=idUsuario).all()
+        form = formulario.NuevoViaje()
+        form.vehiculo.choices = [(0, "Vehiculo")] + [(c.id, c.vehiculo.patente) for c in conductor]
 
-        conductor = model.Conductor.query.filter_by(id_usuario=idUsuario).first()
-        print(model.Conductor.serialize(conductor))
-        if conductor:
+        if form.validate_on_submit():
+            vehiculo = form.vehiculo.data
+            conductorVehiculo = model.Conductor.query.get(vehiculo)
 
-            origen = form.origen.data
-            destino = form.destino.data
-            cantidadAsientos = form.cantidad_asientos.data
-            fechaInicio = form.fecha_inicio.data
-            horaInicio = form.hora_inicio.data
+            if conductorVehiculo:
+                origen = form.origen.data
+                destino = form.destino.data
+                cantidad_asientos = form.cantidad_asientos.data
+                fecha_inicio = form.fecha_inicio.data
+                hora_inicio = form.hora_inicio.data
+                fecha_inicial = datetime.combine(fecha_inicio, hora_inicio)
 
-            fechaInicial = datetime.combine(fechaInicio,horaInicio)
-            
-            coordenadas_origen = maps.geocode(origen)
-            latitud_origen = coordenadas_origen[0]['geometry']['location']['lat']
-            longitud_origen = coordenadas_origen[0]['geometry']['location']['lng']
+                coordenadas_origen = maps.geocode(origen)
+                coordenadas_destino = maps.geocode(destino)
+                matrix_distance = maps.distance_matrix(origen, destino)
 
-            coordenadas_destino = maps.geocode(destino)
-            latitud_destino = coordenadas_destino[0]['geometry']['location']['lat']
-            longitud_destino = coordenadas_destino[0]['geometry']['location']['lng']
-            
-            matrix_distance = maps.distance_matrix(origen,destino)
-            distancia = matrix_distance['rows'][0]['elements'][0]['distance']['value']
-            duracion = matrix_distance['rows'][0]['elements'][0]['duration']['value']
+                if all('error' not in data for data in [coordenadas_origen, coordenadas_destino, matrix_distance]):
+                    latitud_origen = coordenadas_origen[0]['geometry']['location']['lat']
+                    longitud_origen = coordenadas_origen[0]['geometry']['location']['lng']
+                    latitud_destino = coordenadas_destino[0]['geometry']['location']['lat']
+                    longitud_destino = coordenadas_destino[0]['geometry']['location']['lng']
+                    distancia = matrix_distance['rows'][0]['elements'][0]['distance']['value']
+                    duracion = matrix_distance['rows'][0]['elements'][0]['duration']['value']
 
-            fechaFinal = fechaInicial + timedelta(seconds=duracion)
+                    fecha_final = fecha_inicial + timedelta(seconds=duracion)
 
-            nuevoViaje = model.Viaje(
-                asientos_disponibles= cantidadAsientos,
-                distancia=distancia,
-                direccion_inicial=origen,
-                direccion_final=destino,
-                latitud_inicial=latitud_origen,
-                longitud_inicial=longitud_origen,
-                latitud_final=latitud_destino,
-                longitud_final=longitud_destino,
-                fecha_inicio=fechaInicial,
-                fecha_final=fechaFinal,
-                id_conductor=conductor.id_usuario,
-                id_vehiculo=conductor.id_vehiculo,
-                id_estado_viaje=3,
-                fecha_inicio_real=None,
-                fecha_final_real=None
-            ) 
-            model.Viaje.save_to_db(nuevoViaje)
-            return 'OK'
-        return 'NO EXISTE CONDUCTOR'
+                    ubicacion_viaje = model.Ubicacion(
+                        direccion_inicial=origen,
+                        direccion_final=destino,
+                        latitud_inicial=latitud_origen,
+                        longitud_inicial=longitud_origen,
+                        latitud_final=latitud_destino,
+                        longitud_final=longitud_destino
+                    )
 
-    return render_template('publicar_viaje.html', form = form)
+                    model.Ubicacion.save_to_db(ubicacion_viaje)
+
+                    adicional = model.Adicional(
+                        equipaje=bool(form.equipaje.data),
+                        mascota=bool(form.mascota.data),
+                        alimentos=bool(form.alimentos.data)
+                    )
+
+                    model.Adicional.save_to_db(adicional)
+
+                    nuevo_viaje = model.Viaje(
+                        asientos_disponibles=cantidad_asientos,
+                        fecha_inicio=fecha_inicial,
+                        fecha_final=fecha_final,
+                        id_conductor=conductorVehiculo.id,
+                        id_estado_viaje=3,
+                        fecha_inicio_real=None,
+                        fecha_final_real=None,
+                        id_ubicacion=ubicacion_viaje.id,
+                        id_adicional=adicional.id
+                    )
+
+                    model.Viaje.save_to_db(nuevo_viaje)
+
+                    flash('Viaje publicado con éxito', 'success')
+                    return redirect(url_for('viaje_bp.BuscarViaje'))
+                else:
+                    flash('Hubo un error al obtener detalles de ubicación o distancia', 'error')
+            else:
+                flash('No existe conductor asociado', 'error')
+        
+        return render_template('publicar_viaje.html', form=form)
+    except Exception as e:
+        print(f"Se produjo una excepción: {e}")
+        mensaje = "No se pudo publicar el viaje. Inténtalo de nuevo más tarde."
+        return render_template('publicar_viaje.html', mensaje=mensaje)
+
 
 @viaje_bp.route('/disponibles', methods=['GET', 'POST'])
 @login_required
@@ -133,7 +158,6 @@ def ViajesDisponibles():
 @login_required
 def VerViaje(idViaje):
 
-    #Busco viajes que estan pendientes 
     viaje = model.Viaje.query.get(idViaje)
     idUsuario = current_user.get_id()
     
@@ -224,10 +248,10 @@ def buscar_viaje():
     viajes_query = model.Viaje.query
 
     if origen:
-        viajes_query = viajes_query.filter(model.Viaje.direccion_inicial.ilike(f"%{origen}%"))
+        viajes_query = viajes_query.filter(model.viaje.ubicacion.direccion_inicial.ilike(f"%{origen}%"))
     
     if destino:
-        viajes_query = viajes_query.filter(model.Viaje.direccion_final.ilike(f"%{destino}%"))
+        viajes_query = viajes_query.filter(model.viaje.ubicacion.direccion_final.ilike(f"%{destino}%"))
 
     if fechaInicio:
         comparacionFecha = comparacion_fecha(fechaInicio, horaInicio)
@@ -248,15 +272,28 @@ def resultados_busqueda(viajes):
 @viaje_bp.route('/publicados', methods=['GET', 'POST'])
 @login_required
 def ViajesPublicados():
-    idUsuario = current_user.get_id()
-    #Busco viajes publicados por ese usuario, es decir siendo conductor.
-    viajes = model.Viaje.query.filter_by(id_conductor=idUsuario)
+    try:
+        idUsuario = current_user.get_id()
+        # Busco viajes publicados por ese usuario, es decir siendo conductor.
+        conductores = model.Conductor.query.filter_by(id_usuario=idUsuario).all()
+        print(conductores)
+        viajes_por_conductor = []
 
-    if viajes:
-        return render_template('listado_viajes.html', viajes=viajes)
-    else: 
+        for conductor in conductores:
+            viajes = model.Viaje.query.filter_by(id_conductor=conductor.id).all()
+            viajes_por_conductor.extend(viajes)
+        print(viajes_por_conductor)
+
+        if not viajes_por_conductor:
+            raise Exception("No se encontraron viajes correspondientes al conductor.")
+
+        return render_template('listado_viajes.html', viajes=viajes_por_conductor)
+    except Exception as e:
+        # Manejar la excepción si no se encuentran viajes correspondientes.
+        print(f"Se produjo una excepción: {e}")
         mensaje = "No hay viajes Publicados."
-        return render_template('listado_viajes.html', mensaje = mensaje)
+        return render_template('listado_viajes.html', mensaje=mensaje)
+
     
 @viaje_bp.route('/<idViaje>/pasajeros', methods=['GET', 'POST'])
 @login_required

@@ -1,25 +1,114 @@
-<html>
-	<head>
-		<title>LLEVAPPME</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    </head>
-	<body>
-        <section>
-            {% from "_formhelpers.html" import render_field %}
-            <form method="post" action="{{url_for('viaje_bp.PublicarViaje')}}">
-                {{ form.hidden_tag() }}
-            <dl>
-                {{ render_field(form.origen) }}
-                {{ render_field(form.destino) }}
-                {{ render_field(form.cantidad_asientos) }}
-                {{ render_field(form.fecha_inicio) }}
-                {{ render_field(form.hora_inicio) }}
-            </dl>
-            {{ render_field(form.submit) }}
-            </form>
-        </section>						
+{% extends 'layout.html' %}
+{% block section %}
+<!-- Section -->
+<section>
+    <header class="major">
+        <h2>Nuevo Viaje</h2>
+    </header>
+    {% if resultado %}
+        <a> {{resultado}} </a>
+    {% endif%}    
+    {% if form %}
+        <form method="post" action="{{url_for('viaje_bp.PublicarViaje')}}">
+        {{ form.hidden_tag() }}
+        <div class="row gtr-200">
+            <div class="col-9 col-12-medium">
+                <div class="row gtr-uniform">
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.origen(type="text",  id="origen", value="", placeholder="Origen") }}
+                        <div>
+                            {% for error in form.origen.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.destino(type="text",  id="destino", value="", placeholder="Destino") }}
+                        <div>
+                            {% for error in form.destino.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.vehiculo(type="text",  id="vehiculo", value="", placeholder="vehiculo") }}
+                        <div>
+                            {% for error in form.vehiculo.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.cantidad_asientos(type="tel",  id="telefono", value="", placeholder="Cantidad asientos disponibles") }}
+                        <div>
+                            {% for error in form.cantidad_asientos.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.fecha_inicio(type="text",  id="fecha_inicio", value="", placeholder="Fecha") }}
+                        <div>
+                            {% for error in form.fecha_inicio.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.hora_inicio(type="text",  id="hora_inicio", value="", placeholder="Horario") }}
+                        <div>
+                            {% for error in form.hora_inicio.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3 col-12-medium">
+                <h4 style="margin-top: 13px;">Adicionales</h4>
+				<div class="box" style="padding-bottom: 0px;">
+                    <div class="col-4 col-12-small">
+                        {{ form.equipaje(type="checkbox") }}
+                        {{ form.equipaje.label() }}
+                        <div>
+                            {% for error in form.equipaje.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-4 col-12-small">
+                        {{ form.mascota(type="checkbox") }}
+                        {{ form.mascota.label() }}
+                        <div>
+                            {% for error in form.mascota.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-4 col-12-small">
+                        {{ form.alimentos(type="checkbox") }}
+                        {{ form.alimentos.label() }}
+                        <div>
+                            {% for error in form.alimentos.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Break -->
+            <div class="col-12">
+                <ul class="actions">
+                    <li>{{ form.submit(type="submit", value="Publicar") }}</li>
+                </ul>
+            </div>
+        </div>
+    </form>
+    {% endif %}
+                
+<h2 class="major">ACCIONES</h2>
+<a class="special" href="{{url_for('vehiculo_bp.Vehiculo')}}">Nuevo Vehiculo</a>
+<a class="special" href="{{url_for('viaje_bp.PublicarViaje')}}">Publicar viaje</a>
 
-        <a href="{{url_for('usuario_bp.Logout')}}">Salir</a>
-	</body>
-</html>
+
+{% endblock %}
