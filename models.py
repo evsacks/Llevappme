@@ -173,6 +173,49 @@ class TipoUsuario(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+class Notificacion(db.Model):
+    __tablename__ = 'notificacion'
+    __table_args__ = {'extend_existing': True} 
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    contenido = db.Column(db.String(255), nullable=False)
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Campos para relacionar la notificación con usuarios
+    id_emisor = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    id_receptor = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    
+    # Agregar una columna para indicar si la notificación ha sido leída o no
+    leida = db.Column(db.Boolean, default=False)
+    
+    def __init__(self, contenido, id_emisor, id_receptor):
+        self.contenido = contenido
+        self.id_emisor = id_emisor
+        self.id_receptor = id_receptor
+
+    def __repr__(self):
+        id = self.id
+        contenido = self.contenido
+        fecha_creacion = self.fecha_creacion
+        id_emisor = self.id_emisor
+        id_receptor = self.id_receptor
+        leida = self.leida
+        notificacion = '<Notificacion(id={}, contenido={}, fecha creacion={}, emisor={}, receptor={}, leida = {})>'\
+                .format(id,contenido, fecha_creacion,id_emisor,id_receptor,leida)
+        return notificacion
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'contenido': self.contenido,
+            'fecha_creacion': self.fecha_creacion,
+            'id_emisor': self.id_emisor,
+            'id_receptor': self.id_receptor,
+            'leida': self.leida
+        }
+    
+    def marcar_como_leida(self):
+        self.leida = True
 
 # VIAJE
 
