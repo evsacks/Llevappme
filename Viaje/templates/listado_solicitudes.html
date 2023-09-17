@@ -21,8 +21,8 @@
                         {% for solicitud in solicitudesPasajero %}
                             <tr>
                                 <td> {{ solicitud.viaje.usuario.email}}</td>
-                                <td> {{ solicitud.viaje.direccion_inicial}}</td>
-                                <td> {{ solicitud.viaje.direccion_final}}</td>
+                                <td> {{ solicitud.viaje.ubicacion.direccion_inicial}}</td>
+                                <td> {{ solicitud.viaje.ubicacion.direccion_final}}</td>
                                 <td> {{ solicitud.viaje.fecha_inicio.date()}}</td>
                                 <td> {{ solicitud.viaje.fecha_inicio.time()}}</td>
                                 <td> {{ solicitud.estado.descripcion}}</td>
