@@ -192,11 +192,12 @@ class Viaje(db.Model):
     id_conductor = db.Column(db.Integer, db.ForeignKey('conductor.id'), nullable = False)
     id_estado_viaje = db.Column(db.Integer, db.ForeignKey('estado_viaje.id'), nullable = False)
     id_ubicacion = db.Column(db.Integer, db.ForeignKey('ubicacion.id'), nullable = False)
+    id_adicional = db.Column(db.Integer, db.ForeignKey('adicional.id'), nullable = False)
 
     tracking = relationship('Tracking', backref = 'viaje')
     pasajeros = relationship('Pasajero', backref = 'viaje')
 
-    def __init__(self, asientos_disponibles, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, id_conductor, id_estado_viaje, id_ubicacion):
+    def __init__(self, asientos_disponibles, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, id_conductor, id_estado_viaje, id_ubicacion, id_adicional):
         self.asientos_disponibles = asientos_disponibles
         self.fecha_inicio = fecha_inicio
         self.fecha_inicio_real = fecha_inicio_real
@@ -205,6 +206,7 @@ class Viaje(db.Model):
         self.id_conductor = id_conductor
         self.id_estado_viaje = id_estado_viaje
         self.id_ubicacion = id_ubicacion
+        self.id_adicional = id_adicional
 
     def __repr__(self):
         id = self.id
@@ -216,10 +218,12 @@ class Viaje(db.Model):
         id_conductor = self.id_conductor
         id_estado_viaje = self.id_estado_viaje
         id_ubicacion = self.id_ubicacion
+        id_adicional = self.id_adicional
         viaje = '<Viaje(id={}, cantidad pasajeros={}, fecha inicio={}, fecha inicio real={}, fecha final={}, \
-                        fecha final real={}, conductor={}, estado viaje={}, ubicacion={})>'\
+                        fecha final real={}, conductor={}, estado viaje={}, ubicacion={}, adicional = {})>'\
                 .format(id,asientos_disponibles,fecha_inicio,\
-                        fecha_inicio_real,fecha_final,fecha_final_real,id_conductor, id_estado_viaje, id_ubicacion)
+                        fecha_inicio_real,fecha_final,fecha_final_real,\
+                        id_conductor, id_estado_viaje, id_ubicacion, id_adicional)
         return viaje
 
     def serialize(self):
@@ -232,7 +236,8 @@ class Viaje(db.Model):
             'fecha_final_real': self.fecha_final_real,
             'id_conductor': self.id_conductor,
             'id_estado_viaje': self.id_estado_viaje,
-            'id_ubicacion': self.id_ubicacion
+            'id_ubicacion': self.id_ubicacion,
+            'id_adicional': self.id_adicional
     }
     
     def save_to_db(self):
@@ -479,6 +484,49 @@ class Ubicacion(db.Model):
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
+
+class Adicional(db.Model):
+    __tablename__ = 'adicional'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    mascota = db.Column(db.Boolean, unique = False, nullable = False)
+    equipaje = db.Column(db.Boolean, unique = False, nullable = False)
+    alimentos = db.Column(db.Boolean, unique = False, nullable = False)
+
+    viajes = relationship('Viaje', backref = 'adicional')
+
+    def __init__(self, mascota, equipaje, alimentos):
+        self.mascota = mascota,
+        self.equipaje = equipaje,
+        self.alimentos = alimentos
+
+    def __repr__(self):
+        id = self.id
+        mascota = self.mascota
+        equipaje = self.equipaje
+        alimentos = self.alimentos
+        adicional = '<Adicional_viaje(id={}, mascota={}, equipaje={}, alimentos={})>' \
+                    .format(id,mascota,equipaje,alimentos)
+        return adicional
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'mascota': self.mascota,
+            'equipaje': self.equipaje,
+            'alimentos': self.alimentos
+    }
+    
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
 
 # VEHICULO
 
