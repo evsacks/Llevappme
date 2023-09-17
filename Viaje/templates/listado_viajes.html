@@ -1,45 +1,51 @@
 {% extends 'layout.html' %}
 {% block section %}
+
 <section>
-    <!-- Elements -->
-    <h2 id="elements">Viajes Publicados</h2>
-
+    <header class="major">
+        <h2>Viajes publicados</h2>
+    </header>
+    <div class="posts">
         {% if viajes %}
-            <div class="table-wrapper">
-                <table class="alt">
-                    <thead>
-                        <tr>
-                            <th scope="col">Conductor</th>
-                            <th scope="col">Origen</th>
-                            <th scope="col">Destino</th>
-                            <th scope="col">Fecha Salida</th>
-                            <th scope="col">Hora Salida</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for viaje in viajes %}
-                            <tr>
-                                <td> {{ viaje.usuario.email}}</td>
-                                <td> {{ viaje.direccion_inicial}}</td>
-                                <td> {{ viaje.direccion_final}}</td>
-                                <td> {{ viaje.fecha_inicio.date()}}</td>
-                                <td> {{ viaje.fecha_inicio.time()}}</td>
-                                <td> 
-                                    <a href="{{url_for('viaje_bp.VerViaje', idViaje=viaje.id)}}">Ver viaje</a>
-                                    {% if current_user.id != viaje.usuario.id %}
-                                        <a href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}">Solicitar viaje</a>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {% for viaje in viajes %}
+                <article>
+                    <h3 style="margin-bottom: 0px;">
+                        <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
+                        {{viaje.ubicacion.direccion_inicial}}
+                    </h3>
+                    <h3 style="margin-bottom: 0px;">
+                        <a class="fas fa-chevron-down fa-xs"></a>
+                    </h3>
+                    <h3>
+                        <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
+                        {{viaje.ubicacion.direccion_final}}
+                    </h3>
+                    <p style="margin-bottom: 0px;">
+                        <a class="fas fa-calendar-day" style="margin-right: 10px;"></a>
+                        {{ formato_fecha(viaje.fecha_inicio) }}
+                    </p>
+                    <p>
+                        <a class="fas fa-clock" style="margin-right: 10px;"></a>
+                        {{ formato_hora(viaje.fecha_inicio) }}
+                    </p>
+                    <ul class="actions">
+                        <li>
+                            <div class="row">
+                                <div class="col-10 col-12-medium">
+                                    <h4>{{viaje.estado.descripcion}}</h4>
+                                </div>
+                                <div class="col-2 col-12-medium">
+                                    <a href="{{url_for('viaje_bp.VerViaje',idViaje=viaje.id)}}" class="button">Ver</a>    
+                                </div>
+                                
+                                
+                            </div>
+                        </li>
+                    </ul>
+                </article>
+            {% endfor %}
         {% endif %}
-
-    {% if mensaje %}
-        <a>{{mensaje}}</a>
-    {% endif %}
+    </div>
 </section>
+
 {% endblock %}
