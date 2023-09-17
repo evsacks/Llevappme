@@ -157,20 +157,22 @@ def ViajesDisponibles():
 @viaje_bp.route('/detalle/<idViaje>', methods=['GET', 'POST'])
 @login_required
 def VerViaje(idViaje):
+    try:
+        viaje = model.Viaje.query.get(idViaje)
+        if not viaje:
+            raise Exception("No existe ese viaje")
 
-    viaje = model.Viaje.query.get(idViaje)
-    idUsuario = current_user.get_id()
-    
-    pasajero = model.Pasajero.solicitud_activa(idUsuario,idViaje)
+        idUsuario = current_user.get_id()
+        pasajero = model.Pasajero.solicitud_activa(idUsuario, idViaje)
 
-    if viaje:
         if pasajero:
             return render_template('ver_viaje.html', viaje=viaje)
         else:
-            return render_template('ver_viaje.html', viaje=viaje, solicitud = True)
-    else: 
-        mensaje = "No existe ese viaje"
-        return render_template('ver_viaje.html', mensaje = mensaje)
+            return render_template('ver_viaje.html', viaje=viaje, solicitud=True)
+
+    except Exception as e:
+        mensaje = str(e)  # Utiliza el mensaje de la excepción para proporcionar información sobre el error
+        return render_template('ver_viaje.html', mensaje=mensaje)
     
 
 @viaje_bp.route('/solicitar/<idViaje>', methods=['GET', 'POST'])
@@ -238,32 +240,44 @@ def BuscarViaje():
 
 def buscar_viaje():
     form = formulario.BuscarViaje()
-    idUsuario = current_user.get_id()
+    resultado = None
+
+    try:
+        idUsuario = current_user.get_id()
     
-    origen = form.origen.data
-    destino = form.destino.data
-    fechaInicio = form.fecha_inicio.data
-    horaInicio = form.hora_inicio.data
+        origen = form.origen.data
+        destino = form.destino.data
+        fechaInicio = form.fecha_inicio.data
+        horaInicio = form.hora_inicio.data
 
-    viajes_query = model.Viaje.query
+        viajes_query = model.Viaje.query
 
-    if origen:
-        viajes_query = viajes_query.filter(model.viaje.ubicacion.direccion_inicial.ilike(f"%{origen}%"))
+        if origen:
+            # Utiliza una subconsulta para filtrar por ubicaciones que coincidan con el origen.
+            ubicaciones_origen = model.Ubicacion.query.filter(model.Ubicacion.direccion_inicial.ilike(f"%{origen}%"))
+            viajes_query = viajes_query.filter(model.Viaje.id_ubicacion.in_(u.id for u in ubicaciones_origen))
+        
+        if destino:
+            # Utiliza una subconsulta para filtrar por ubicaciones que coincidan con el destino.
+            ubicaciones_destino = model.Ubicacion.query.filter(model.Ubicacion.direccion_final.ilike(f"%{destino}%"))
+            viajes_query = viajes_query.filter(model.Viaje.id_ubicacion.in_(u.id for u in ubicaciones_destino))
+
+        if fechaInicio:
+            comparacionFecha = comparacion_fecha(fechaInicio, horaInicio)
+            fechaInicio0000 = comparacionFecha[0]
+            fechaInicio2359 = comparacionFecha[1]
+            viajes_query = viajes_query.filter(model.Viaje.fecha_inicio.between(fechaInicio0000, fechaInicio2359))
+
+        viajes = viajes_query.all()
+
+        if not viajes:
+            resultado = "No se encontraron coincidencias"
+        else:
+            return resultados_busqueda(viajes)
     
-    if destino:
-        viajes_query = viajes_query.filter(model.viaje.ubicacion.direccion_final.ilike(f"%{destino}%"))
+    except Exception as e:
+        flash(f"Se produjo un error: {str(e)}", 'error')
 
-    if fechaInicio:
-        comparacionFecha = comparacion_fecha(fechaInicio, horaInicio)
-        fechaInicio0000 = comparacionFecha[0]
-        fechaInicio2359 = comparacionFecha[1]
-        viajes_query = viajes_query.filter(model.Viaje.fecha_inicio.between(fechaInicio0000, fechaInicio2359))
-
-    viajes = viajes_query.all()
-    if viajes:
-        return resultados_busqueda(viajes)
-    else:
-        resultado = "No se encontraron coincidencias"
     return render_template('buscar_viaje.html', resultado=resultado)
 
 def resultados_busqueda(viajes):
