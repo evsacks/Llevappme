@@ -10,7 +10,7 @@ class NuevoViaje(FlaskForm):
     origen = StringField('Origen', validators=[DataRequired(), Length(min=2, max=100)])
     destino = StringField('Destino', validators=[DataRequired(), Length(min=2, max=100)])
     cantidad_asientos = IntegerField('Cantidad de asientos disponibles', validators=[DataRequired()])
-    fecha_inicio = DateField('Fecha de viaje', validators=[DataRequired()])
+    fecha_inicio = DateField('Fecha de viaje', validators=[DataRequired()], format='%d/%m/%Y')
     hora_inicio = TimeField('Hora Inicio', validators=[DataRequired()])
     submit = SubmitField('Finalizar')
 
