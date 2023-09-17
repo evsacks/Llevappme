@@ -9,14 +9,14 @@
                         <li>
                             <h3 style="margin-bottom: 0px;">
                                 <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
-                                {{viaje.direccion_inicial}}
+                                {{viaje.ubicacion.direccion_inicial}}
                             </h3>
                             <h3 style="margin-bottom: 0px;">
                                 <a class="fas fa-chevron-down fa-xs"></a>
                             </h3>
                             <h3>
                                 <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
-                                {{viaje.direccion_final}}
+                                {{viaje.ubicacion.direccion_final}}
                             </h3>
                         </li>
                         <li>
@@ -28,32 +28,78 @@
                             Disponibilidad: {{viaje.asientos_disponibles}}
                         </li>
                         <li>
-                            Distancia: {{viaje.distancia}} KM.
+                            Distancia:  KM.
                         </li>
                     </ul>
                     <ul class="actions fit">
                         <li>
-                            {% if ((solicitud) and (current_user.id != viaje.usuario.id)) %}
-                                <a  href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}"
-                                    class="button primary fit">
-                                    Solicitar Viaje
-                                </a>
-                            {% elif current_user.id == viaje.usuario.id %}
-                                <a  href="{{url_for('viaje_bp.VerPasajeros', idViaje=viaje.id)}}"
-                                    class="button primary fit">
-                                    Ver Pasajeros
-                                </a>
+                            {% if (current_user.id != viaje.conductor.id_usuario) %}
+                                <div class="row">
+                                    <div class="col-4 col-12-medium">
+                                        <ul class="actions stacked">
+                                            <li><a  href="#" class="button">Conductor</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-4 col-12-medium">
+                                        <ul class="actions stacked">
+                                            <li><a href="#" class="button fit">Pasajeros</a></li>
+                                        </ul>
+                                    </div>
+                                    {% if solicitud %}
+                                        <div class="col-4 col-12-medium">
+                                            <ul class="actions stacked">
+                                                <li><a  href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}"
+                                                    class="button fit">
+                                                    ¡Quiero unirme!
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    {% else %}
+                                        <div class="col-4 col-12-medium">
+                                            <ul class="actions stacked">
+                                                <li><a  href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}"
+                                                    class="button fit">
+                                                    Cancelar Solicitud
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                </div>  
+                            {% elif current_user.id == viaje.conductor.id_usuario %}
+                                <div class="row">
+                                    <div class="col-4 col-12-medium">
+                                        <ul class="actions stacked">
+                                            <li>
+                                                <a  href="{{url_for('viaje_bp.VerPasajeros', idViaje=viaje.id)}}"
+                                                class="button">Pasajeros</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-4 col-12-medium">
+                                        <ul class="actions stacked">
+                                            <li><a href="#" class="button fit">Editar</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-4 col-12-medium">
+                                        <ul class="actions stacked">
+                                            <li><a href="#" class="button primary fit">Eliminar</a></li>
+                                        </ul>
+                                    </div>
+                                </div>                         
                             {% endif %}
+                        </li>
                     </ul>
                     
                 </div>
                 <div class="col-6 col-12-medium">
                     <h3>Mapa</h3>
                     <div id="map" style="height: 300px;"
-                        data-lat-inicial="{{ viaje.latitud_inicial }}"
-                        data-lng-inicial="{{ viaje.longitud_inicial }}"
-                        data-lat-final="{{ viaje.latitud_final }}"
-                        data-lng-final="{{ viaje.longitud_final }}"></div>
+                        data-lat-inicial="{{ viaje.ubicacion.latitud_inicial }}"
+                        data-lng-inicial="{{ viaje.ubicacion.longitud_inicial }}"
+                        data-lat-final="{{ viaje.ubicacion.latitud_final }}"
+                        data-lng-final="{{ viaje.ubicacion.longitud_final }}"></div>
                 </div>
             </div>
         </section>
