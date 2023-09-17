@@ -4,6 +4,18 @@ from sqlalchemy.orm import relationship
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
+#Hay que agregar el serializador a cada clase y eliminar serialize.
+#Investigar la posibilidad de agregar services y separar las tablas de metodos de base de datos.
+class SerializableMixin:
+    def serialize(self):
+        serialized_data = {}
+        for column in self.__table__.columns:
+            value = getattr(self, column.name)
+            if isinstance(value, datetime):
+                value = value.isoformat()
+            serialized_data[column.name] = value
+        return serialized_data
+
 # USUARIO 
 
 class Usuario(db.Model, UserMixin):
@@ -25,7 +37,6 @@ class Usuario(db.Model, UserMixin):
 
     pasajeros =  relationship('Pasajero', backref = 'usuario')
     conductores =  relationship('Conductor', backref = 'usuario')
-    viajes =  relationship('Viaje', backref = 'usuario')
 
     def __init__(self, nombre, apellido, email, contrasenia, telefono, fecha_nacimiento, fecha_creacion, fecha_actualizacion, id_tipo_usuario, id_estado_usuario):
         self.nombre = nombre
@@ -185,15 +196,8 @@ class Viaje(db.Model):
     tracking = relationship('Tracking', backref = 'viaje')
     pasajeros = relationship('Pasajero', backref = 'viaje')
 
-    def __init__(self, asientos_disponibles, distancia, direccion_inicial, direccion_final, latitud_inicial, latitud_final, longitud_inicial, longitud_final, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, id_conductor, id_estado_viaje, id_ubicacion):
+    def __init__(self, asientos_disponibles, fecha_inicio, fecha_inicio_real, fecha_final, fecha_final_real, id_conductor, id_estado_viaje, id_ubicacion):
         self.asientos_disponibles = asientos_disponibles
-        self.distancia = distancia
-        self.direccion_inicial = direccion_inicial
-        self.direccion_final = direccion_final
-        self.latitud_inicial = latitud_inicial
-        self.latitud_final = latitud_final
-        self.longitud_inicial = longitud_inicial
-        self.longitud_final = longitud_final
         self.fecha_inicio = fecha_inicio
         self.fecha_inicio_real = fecha_inicio_real
         self.fecha_final = fecha_final
@@ -205,13 +209,6 @@ class Viaje(db.Model):
     def __repr__(self):
         id = self.id
         asientos_disponibles = self.asientos_disponibles
-        distancia = self.distancia
-        direccion_inicial = self.direccion_inicial
-        direccion_final = self.direccion_final
-        latitud_inicial = self.latitud_inicial
-        latitud_final = self.latitud_final
-        longitud_inicial = self.longitud_inicial
-        longitud_final = self.longitud_final
         fecha_inicio = self.fecha_inicio
         fecha_inicio_real = self.fecha_inicio_real
         fecha_final = self.fecha_final
@@ -219,13 +216,9 @@ class Viaje(db.Model):
         id_conductor = self.id_conductor
         id_estado_viaje = self.id_estado_viaje
         id_ubicacion = self.id_ubicacion
-        viaje = '<Viaje(id={}, cantidad pasajeros={}, distancia={}, \
-                        direccion inicial={}, direccion final={}, latitud inicial={}, \
-                        latitud final={}, longitud inicial={}, longitud final={}, \
-                        fecha inicio={}, fecha inicio real={}, fecha final={}, \
+        viaje = '<Viaje(id={}, cantidad pasajeros={}, fecha inicio={}, fecha inicio real={}, fecha final={}, \
                         fecha final real={}, conductor={}, estado viaje={}, ubicacion={})>'\
-                .format(id,asientos_disponibles,distancia,direccion_inicial,direccion_final,\
-                        latitud_inicial,latitud_final,longitud_inicial,longitud_final,fecha_inicio,\
+                .format(id,asientos_disponibles,fecha_inicio,\
                         fecha_inicio_real,fecha_final,fecha_final_real,id_conductor, id_estado_viaje, id_ubicacion)
         return viaje
 
@@ -233,13 +226,6 @@ class Viaje(db.Model):
         return {
             'id': self.id,
             'asientos_disponibles': self.asientos_disponibles,
-            'distancia': self.distancia,
-            'direccion_inicial': self.direccion_inicial,
-            'direccion_final': self.direccion_final,
-            'latitud_inicial': self.latitud_inicial,
-            'latitud_final': self.latitud_final,
-            'longitud_inicial': self.longitud_inicial,
-            'longitud_final': self.longitud_final,
             'fecha_inicio': self.fecha_inicio,
             'fecha_inicio_real': self.fecha_inicio_real,
             'fecha_final': self.fecha_final,
