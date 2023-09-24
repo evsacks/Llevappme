@@ -8,7 +8,9 @@ import Viaje.forms as formulario
 
 # Función auxiliar para comprobar si un usuario ya ha solicitado un viaje
 def usuario_solicito_viaje(idUsuario, idViaje):
-    pasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario, id_viaje=idViaje, id_estado_pasajero=3)\
+    pasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario, id_viaje=idViaje)\
+                                    .filter(or_(model.Pasajero.id_estado_pasajero == 1, \
+                                                model.Pasajero.id_estado_pasajero == 2))\
                                     .first()
     return pasajero is not None
 
@@ -39,6 +41,17 @@ def solicitar_viaje(idUsuario,idViaje):
     db.session.commit()
 
     return nuevoPasajero
+
+def cancelar_solicitud_viaje(idUsuario,idViaje):
+    
+    pasajero = model.Pasajero.query.filter_by(id_usuario = idUsuario, id_viaje = idViaje).first()
+    
+    pasajero.fecha_actualizacion = datetime.now()
+    pasajero.id_estado_pasajero = 4
+
+    db.session.commit()
+
+    return pasajero
 
 def viajes_pendientes_como_conductor(idUsuario):
     # Obtén todos los conductores correspondientes al usuario

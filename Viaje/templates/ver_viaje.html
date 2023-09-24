@@ -1,6 +1,5 @@
 {% extends 'layout.html' %}
 {% block section %}
-
     {% if viaje %}
         <section>
             <div class="row gtr-200">
@@ -28,70 +27,18 @@
                             Disponibilidad: {{viaje.asientos_disponibles}}
                         </li>
                         <li>
-                            Distancia:  KM.
+                            Distancia: KM.
                         </li>
                     </ul>
                     <ul class="actions fit">
                         <li>
-                            {% if (current_user.id != viaje.conductor.id_usuario) %}
-                                <div class="row">
-                                    <div class="col-4 col-12-medium">
-                                        <ul class="actions stacked">
-                                            <li><a  href="#" class="button">Conductor</a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-4 col-12-medium">
-                                        <ul class="actions stacked">
-                                            <li><a href="#" class="button fit">Pasajeros</a></li>
-                                        </ul>
-                                    </div>
-                                    {% if solicitud %}
-                                        <div class="col-4 col-12-medium">
-                                            <ul class="actions stacked">
-                                                <li><a  href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}"
-                                                    class="button fit">
-                                                    ¡Quiero unirme!
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    {% else %}
-                                        <div class="col-4 col-12-medium">
-                                            <ul class="actions stacked">
-                                                <li><a  href="{{url_for('viaje_bp.SolicitarViaje', idViaje=viaje.id)}}"
-                                                    class="button fit">
-                                                    Cancelar Solicitud
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    {% endif %}
-                                </div>  
+                            {% if current_user.id != viaje.conductor.id_usuario %}
+                                {% include 'macros/pasajeros_buttons.html' %}
                             {% elif current_user.id == viaje.conductor.id_usuario %}
-                                <div class="row">
-                                    <div class="col-4 col-12-medium">
-                                        <ul class="actions stacked">
-                                            <li>
-                                                <a  href="{{url_for('viaje_bp.VerPasajeros', idViaje=viaje.id)}}"
-                                                class="button">Pasajeros</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-4 col-12-medium">
-                                        <ul class="actions stacked">
-                                            <li><a href="{{ url_for('viaje_bp.EditarViaje', idViaje=viaje.id) }}" class="button fit">Editar</a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-4 col-12-medium">
-                                        <ul class="actions stacked">
-                                            <li><a href="#" class="button primary fit">Eliminar</a></li>
-                                        </ul>
-                                    </div>
-                                </div>                         
+                                {% include 'macros/conductor_buttons.html' %}
                             {% endif %}
                         </li>
                     </ul>
-                    
                 </div>
                 <div class="col-6 col-12-medium">
                     <h3>Mapa</h3>
@@ -103,5 +50,8 @@
                 </div>
             </div>
         </section>
+    {% endif %}
+    {% if mensaje %}
+        {{mensaje}}
     {% endif %}
 {% endblock %}

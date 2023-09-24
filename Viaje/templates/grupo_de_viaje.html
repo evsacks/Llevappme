@@ -17,14 +17,10 @@
                     </p>
                 </div>
             </article>
-            {% set conductor_id = viaje.conductor.id_usuario %}
             {% for pasajero in pasajeros %}
-                {% set es_confirmado = pasajero.estado.descripcion == "Confirmado" %}
-                {% set es_pendiente = pasajero.estado.descripcion == "Pendiente" %}
-                {% set es_mi_pasajero = es_pendiente and conductor_id == current_user.id %}
-                {% if es_confirmado or es_mi_pasajero %}
+                {% if pasajero.estado.descripcion == "Confirmado" %}
                     <article>
-                        <span class="icon solid {{ 'fa-user-check' if es_confirmado else 'fa-user-clock' }}"></span>
+                        <span class="icon solid fa-user-check"></span>
                         <div class="content">
                             <h3> {{pasajero.usuario.nombre}} {{pasajero.usuario.apellido}} </h3>
                             <h5> Pasajero </h5>
@@ -37,6 +33,32 @@
                 {% endif %}
             {% endfor %}
         </div>
+        {% if viaje.conductor.id_usuario == current_user.id %}
+            <h2>Pasajeros</h2>
+            <div class="row">
+                <div class="col-4 col-12-medium">
+                    <ul class="actions stacked">
+                        <li>
+                            <a href="#" class="button fit">Pendientes</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-4 col-12-medium">
+                    <ul class="actions stacked">
+                        <li>
+                            <a href="#" class="button fit">Rechazados</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-4 col-12-medium">
+                    <ul class="actions stacked">
+                        <li>
+                            <a href="#" class="button fit">Cancelados</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
     {% endif %}
 </section>
 {% endblock %}

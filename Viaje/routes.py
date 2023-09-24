@@ -10,7 +10,7 @@ from app import maps, db
 import Viaje.functions.f_EditarViaje as fedv
 import Viaje.functions.f_EliminarViaje as felv
 import Viaje.functions.f_PublicarViaje as fpuv
-import Viaje.functions.f_SolicitarViaje as fsov
+import Viaje.functions.f_SolicitudViaje as fsov
 
 
 viaje_bp = Blueprint('viaje_bp', __name__, url_prefix='/viaje', template_folder='templates', static_folder='static')
@@ -177,15 +177,17 @@ def VerViaje(idViaje):
             raise Exception("No existe ese viaje")
 
         idUsuario = current_user.get_id()
-        pasajero = fsov.usuario_solicito_viaje(idUsuario,viaje.id)
+        es_pasajero = fsov.usuario_solicito_viaje(idUsuario,viaje.id)
+        print("Es un pasajero: ", es_pasajero)
 
-        if pasajero:
-            return render_template('ver_viaje.html', viaje=viaje)
+        if es_pasajero:
+            return render_template('ver_viaje.html', viaje=viaje, solicitud="Enviada")
         else:
-            return render_template('ver_viaje.html', viaje=viaje, solicitud=True)
+            print("No es pasajero, muestro viaje", viaje)
+            return render_template('ver_viaje.html', viaje=viaje, solicitud="Libre")
 
     except Exception as e:
-        mensaje = str(e)  # Utiliza el mensaje de la excepción para proporcionar información sobre el error
+        mensaje = str(e) 
         return render_template('ver_viaje.html', mensaje=mensaje)
 
 @viaje_bp.route('/buscar', methods=['GET', 'POST'])
@@ -246,9 +248,9 @@ def resultados_busqueda(viajes):
 ##### PASAJERO #######
 ######################
 
-@viaje_bp.route('/solicitar/<idViaje>', methods=['GET', 'POST'])
+@viaje_bp.route('/solicitud/<idViaje>', methods=['GET', 'POST'])
 @login_required
-def SolicitarViaje(idViaje):
+def SolicitudViaje(idViaje):
     viaje = model.Viaje.query.get(idViaje)
     idUsuario = current_user.get_id()
     mensaje = None
@@ -276,9 +278,32 @@ def SolicitarViaje(idViaje):
                 pasajero = fsov.solicitar_viaje(idUsuario, idViaje)
                 if pasajero:
                     mensaje = "Solicitaste el viaje"
+                    return redirect(url_for("viaje_bp.VerViaje", idViaje = idViaje))
 
     return render_template('ver_viaje.html', viaje=viaje, mensaje=mensaje)
 
+@viaje_bp.route('/cancelar/solicitud/<idViaje>', methods=['GET', 'POST'])
+@login_required
+def CancelarSolicitudViaje(idViaje):
+    viaje = model.Viaje.query.get(idViaje)
+    idUsuario = current_user.get_id()
+    mensaje = None
+
+    if not viaje:
+        mensaje = "No existe ese viaje"
+    else:
+        pasajero = fsov.usuario_solicito_viaje(idUsuario, idViaje)
+        conductor = viaje.conductor.id_usuario == idUsuario
+        if conductor:
+            mensaje = "Eres el conductor de este viaje"
+        elif pasajero:
+            pasajero_cancelado = fsov.cancelar_solicitud_viaje(idUsuario, idViaje)
+            print("Cancelado:", pasajero_cancelado)
+            mensaje = "cancelaste tu solicitud"
+            return redirect(url_for("viaje_bp.VerViaje", idViaje = idViaje))
+        else:
+            return redirect(url_for("viaje_bp.VerViaje", idViaje = idViaje))
+    return render_template('ver_viaje.html', viaje=viaje, mensaje=mensaje)
 
 @viaje_bp.route('/ver/solicitudes', methods=['GET', 'POST'])
 @login_required

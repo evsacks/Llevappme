@@ -1,0 +1,30 @@
+<div class="row">
+    <div class="col-6 col-12-medium">
+        <ul class="actions stacked">
+            <li>
+                <a href="#" class="button">Grupo de viaje</a>
+            </li>
+        </ul>
+    </div>
+    {% if solicitud == "Libre" %}
+        <div class="col-6 col-12-medium">
+            <ul class="actions stacked">
+                <li>
+                    <a href="{{url_for('viaje_bp.SolicitudViaje', idViaje=viaje.id)}}" class="button fit">
+                        ¡Quiero unirme!
+                    </a>
+                </li>
+            </ul>
+        </div>
+    {% elif solicitud == "Enviada" %}
+        <div class="col-6 col-12-medium">
+            <ul class="actions stacked">
+                <li>
+                    <a href="{{url_for('viaje_bp.CancelarSolicitudViaje', idViaje=viaje.id)}}" class="button fit">
+                        Cancelar Solicitud
+                    </a>
+                </li>
+            </ul>
+        </div>
+    {% endif %}
+</div>
