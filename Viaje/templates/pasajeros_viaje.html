@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+{% block section %}
+<section>
+    <header class="major">
+        <h2>Pasajeros</h2>
+    </header>
+    {% if (viaje) and (pasajeros|length > 0) %}
+        <h3>{{ pasajeros[1].estado.descripcion }}</h3>
+        <div class="features">
+            {% for pasajero in pasajeros %}
+
+                {% set estado = pasajero.estado.descripcion %}
+                {% set icono = '' %}
+                {% set mensaje = '' %}
+                {% set acciones_html = '' %}
+                
+                {% if estado == "Pendiente" %}
+                    {% set icono = 'fa-user-clock' %}
+                    {% set mensaje = 'Pendiente desde:' %}
+                    {% set acciones_html = '<div>
+                                                <ul class="actions">
+                                                    <li><a href="#" class="button">Confirmar</a></li>
+                                                    <li><a href="#" class="button primary">Rechazar</a></li>
+                                                </ul>
+                                            </div>
+                                            '%}
+                {% elif estado == "Rechazado" %}
+                    {% set icono = 'fa-user-xmark' %}
+                    {% set mensaje = 'Fecha rechazo:' %}
+                {% elif estado == "Cancelado" %}
+                    {% set icono = 'fa-user-minus' %}
+                    {% set mensaje = 'Fecha cancelación:' %}
+                {% endif %}
+                <article>
+                    <span class="icon solid {{ icono }}"></span>
+                    <div class="content">
+                        <h3> {{pasajero.usuario.nombre}} {{pasajero.usuario.apellido}} </h3>
+                        <p> {{ mensaje }} {{ formato_fecha_corta(pasajero.fecha_actualizacion) }}
+                            <BR>
+                            Hora: {{ formato_hora(pasajero.fecha_actualizacion) }}
+                        </p>
+                        {% if acciones_html %}
+                            {{ acciones_html|safe }}
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

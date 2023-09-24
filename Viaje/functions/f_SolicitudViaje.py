@@ -32,13 +32,7 @@ def solicitar_viaje(idUsuario,idViaje):
         id_viaje = idViaje,
         id_estado_pasajero = 2
     )
-
-    viaje = model.Viaje.query.get(idViaje)
-    asientosDisponibles = viaje.asientos_disponibles
-    viaje.asientos_disponibles = asientosDisponibles - 1
-
     model.Pasajero.save_to_db(nuevoPasajero)
-    db.session.commit()
 
     return nuevoPasajero
 
@@ -78,10 +72,8 @@ def viajes_pendientes_como_pasajero(idUsuario):
 
     return viajes_pendientes
 
-def pasajeros_pendientes_viaje(idViaje):
-    # Consulta todos los pasajeros de un viaje que estén pendientes o confirmados
-    pasajeros = model.Pasajero.query.filter_by(id_viaje=idViaje)\
-                                    .filter(or_(model.Pasajero.id_estado_pasajero == 1, \
-                                                model.Pasajero.id_estado_pasajero == 2))\
+def pasajeros_viaje(idViaje, idEstado):
+    # Consulta todos los pasajeros de un viaje en cierto estado
+    pasajeros = model.Pasajero.query.filter_by(id_viaje=idViaje, id_estado_pasajero = idEstado)\
                                     .all()
     return pasajeros

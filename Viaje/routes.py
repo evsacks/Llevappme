@@ -11,22 +11,12 @@ import Viaje.functions.f_EditarViaje as fedv
 import Viaje.functions.f_EliminarViaje as felv
 import Viaje.functions.f_PublicarViaje as fpuv
 import Viaje.functions.f_SolicitudViaje as fsov
-
+import Viaje.functions.f_AccionesConductor as facc
+import Viaje.functions.f_BuscarViaje as fbuv
 
 viaje_bp = Blueprint('viaje_bp', __name__, url_prefix='/viaje', template_folder='templates', static_folder='static')
 
 
-def comparacion_fecha(fechaInicio,horaInicio):
-    print(fechaInicio, horaInicio)
-    if horaInicio:
-        fechaInicio0000 = datetime.combine(fechaInicio,horaInicio)
-        fechaInicio2359 = datetime.combine(fechaInicio,datetime.strptime('23:59:59', '%H:%M:%S').time())
-    else:
-        fechaInicio0000 = datetime.combine(fechaInicio,datetime.strptime('00:00:00', '%H:%M:%S').time())
-        fechaInicio2359 = datetime.combine(fechaInicio,datetime.strptime('23:59:59', '%H:%M:%S').time())
-    print(fechaInicio0000)
-    print(fechaInicio2359)
-    return (fechaInicio0000, fechaInicio2359)
 
 ######################    
 ##### CONDUCTOR ######
@@ -133,41 +123,39 @@ def ViajesPublicados():
         mensaje = "No hay viajes Publicados."
         return render_template('listado_viajes.html', mensaje=mensaje)
 
-def modificar_estado_pasajero(idPasajero, idViaje, nuevo_estado):
-    pasajero = model.Pasajero.query.get(idPasajero)
-
-    if pasajero.estado.descripcion in ['Rechazado', 'Confirmado']:
-        viaje = model.Viaje.query.get(idViaje)
-        
-        mensaje = "No puede modificar el estado del pasajero. Ya fue {}".format(pasajero.estado.descripcion)
-        return render_template('listado_pasajero_viaje.html', viaje=viaje, mensaje=mensaje)
-    
-    else:
-        estado = model.EstadoPasajero.query.filter_by(descripcion=nuevo_estado).first()
-        pasajero.id_estado_pasajero = estado.id
-        pasajero.fecha_actualizacion = datetime.now()
-        model.Pasajero.save_to_db(pasajero)
-        return True
-
-@viaje_bp.route('/<idViaje>/pasajero/<idPasajero>/confirmar', methods=['GET', 'POST'])
+@viaje_bp.route('pasajero/<idPasajero>/confirmar', methods=['GET', 'POST'])
 @login_required
-def AceptarPasajero(idPasajero, idViaje):
-    if modificar_estado_pasajero(idPasajero, idViaje, 'Confirmado'):
-        viaje = model.Viaje.query.get(idViaje)
-        asientosActuales = viaje.asientos_disponibles
-        viaje.asientos_disponibles = asientosActuales - 1
-        model.Viaje.save_to_db(viaje)
-    return redirect(url_for('viaje_bp.VerPasajeros', idViaje=viaje.id))
+def AceptarPasajero(idPasajero):
+    if facc.modificar_estado_pasajero(idPasajero, 'Confirmado'):
+        pasajero = model.Pasajero.get(idPasajero)
+        asientosActuales = pasajero.viaje.asientos_disponibles
+        pasajero.viaje.asientos_disponibles = asientosActuales - 1
+        db.session.commit()
+    return redirect(url_for('viaje_bp.GrupoDeViaje', idViaje=pasajero.id_viaje))
 
-@viaje_bp.route('/<idViaje>/pasajero/<idPasajero>/rechazar', methods=['GET', 'POST'])
+@viaje_bp.route('pasajero/<idPasajero>/rechazar', methods=['GET', 'POST'])
 @login_required
-def RechazarPasajero(idPasajero, idViaje):
-    modificar_estado_pasajero(idPasajero, idViaje, 'Rechazado')
-    return redirect(url_for('viaje_bp.VerPasajeros', idViaje=idViaje))
+def RechazarPasajero(idPasajero):
+    pasajero = model.Pasajero.get(idPasajero)
+    if facc.modificar_estado_pasajero(idPasajero, 'Rechazado'):
+        return redirect(url_for('viaje_bp.GrupoDeViaje', idViaje=pasajero.id_viaje))
+
+@viaje_bp.route('/<idViaje>/pasajeros/<idEstado>', methods=['GET', 'POST'])
+@login_required
+def VerPasajeros(idViaje, idEstado):
+    viaje = model.Viaje.query.get(idViaje)
+    #Estado 2 = Pendiente
+    #Estado 3 = Rechazado
+    #Estado 4 = Cancelado
+    pasajeros = fsov.pasajeros_viaje(idViaje, idEstado)
+
+    return render_template('pasajeros_viaje.html', pasajeros = pasajeros, viaje = viaje)
+
 
 ######################    
 ####### AMBOS ########
 ######################
+
 @viaje_bp.route('/detalle/<idViaje>', methods=['GET', 'POST'])
 @login_required
 def VerViaje(idViaje):
@@ -196,53 +184,17 @@ def BuscarViaje():
     form = formulario.BuscarViaje()
     if form.validate_on_submit():
         print("validado, dispara buscar_viaje()")
-        return buscar_viaje()
+        return fbuv.buscar_viaje()
     return render_template('buscar_viaje.html', form=form)
 
-def buscar_viaje():
-    form = formulario.BuscarViaje()
-    resultado = None
-
-    try:
-        idUsuario = current_user.get_id()
-    
-        origen = form.origen.data
-        destino = form.destino.data
-        fechaInicio = form.fecha_inicio.data
-        horaInicio = form.hora_inicio.data
-
-        viajes_query = model.Viaje.query
-
-        if origen:
-            # Utiliza una subconsulta para filtrar por ubicaciones que coincidan con el origen.
-            ubicaciones_origen = model.Ubicacion.query.filter(model.Ubicacion.direccion_inicial.ilike(f"%{origen}%"))
-            viajes_query = viajes_query.filter(model.Viaje.id_ubicacion.in_(u.id for u in ubicaciones_origen))
-        
-        if destino:
-            # Utiliza una subconsulta para filtrar por ubicaciones que coincidan con el destino.
-            ubicaciones_destino = model.Ubicacion.query.filter(model.Ubicacion.direccion_final.ilike(f"%{destino}%"))
-            viajes_query = viajes_query.filter(model.Viaje.id_ubicacion.in_(u.id for u in ubicaciones_destino))
-
-        if fechaInicio:
-            comparacionFecha = comparacion_fecha(fechaInicio, horaInicio)
-            fechaInicio0000 = comparacionFecha[0]
-            fechaInicio2359 = comparacionFecha[1]
-            viajes_query = viajes_query.filter(model.Viaje.fecha_inicio.between(fechaInicio0000, fechaInicio2359))
-
-        viajes = viajes_query.all()
-
-        if not viajes:
-            resultado = "No se encontraron coincidencias"
-        else:
-            return resultados_busqueda(viajes)
-    
-    except Exception as e:
-        flash(f"Se produjo un error: {str(e)}", 'error')
-
-    return render_template('buscar_viaje.html', resultado=resultado)
-
-def resultados_busqueda(viajes):
-    return render_template('resultado_busqueda.html', viajes = viajes)
+@viaje_bp.route('/<idViaje>/grupo', methods=['GET', 'POST'])
+@login_required
+def GrupoDeViaje(idViaje):
+    viaje = model.Viaje.query.get(idViaje)
+    # pasajeros_viaje(idViaje, idEstado)
+    # Estado 1  = Confirmados
+    pasajeros = fsov.pasajeros_viaje(idViaje, 1)
+    return render_template('grupo_de_viaje.html', pasajeros = pasajeros, viaje = viaje)
 
 ######################    
 ##### PASAJERO #######
@@ -312,9 +264,4 @@ def MisSolicitudes():
     solicitudesPasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario)
     return render_template('listado_solicitudes.html', solicitudesPasajero=solicitudesPasajero)
 
-@viaje_bp.route('/<idViaje>/grupo', methods=['GET', 'POST'])
-@login_required
-def GrupoDeViaje(idViaje):
-    viaje = model.Viaje.query.get(idViaje)
-    pasajeros = fsov.pasajeros_pendientes_viaje(idViaje)
-    return render_template('grupo_de_viaje.html', pasajeros = pasajeros, viaje = viaje)
+

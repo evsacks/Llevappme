@@ -28,6 +28,10 @@ def formato_fecha(date):
 
     return fecha
 
+def formato_fecha_corta(date):
+    fecha = date.strftime("%d/%m/%Y")
+    return fecha
+
 def formato_hora(time):
     # Obtiene las horas y minutos del objeto time
     hora = time.hour
@@ -47,6 +51,7 @@ def formato_hora(time):
 
 app.jinja_env.globals.update(formato_fecha=formato_fecha)
 app.jinja_env.globals.update(formato_hora=formato_hora)
+app.jinja_env.globals.update(formato_fecha_corta=formato_fecha_corta)
 
 #Home
 @app.route('/', methods=['GET', 'POST'])
