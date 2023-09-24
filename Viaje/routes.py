@@ -1,34 +1,20 @@
 from flask import Blueprint, render_template, url_for, redirect, flash
 import models as model
-from flask_login import login_user,logout_user,login_required,current_user
+from flask_login import login_required,current_user
 from datetime import datetime, timedelta
-from sqlalchemy import cast
-
+from sqlalchemy.exc import SQLAlchemyError
+import routes as r
 import Viaje.forms as formulario
-from app import maps
-from pprint import pprint
+from app import maps, db
+
+import Viaje.functions.f_EditarViaje as fedv
+import Viaje.functions.f_EliminarViaje as felv
+import Viaje.functions.f_PublicarViaje as fpuv
+import Viaje.functions.f_SolicitarViaje as fsov
+
+
 viaje_bp = Blueprint('viaje_bp', __name__, url_prefix='/viaje', template_folder='templates', static_folder='static')
 
-
-
-def solicitar_viaje(idUsuario,idViaje):
-    
-    nuevoPasajero = model.Pasajero(
-        fecha_actualizacion = datetime.now(),
-        fecha_solicitud = datetime.now(),
-        id_usuario = idUsuario,
-        id_viaje = idViaje,
-        id_estado_pasajero = 2
-    )
-
-    #viaje = model.Viaje.query.get(idViaje)
-    #asientosDisponibles = viaje.asientos_disponibles
-    #viaje.asientos_disponibles = asientosDisponibles - 1
-
-    model.Pasajero.save_to_db(nuevoPasajero)
-    #model.Viaje.save_to_db(viaje)
-
-    return nuevoPasajero
 
 def comparacion_fecha(fechaInicio,horaInicio):
     print(fechaInicio, horaInicio)
@@ -42,23 +28,10 @@ def comparacion_fecha(fechaInicio,horaInicio):
     print(fechaInicio2359)
     return (fechaInicio0000, fechaInicio2359)
 
-#VIAJE SEGUN ESTADO
-@viaje_bp.route('/estado/<estado>', methods=['GET', 'POST'])
-@login_required
-def ViajesEstado(estado):
-    idUsuario = current_user.get_id()
-    viajes_usuario = model.Viaje.query.filter((model.Viaje.id_conductor==idUsuario) & \
-                                       (model.Viaje.id_estado_viaje==estado)).all()
-    if viajes_usuario:
-        return render_template('viajes_usuario.html',
-                               viajes=viajes_usuario)
-    else: 
-        mensaje = "No hay viajes para el usuario {} en estado {}".\
-                format(model.Usuario.query.get(idUsuario).nombre,\
-                       model.EstadoViaje.query.get(estado).descripcion)
-        return render_template('viajes_usuario.html', mensaje = mensaje)
-       
-#PUBLICAR VIAJE - CONDUCTOR
+######################    
+##### CONDUCTOR ######
+######################
+
 @viaje_bp.route('/publicar', methods=['GET', 'POST'])
 @login_required
 def PublicarViaje():
@@ -69,70 +42,24 @@ def PublicarViaje():
         form.vehiculo.choices = [(0, "Vehiculo")] + [(c.id, c.vehiculo.patente) for c in conductor]
 
         if form.validate_on_submit():
-            vehiculo = form.vehiculo.data
-            conductorVehiculo = model.Conductor.query.get(vehiculo)
+            vehiculo, origen, destino, cantidad_asientos, fecha_inicio, hora_inicio, equipaje, mascota, alimentos = fpuv.obtener_datos_del_formulario(form)
+            coordenadas_y_distancia = fpuv.obtener_coordenadas_y_distancia(origen, destino)
 
-            if conductorVehiculo:
-                origen = form.origen.data
-                destino = form.destino.data
-                cantidad_asientos = form.cantidad_asientos.data
-                fecha_inicio = form.fecha_inicio.data
-                hora_inicio = form.hora_inicio.data
-                fecha_inicial = datetime.combine(fecha_inicio, hora_inicio)
+            if coordenadas_y_distancia:
+                latitud_origen, longitud_origen, latitud_destino, longitud_destino, distancia, duracion = coordenadas_y_distancia
 
-                coordenadas_origen = maps.geocode(origen)
-                coordenadas_destino = maps.geocode(destino)
-                matrix_distance = maps.distance_matrix(origen, destino)
+                fpuv.guardar_datos_en_la_base_de_datos(
+                    vehiculo, origen, destino, cantidad_asientos, fecha_inicio, hora_inicio,
+                    latitud_origen, longitud_origen, latitud_destino, longitud_destino, distancia, duracion,
+                    equipaje, mascota, alimentos
+                )
 
-                if all('error' not in data for data in [coordenadas_origen, coordenadas_destino, matrix_distance]):
-                    latitud_origen = coordenadas_origen[0]['geometry']['location']['lat']
-                    longitud_origen = coordenadas_origen[0]['geometry']['location']['lng']
-                    latitud_destino = coordenadas_destino[0]['geometry']['location']['lat']
-                    longitud_destino = coordenadas_destino[0]['geometry']['location']['lng']
-                    distancia = matrix_distance['rows'][0]['elements'][0]['distance']['value']
-                    duracion = matrix_distance['rows'][0]['elements'][0]['duration']['value']
-
-                    fecha_final = fecha_inicial + timedelta(seconds=duracion)
-
-                    ubicacion_viaje = model.Ubicacion(
-                        direccion_inicial=origen,
-                        direccion_final=destino,
-                        latitud_inicial=latitud_origen,
-                        longitud_inicial=longitud_origen,
-                        latitud_final=latitud_destino,
-                        longitud_final=longitud_destino
-                    )
-
-                    model.Ubicacion.save_to_db(ubicacion_viaje)
-
-                    adicional = model.Adicional(
-                        equipaje=bool(form.equipaje.data),
-                        mascota=bool(form.mascota.data),
-                        alimentos=bool(form.alimentos.data)
-                    )
-
-                    model.Adicional.save_to_db(adicional)
-
-                    nuevo_viaje = model.Viaje(
-                        asientos_disponibles=cantidad_asientos,
-                        fecha_inicio=fecha_inicial,
-                        fecha_final=fecha_final,
-                        id_conductor=conductorVehiculo.id,
-                        id_estado_viaje=3,
-                        fecha_inicio_real=None,
-                        fecha_final_real=None,
-                        id_ubicacion=ubicacion_viaje.id,
-                        id_adicional=adicional.id
-                    )
-
-                    model.Viaje.save_to_db(nuevo_viaje)
-
-                    flash('Viaje publicado con éxito', 'success')
-                    return redirect(url_for('viaje_bp.BuscarViaje'))
-                else:
-                    flash('Hubo un error al obtener detalles de ubicación o distancia', 'error')
+                flash('Viaje publicado con éxito', 'success')
+                return redirect(url_for('viaje_bp.BuscarViaje'))
             else:
-                flash('No existe conductor asociado', 'error')
+                flash('Hubo un error al obtener detalles de ubicación o distancia', 'error')
+        else:
+            flash('No existe conductor asociado', 'error')
         
         return render_template('publicar_viaje.html', form=form)
     except Exception as e:
@@ -140,20 +67,107 @@ def PublicarViaje():
         mensaje = "No se pudo publicar el viaje. Inténtalo de nuevo más tarde."
         return render_template('publicar_viaje.html', mensaje=mensaje)
 
-
-@viaje_bp.route('/disponibles', methods=['GET', 'POST'])
+@viaje_bp.route('/editar/<idViaje>', methods=['GET', 'POST'])
 @login_required
-def ViajesDisponibles():
+def EditarViaje(idViaje):
+    viaje = model.Viaje.query.get(idViaje)
+    
+    if not viaje:
+        return fedv.redireccionar_y_mostrar_error('Viaje no encontrado', 'error', 'viaje_bp.ViajesPublicados')
+    
+    if not fedv.tiene_permiso_para_editar(viaje):
+        return fedv.redireccionar_y_mostrar_error('No tienes permiso para editar este viaje', 'error', 'viaje_bp.ViajesPublicados')
 
-    #Busco viajes que estan pendientes 
-    viajes = model.Viaje.query.filter_by(id_estado_viaje=3)
+    form = fedv.inicializar_formulario(viaje)
 
-    if viajes:
-        return render_template('listado_viajes.html', viajes=viajes)
-    else: 
-        mensaje = "No hay viajes disponibles."
-        return render_template('listado_viajes.html', mensaje = mensaje)
+    try:
+        if form.validate_on_submit():
+            fedv.actualizar_viaje_con_formulario(viaje, form)
+            db.session.commit()
+            flash('Viaje editado con éxito', 'success')
+            return redirect(url_for('viaje_bp.VerViaje', idViaje=idViaje))
+        else:
+            fedv.cargar_datos_del_viaje_en_formulario(form, viaje)
+            return render_template('editar_viaje.html', form=form, viaje=viaje)
+    except SQLAlchemyError as e:
+        flash('Error al editar el viaje', 'error')
+        print('Error al editar el viaje:', str(e))
+        return redirect(url_for('viaje_bp.ViajesPublicados'))
 
+@viaje_bp.route('/eliminar/<idViaje>', methods=['GET', 'POST'])
+@login_required
+def EliminarViaje(idViaje):
+    viaje = model.Viaje.query.get(idViaje)
+
+    if not viaje:
+        return felv.redireccionar_y_mostrar_error('Viaje no encontrado', 'error', 'viaje_bp.BuscarViaje')
+
+    if not felv.tiene_permiso_para_eliminar(viaje):
+        return felv.redireccionar_y_mostrar_error('No tienes permiso para eliminar este viaje', 'error', 'viaje_bp.BuscarViaje')
+
+    felv.eliminar_viaje(viaje)
+
+    return redirect(url_for('viaje_bp.BuscarViaje'))
+
+@viaje_bp.route('/publicados', methods=['GET', 'POST'])
+@login_required
+def ViajesPublicados():
+    try:
+        idUsuario = current_user.get_id()
+        # Busco viajes publicados por ese usuario, es decir siendo conductor.
+        conductores = model.Conductor.query.filter_by(id_usuario=idUsuario).all()
+
+        viajes_por_conductor = []
+
+        for conductor in conductores:
+            viajes = model.Viaje.query.filter_by(id_conductor=conductor.id).all()
+            viajes_por_conductor.extend(viajes)
+
+        if not viajes_por_conductor:
+            raise Exception("No se encontraron viajes correspondientes al conductor.")
+
+        return render_template('listado_viajes.html', viajes=viajes_por_conductor)
+    except Exception as e:
+        # Manejar la excepción si no se encuentran viajes correspondientes.
+        print(f"Se produjo una excepción: {e}")
+        mensaje = "No hay viajes Publicados."
+        return render_template('listado_viajes.html', mensaje=mensaje)
+
+def modificar_estado_pasajero(idPasajero, idViaje, nuevo_estado):
+    pasajero = model.Pasajero.query.get(idPasajero)
+
+    if pasajero.estado.descripcion in ['Rechazado', 'Confirmado']:
+        viaje = model.Viaje.query.get(idViaje)
+        
+        mensaje = "No puede modificar el estado del pasajero. Ya fue {}".format(pasajero.estado.descripcion)
+        return render_template('listado_pasajero_viaje.html', viaje=viaje, mensaje=mensaje)
+    
+    else:
+        estado = model.EstadoPasajero.query.filter_by(descripcion=nuevo_estado).first()
+        pasajero.id_estado_pasajero = estado.id
+        pasajero.fecha_actualizacion = datetime.now()
+        model.Pasajero.save_to_db(pasajero)
+        return True
+
+@viaje_bp.route('/<idViaje>/pasajero/<idPasajero>/confirmar', methods=['GET', 'POST'])
+@login_required
+def AceptarPasajero(idPasajero, idViaje):
+    if modificar_estado_pasajero(idPasajero, idViaje, 'Confirmado'):
+        viaje = model.Viaje.query.get(idViaje)
+        asientosActuales = viaje.asientos_disponibles
+        viaje.asientos_disponibles = asientosActuales - 1
+        model.Viaje.save_to_db(viaje)
+    return redirect(url_for('viaje_bp.VerPasajeros', idViaje=viaje.id))
+
+@viaje_bp.route('/<idViaje>/pasajero/<idPasajero>/rechazar', methods=['GET', 'POST'])
+@login_required
+def RechazarPasajero(idPasajero, idViaje):
+    modificar_estado_pasajero(idPasajero, idViaje, 'Rechazado')
+    return redirect(url_for('viaje_bp.VerPasajeros', idViaje=idViaje))
+
+######################    
+####### AMBOS ########
+######################
 @viaje_bp.route('/detalle/<idViaje>', methods=['GET', 'POST'])
 @login_required
 def VerViaje(idViaje):
@@ -163,7 +177,7 @@ def VerViaje(idViaje):
             raise Exception("No existe ese viaje")
 
         idUsuario = current_user.get_id()
-        pasajero = model.Pasajero.solicitud_activa(idUsuario, idViaje)
+        pasajero = fsov.usuario_solicito_viaje(idUsuario,viaje.id)
 
         if pasajero:
             return render_template('ver_viaje.html', viaje=viaje)
@@ -173,61 +187,6 @@ def VerViaje(idViaje):
     except Exception as e:
         mensaje = str(e)  # Utiliza el mensaje de la excepción para proporcionar información sobre el error
         return render_template('ver_viaje.html', mensaje=mensaje)
-    
-
-@viaje_bp.route('/solicitar/<idViaje>', methods=['GET', 'POST'])
-@login_required
-def SolicitarViaje(idViaje):
-
-    #Busco viajes que estan pendientes 
-    viaje = model.Viaje.query.get(idViaje)
-    idUsuario = current_user.get_id()
-    
-    pasajero = model.Pasajero.solicitud_activa(idUsuario,idViaje)
-    if pasajero:
-        mensaje = "Ya solicitaste ese viaje, por favor busca uno nuevo"
-        return redirect(url_for('viaje_bp.BuscarViaje'))
-
-    if viaje:
-
-        soyConductor = model.Viaje.viajes_pendientes_usuario(idUsuario) 
-        soyPasajero = model.Pasajero.viajes_activos_pasajero(idUsuario)
-        
-        #Viajes como pasajero y conductor que estan activos o pendientes
-        misViajes = soyConductor + soyPasajero
-        
-        if viaje.asientos_disponibles == 0:
-            mensaje = 'No hay asientos disponibles'
-            return render_template('ver_viaje.html', mensaje = mensaje)
-
-        if misViajes:
-            for v in misViajes:
-                coincidencia_inicio = v.fecha_inicio <= viaje.fecha_inicio <= v.fecha_final
-                coincidencia_final = v.fecha_inicio <= viaje.fecha_final <= v.fecha_final
-                if (coincidencia_inicio or coincidencia_final):
-                    mensaje = "Ya existe viaje pendiente / confirmado en esa fecha."
-                    return render_template('ver_viaje.html', mensaje = mensaje)
-
-        #Si no hay impedimentos para la solicitud:
-
-        pasajero = solicitar_viaje(idUsuario,idViaje)
-
-        if pasajero: 
-            mensaje = "Solicitaste el viaje"
-            return render_template('ver_viaje.html', viaje=viaje, mensaje = mensaje)
-
-        return render_template('ver_viaje.html', viaje=viaje)
-    else: 
-        mensaje = "No existe ese viaje"
-        return render_template('ver_viaje.html', mensaje = mensaje)
-
-
-@viaje_bp.route('/ver/solicitudes', methods=['GET', 'POST'])
-@login_required
-def MisSolicitudes():
-    idUsuario = current_user.get_id()
-    solicitudesPasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario)
-    return render_template('listado_solicitudes.html', solicitudesPasajero=solicitudesPasajero)
 
 @viaje_bp.route('/buscar', methods=['GET', 'POST'])
 @login_required
@@ -283,66 +242,53 @@ def buscar_viaje():
 def resultados_busqueda(viajes):
     return render_template('resultado_busqueda.html', viajes = viajes)
 
-@viaje_bp.route('/publicados', methods=['GET', 'POST'])
+######################    
+##### PASAJERO #######
+######################
+
+@viaje_bp.route('/solicitar/<idViaje>', methods=['GET', 'POST'])
 @login_required
-def ViajesPublicados():
-    try:
-        idUsuario = current_user.get_id()
-        # Busco viajes publicados por ese usuario, es decir siendo conductor.
-        conductores = model.Conductor.query.filter_by(id_usuario=idUsuario).all()
-        print(conductores)
-        viajes_por_conductor = []
+def SolicitarViaje(idViaje):
+    viaje = model.Viaje.query.get(idViaje)
+    idUsuario = current_user.get_id()
+    mensaje = None
 
-        for conductor in conductores:
-            viajes = model.Viaje.query.filter_by(id_conductor=conductor.id).all()
-            viajes_por_conductor.extend(viajes)
-        print(viajes_por_conductor)
+    if not viaje:
+        mensaje = "No existe ese viaje"
+    else:
+        pasajero = fsov.usuario_solicito_viaje(idUsuario, idViaje)
+        conductor = viaje.conductor.id_usuario == idUsuario
 
-        if not viajes_por_conductor:
-            raise Exception("No se encontraron viajes correspondientes al conductor.")
+        if pasajero:
+            mensaje = "Ya solicitaste ese viaje, por favor busca uno nuevo"
+        elif conductor:
+            mensaje = "Eres el conductor de este viaje"
+        else:
+            soy_conductor_en = fsov.viajes_pendientes_como_conductor(idUsuario)
+            soy_pasajero_en = fsov.viajes_pendientes_como_pasajero(idUsuario)
+            mis_viajes = soy_conductor_en + soy_pasajero_en
 
-        return render_template('listado_viajes.html', viajes=viajes_por_conductor)
-    except Exception as e:
-        # Manejar la excepción si no se encuentran viajes correspondientes.
-        print(f"Se produjo una excepción: {e}")
-        mensaje = "No hay viajes Publicados."
-        return render_template('listado_viajes.html', mensaje=mensaje)
+            if viaje.asientos_disponibles == 0:
+                mensaje = 'No hay asientos disponibles'
+            elif fsov.hay_conflictos_de_horario(mis_viajes, viaje):
+                mensaje = "Ya existe viaje pendiente / confirmado en esa fecha."
+            else:
+                pasajero = fsov.solicitar_viaje(idUsuario, idViaje)
+                if pasajero:
+                    mensaje = "Solicitaste el viaje"
 
-    
+    return render_template('ver_viaje.html', viaje=viaje, mensaje=mensaje)
+
+
+@viaje_bp.route('/ver/solicitudes', methods=['GET', 'POST'])
+@login_required
+def MisSolicitudes():
+    idUsuario = current_user.get_id()
+    solicitudesPasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario)
+    return render_template('listado_solicitudes.html', solicitudesPasajero=solicitudesPasajero)
+
 @viaje_bp.route('/<idViaje>/pasajeros', methods=['GET', 'POST'])
 @login_required
 def VerPasajeros(idViaje):
     viaje = model.Viaje.query.get(idViaje)
     return render_template('listado_pasajero_viaje.html', viaje = viaje)
-
-def modificar_estado_pasajero(idPasajero, idViaje, nuevo_estado):
-    pasajero = model.Pasajero.query.get(idPasajero)
-
-    if pasajero.estado.descripcion in ['Rechazado', 'Confirmado']:
-        viaje = model.Viaje.query.get(idViaje)
-        
-        mensaje = "No puede modificar el estado del pasajero. Ya fue {}".format(pasajero.estado.descripcion)
-        return render_template('listado_pasajero_viaje.html', viaje=viaje, mensaje=mensaje)
-    
-    else:
-        estado = model.EstadoPasajero.query.filter_by(descripcion=nuevo_estado).first()
-        pasajero.id_estado_pasajero = estado.id
-        pasajero.fecha_actualizacion = datetime.now()
-        model.Pasajero.save_to_db(pasajero)
-        return True
-
-@viaje_bp.route('/<idViaje>/pasajero/<idPasajero>/confirmar', methods=['GET', 'POST'])
-@login_required
-def AceptarPasajero(idPasajero, idViaje):
-    if modificar_estado_pasajero(idPasajero, idViaje, 'Confirmado'):
-        viaje = model.Viaje.query.get(idViaje)
-        asientosActuales = viaje.asientos_disponibles
-        viaje.asientos_disponibles = asientosActuales - 1
-        model.Viaje.save_to_db(viaje)
-    return redirect(url_for('viaje_bp.VerPasajeros', idViaje=viaje.id))
-
-@viaje_bp.route('/<idViaje>/pasajero/<idPasajero>/rechazar', methods=['GET', 'POST'])
-@login_required
-def RechazarPasajero(idPasajero, idViaje):
-    modificar_estado_pasajero(idPasajero, idViaje, 'Rechazado')
-    return redirect(url_for('viaje_bp.VerPasajeros', idViaje=idViaje))

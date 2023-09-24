@@ -103,6 +103,9 @@ class Usuario(db.Model, UserMixin):
         db.session.delete(self)
         db.session.commit()
 
+    def update_from_db():
+        db.session.commit()
+
 class EstadoUsuario(db.Model):
     __tablename__ = 'estado_usuario'
     __table_args__ = {'extend_existing': True} 
@@ -134,6 +137,9 @@ class EstadoUsuario(db.Model):
 
     def delete_from_db(self):
         db.session.delete(self)
+        db.session.commit()
+
+    def update_from_db():
         db.session.commit()
 
 class TipoUsuario(db.Model):
@@ -171,6 +177,9 @@ class TipoUsuario(db.Model):
 
     def delete_from_db(self):
         db.session.delete(self)
+        db.session.commit()
+
+    def update_from_db():
         db.session.commit()
 
 class Notificacion(db.Model):
@@ -216,7 +225,9 @@ class Notificacion(db.Model):
     
     def marcar_como_leida(self):
         self.leida = True
-
+    
+    def update_from_db():
+        db.session.commit()
 # VIAJE
 
 class Viaje(db.Model):
@@ -291,6 +302,9 @@ class Viaje(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def update_from_db():
+        db.session.commit()
+
 class Tracking(db.Model):
     __tablename__ = 'tracking'
     __table_args__ = {'extend_existing': True} 
@@ -337,6 +351,9 @@ class Tracking(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def update_from_db():
+        db.session.commit()
+
 class Pasajero(db.Model):
     __tablename__ = 'pasajero'
     __table_args__ = {'extend_existing': True} 
@@ -379,28 +396,15 @@ class Pasajero(db.Model):
             'id_estado_pasajero': self.id_estado_pasajero
     }
 
-    @classmethod
-    def viajes_activos_pasajero(cls,idUsuario):
-        pasajeros = cls.query.filter((cls.id_usuario==idUsuario) & \
-                                  ((cls.id_estado_pasajero == 1) | \
-                                   (cls.id_estado_pasajero == 2))).all() 
-        viajes = [ Viaje.query.get(idViaje) for idViaje in pasajeros]
-        return viajes
-    
-    @classmethod
-    def solicitud_activa(cls,idUsuario,idViaje):
-        pasajeros = cls.query.filter((cls.id_usuario == idUsuario)  & \
-                                     (cls.id_viaje == idViaje)      & \
-                                    ((cls.id_estado_pasajero == 1)  | \
-                                     (cls.id_estado_pasajero == 2))).first() 
-        return pasajeros
-
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
 
     def delete_from_db(self):
         db.session.delete(self)
+        db.session.commit()
+    
+    def update_from_db():
         db.session.commit()
 
 class EstadoPasajero(db.Model):
@@ -437,6 +441,9 @@ class EstadoPasajero(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def update_from_db():
+        db.session.commit()
+
 class EstadoViaje(db.Model):
     __tablename__ = 'estado_viaje'
     __table_args__ = {'extend_existing': True} 
@@ -469,6 +476,9 @@ class EstadoViaje(db.Model):
 
     def delete_from_db(self):
         db.session.delete(self)
+        db.session.commit()
+
+    def update_from_db():
         db.session.commit()
 
 class Ubicacion(db.Model):
@@ -527,6 +537,9 @@ class Ubicacion(db.Model):
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
+   
+    def update_from_db():
+        db.session.commit()
 
 class Adicional(db.Model):
     __tablename__ = 'adicional'
@@ -570,6 +583,8 @@ class Adicional(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def update_from_db():
+        db.session.commit()
 
 # VEHICULO
 
@@ -624,6 +639,8 @@ class Vehiculo(db.Model):
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
+    def update_from_db():
+        db.session.commit()
 
 class Conductor(db.Model):
     __tablename__ = 'conductor'
@@ -662,4 +679,6 @@ class Conductor(db.Model):
 
     def delete_from_db(self):
         db.session.delete(self)
+        db.session.commit()
+    def update_from_db():
         db.session.commit()

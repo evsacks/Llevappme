@@ -1,0 +1,108 @@
+{% extends 'layout.html' %}
+{% block section %}
+<!-- Section -->
+<section>
+    <header class="major">
+        <h2>Editar Viaje</h2>
+    </header>
+    {% if resultado %}
+        <a> {{resultado}} </a>
+    {% endif%}    
+    {% if form %}
+        <form method="post" action="{{ url_for('viaje_bp.EditarViaje', idViaje=viaje.id) }}">
+        {{ form.hidden_tag() }}
+        <div class="row gtr-200">
+            <div class="col-9 col-12-medium">
+                <div class="row gtr-uniform">
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.origen(type="text",  id="origen", readonly=true) }}
+                        <div>
+                            {% for error in form.origen.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.destino(type="text",  id="destino", readonly=true) }}
+                        <div>
+                            {% for error in form.destino.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.vehiculo(type="text",  id="vehiculo", readonly=true) }}
+                        <div>
+                            {% for error in form.vehiculo.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.cantidad_asientos(type="tel",  id="telefono") }}
+                        <div>
+                            {% for error in form.cantidad_asientos.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.fecha_inicio(type="text",  id="fecha_inicio") }}
+                        <div>
+                            {% for error in form.fecha_inicio.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.hora_inicio(type="text",  id="hora_inicio") }}
+                        <div>
+                            {% for error in form.hora_inicio.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3 col-12-medium">
+                <h4 style="margin-top: 13px;">Adicionales</h4>
+				<div class="box" style="padding-bottom: 0px;">
+                    <div class="col-4 col-12-small">
+                        {{ form.equipaje(type="checkbox") }}
+                        {{ form.equipaje.label() }}
+                        <div>
+                            {% for error in form.equipaje.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-4 col-12-small">
+                        {{ form.mascota(type="checkbox") }}
+                        {{ form.mascota.label() }}
+                        <div>
+                            {% for error in form.mascota.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-4 col-12-small">
+                        {{ form.alimentos(type="checkbox") }}
+                        {{ form.alimentos.label() }}
+                        <div>
+                            {% for error in form.alimentos.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Break -->
+            <div class="col-12">
+                <ul class="actions">
+                    <li>{{ form.submit(type="submit", value="Publicar") }}</li>
+                </ul>
+            </div>
+        </div>
+    </form>
+    {% endif %}
+{% endblock %}

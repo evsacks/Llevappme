@@ -11,6 +11,7 @@ API_KEY = 'AIzaSyDt5KdV_gWgU2L_W7yNsJucH5XvQ_dcHq0'
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = False
 
 db = SQLAlchemy(app)
 api = Api(app)
