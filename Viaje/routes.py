@@ -127,7 +127,7 @@ def ViajesPublicados():
 @login_required
 def AceptarPasajero(idPasajero):
     if facc.modificar_estado_pasajero(idPasajero, 'Confirmado'):
-        pasajero = model.Pasajero.get(idPasajero)
+        pasajero = model.Pasajero.query.get(idPasajero)
         asientosActuales = pasajero.viaje.asientos_disponibles
         pasajero.viaje.asientos_disponibles = asientosActuales - 1
         db.session.commit()
@@ -136,7 +136,7 @@ def AceptarPasajero(idPasajero):
 @viaje_bp.route('pasajero/<idPasajero>/rechazar', methods=['GET', 'POST'])
 @login_required
 def RechazarPasajero(idPasajero):
-    pasajero = model.Pasajero.get(idPasajero)
+    pasajero = model.Pasajero.query.get(idPasajero)
     if facc.modificar_estado_pasajero(idPasajero, 'Rechazado'):
         return redirect(url_for('viaje_bp.GrupoDeViaje', idViaje=pasajero.id_viaje))
 
