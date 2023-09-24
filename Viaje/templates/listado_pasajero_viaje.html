@@ -1,35 +1,42 @@
 {% extends 'layout.html' %}
 {% block section %}
 <section>
-    <!-- Elements -->
-    <h2 id="elements">Elements</h2>
-        {% if viaje %}
-            <div class="table-wrapper">
-                <table class="alt">
-                    <thead>
-                        <tr>
-                            <th scope="col">Pasajero</th>
-                            <th scope="col">Estado</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for pasajero in viaje.pasajeros %}
-                            <tr>
-                                <td> {{ pasajero.usuario.email}}</td>
-                                <td> {{ pasajero.estado.descripcion}}</td>
-                                <td> 
-                                    <a href="{{url_for('viaje_bp.AceptarPasajero', idViaje=viaje.id, idPasajero=pasajero.id)}}">Aceptar</a>
-                                    <a href="{{url_for('viaje_bp.RechazarPasajero', idViaje=viaje.id, idPasajero=pasajero.id)}}">Rechazar</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% endif %}
-    {% if mensaje %}
-        <a>{{mensaje}}</a>
+    <header class="major">
+        <h2>Grupo de viaje</h2>
+    </header>
+    {% if viaje %}
+        <div class="features">
+            <article>
+                <span class="icon solid fa-car"></span>
+                <div class="content">
+                    <h3> {{viaje.conductor.usuario.nombre}} {{viaje.conductor.usuario.apellido}} </h3>
+                    <h5> Conductor </h5>
+                    <p> E-mail: {{viaje.conductor.usuario.email|default("N/A") }} 
+                        <BR>
+                        Teléfono: {{viaje.conductor.usuario.telefono|default("N/A") }} 
+                    </p>
+                </div>
+            </article>
+            {% set conductor_id = viaje.conductor.id_usuario %}
+            {% for pasajero in pasajeros %}
+                {% set es_confirmado = pasajero.estado.descripcion == "Confirmado" %}
+                {% set es_pendiente = pasajero.estado.descripcion == "Pendiente" %}
+                {% set es_mi_pasajero = es_pendiente and conductor_id == current_user.id %}
+                {% if es_confirmado or es_mi_pasajero %}
+                    <article>
+                        <span class="icon solid {{ 'fa-user-check' if es_confirmado else 'fa-user-clock' }}"></span>
+                        <div class="content">
+                            <h3> {{pasajero.usuario.nombre}} {{pasajero.usuario.apellido}} </h3>
+                            <h5> Pasajero </h5>
+                            <p> E-mail: {{pasajero.usuario.email|default("N/A") }} 
+                                <BR>
+                                Teléfono: {{pasajero.usuario.telefono|default("N/A") }} 
+                            </p>
+                        </div>
+                    </article>
+                {% endif %}
+            {% endfor %}
+        </div>
     {% endif %}
 </section>
 {% endblock %}

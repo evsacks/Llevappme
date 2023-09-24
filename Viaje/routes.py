@@ -291,4 +291,5 @@ def MisSolicitudes():
 @login_required
 def VerPasajeros(idViaje):
     viaje = model.Viaje.query.get(idViaje)
-    return render_template('listado_pasajero_viaje.html', viaje = viaje)
+    pasajeros = fsov.pasajeros_pendientes_viaje(idViaje)
+    return render_template('listado_pasajero_viaje.html', pasajeros = pasajeros, viaje = viaje)

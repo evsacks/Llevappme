@@ -64,3 +64,11 @@ def viajes_pendientes_como_pasajero(idUsuario):
     viajes_pendientes = [pasajero.viaje for pasajero in pasajeros]
 
     return viajes_pendientes
+
+def pasajeros_pendientes_viaje(idViaje):
+    # Consulta todos los pasajeros de un viaje que estén pendientes o confirmados
+    pasajeros = model.Pasajero.query.filter_by(id_viaje=idViaje)\
+                                    .filter(or_(model.Pasajero.id_estado_pasajero == 1, \
+                                                model.Pasajero.id_estado_pasajero == 2))\
+                                    .all()
+    return pasajeros
