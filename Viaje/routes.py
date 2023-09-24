@@ -287,9 +287,9 @@ def MisSolicitudes():
     solicitudesPasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario)
     return render_template('listado_solicitudes.html', solicitudesPasajero=solicitudesPasajero)
 
-@viaje_bp.route('/<idViaje>/pasajeros', methods=['GET', 'POST'])
+@viaje_bp.route('/<idViaje>/grupo', methods=['GET', 'POST'])
 @login_required
-def VerPasajeros(idViaje):
+def GrupoDeViaje(idViaje):
     viaje = model.Viaje.query.get(idViaje)
     pasajeros = fsov.pasajeros_pendientes_viaje(idViaje)
-    return render_template('listado_pasajero_viaje.html', pasajeros = pasajeros, viaje = viaje)
+    return render_template('grupo_de_viaje.html', pasajeros = pasajeros, viaje = viaje)
