@@ -20,7 +20,7 @@
                     <tbody>
                         {% for solicitud in solicitudesPasajero %}
                             <tr>
-                                <td> {{ solicitud.viaje.usuario.email}}</td>
+                                <td> {{ solicitud.viaje.conductor.usuario.email}}</td>
                                 <td> {{ solicitud.viaje.ubicacion.direccion_inicial}}</td>
                                 <td> {{ solicitud.viaje.ubicacion.direccion_final}}</td>
                                 <td> {{ solicitud.viaje.fecha_inicio.date()}}</td>
