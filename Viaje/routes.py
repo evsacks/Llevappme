@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, url_for, redirect, flash
+from flask import Blueprint, render_template, url_for, redirect, flash, request
 import models as model
 from flask_login import login_required,current_user
 from datetime import datetime, timedelta
@@ -264,4 +264,20 @@ def MisSolicitudes():
     solicitudesPasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario)
     return render_template('listado_solicitudes.html', solicitudesPasajero=solicitudesPasajero)
 
+
+@viaje_bp.route("/guardarUbicacion", methods=["POST"])
+def guardar_ubicacion():
+    data = request.get_json()
+    latitud = data["latitud"]
+    longitud = data["longitud"]
+
+    print("Latitud: ",latitud)
+    print("Longitud: ", longitud)
+
+    # Luego, puedes responder con un mensaje de éxito
+    return "Ubicación guardada con éxito", 200
+
+@viaje_bp.route("/comienza", methods=["GET","POST"])
+def comienza():
+    return render_template('ubicacion.html')
 
