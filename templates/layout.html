@@ -18,14 +18,19 @@
 
 							<!-- Header -->
 								<header id="header">
-									<a href="index.html" class="logo"><strong>LLEVAPPME</strong></a>
-									<ul class="icons">
-										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
-										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
-										<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
-										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
-										<li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
-									</ul>
+									<a href="{{url_for('viaje_bp.BuscarViaje')}}" class="logo"><strong>LLEVAPPME</strong></a>
+									{% if viaje_en_curso(current_user.id) %}
+										<ul id= "idViaje" data-id-viaje= "{{viaje_en_curso(current_user.id)}}" class="icons">
+											{% if session.ubicacion_activada|default(False) %}
+												<li><a style="color: rgba(3, 177, 61, 0.493)"><span>Ubicación activada</span></a></li>
+												<li><a href="{{url_for('viaje_bp.DesactivarUbicacion')}}" style="color: rgba(3, 177, 61, 0.493)" class="fa-solid fa-toggle-on"><span class="label"></span></a></li>
+												<li><a href="#" style="color: rgba(3, 177, 61, 0.493)" class="fa-brands fa-whatsapp"><span class="label"></span></a></li>
+											{% else %}
+												<li><a style="color: rgba(177, 3, 3, 0.493)"><span>Ubicación desactivada</span></a></li>
+												<li><a href="{{url_for('viaje_bp.ActivarUbicacion')}}" style="color: rgba(177, 3, 3, 0.493)" class="fa-solid fa-toggle-off"><span class="label"></span></a></li>
+											{% endif %}
+										</ul>
+									{% endif %}
 								</header>
 
 							<!-- Banner -->
@@ -78,6 +83,76 @@
 
 			</div>
 
+			<script>
+				var ubicacionActivadaValue = "{{ session.ubicacion_activada|default(False)|lower }}";
+			</script>
+			<script>
+				let ubicacionActivada = ubicacionActivadaValue === "true";
+				let intervaloGeolocalizacion;
+				
+				// Función para activar la ubicación automáticamente si la sesión está en True
+				function activarUbicacionAutomaticamente() {
+					if (ubicacionActivada) {
+						obtenerYGuardarUbicacion(); // Comenzar la geolocalización
+					}
+				}
+				
+				// Función para obtener y guardar la ubicación
+				function obtenerYGuardarUbicacion() {
+				if (!ubicacionActivada) {
+					console.log("La ubicación no está activada.");
+					clearInterval(intervaloGeolocalizacion); // Detiene la geolocalización
+					return;
+				}
+				
+				if ("geolocation" in navigator) {
+					navigator.geolocation.getCurrentPosition(function(position) {
+					const latitud = position.coords.latitude;
+					const longitud = position.coords.longitude;
+				
+					// Enviar los datos al servidor
+					enviarUbicacionAlServidor(latitud, longitud);
+					});
+				} else {
+					console.log("El navegador no admite la geolocalización.");
+				}
+				
+				// Programar la próxima actualización después de 5 segundos
+				setTimeout(obtenerYGuardarUbicacion, 5000);
+				}
+				
+				// Obtener id de viaje en cuestion
+				function obtenerIdViaje() {
+				  const elementoConViaje = document.getElementById("idViaje");
+				  const idViaje = elementoConViaje.getAttribute("data-id-viaje");
+				  return idViaje;
+				}
+				
+				// Función para enviar la ubicación al servidor
+				function enviarUbicacionAlServidor(latitud, longitud) {
+				fetch("/viaje/guardar/ubicacion", {
+					method: "POST",
+					headers: {
+					"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ idViaje: obtenerIdViaje(), latitud, longitud }),
+				})
+					.then((response) => {
+					if (response.ok) {
+						console.log("Ubicación guardada con éxito en el servidor.");
+					} else {
+						console.error("Error al guardar la ubicación en el servidor.");
+					}
+					})
+					.catch((error) => {
+					console.error("Error al realizar la solicitud al servidor: " + error);
+					});
+				}
+				
+				// Llama a la función para activar la ubicación automáticamente al cargar la página
+				window.addEventListener('load', activarUbicacionAutomaticamente);
+			</script>
+
 		<!-- Scripts -->
 			<script src="{{url_for('static', filename = 'assets/js/jquery.min.js')}}"></script>
 			<script src="{{url_for('static', filename = 'assets/js/browser.min.js')}}"></script>
@@ -85,6 +160,12 @@
 			<script src="{{url_for('static', filename = 'assets/js/util.js')}}"></script>
 			<script src="{{url_for('static', filename = 'assets/js/main.js')}}"></script>
 			<script src="{{url_for('static', filename = 'assets/js/googlemaps.js')}}"></script>
+			<script src="https://kit.fontawesome.com/228c5469ee.js" crossorigin="anonymous"></script>
 			<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDt5KdV_gWgU2L_W7yNsJucH5XvQ_dcHq0&callback=initMap&v=weekly" defer></script>
+			{% block script %}   
+			{% endblock %}
+			
+
+
 	</body>
 </html>

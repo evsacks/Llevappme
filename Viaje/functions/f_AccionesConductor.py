@@ -21,3 +21,23 @@ def modificar_estado_pasajero(idPasajero, nuevo_estado):
         return render_template('grupo_de_viaje.html', viaje=pasajero.viaje, pasajeros = pasajero.viaje.pasajeros, mensaje=mensaje)
     
         
+def viaje_en_curso_como_conductor(idUsuario):
+    # Obtén todos los conductores correspondientes al usuario
+    conductores = model.Conductor.query.filter_by(id_usuario=idUsuario).all()
+
+    ultimo_viaje_en_curso = None
+
+    for conductor in conductores:
+        # Consulta todos los viajes en los que es conductor y que estén en curso
+        viaje = model.Viaje.query.filter_by(id_conductor=conductor.id, id_estado_viaje=1).order_by(model.Viaje.id.desc()).first()
+        if viaje:
+            ultimo_viaje_en_curso = viaje
+            return ultimo_viaje_en_curso.id
+    return None
+
+def viaje_en_curso_como_pasajero(idUsuario):
+    viaje = model.Pasajero.query.filter_by(id_usuario=idUsuario, id_estado_pasajero=5).order_by(model.Pasajero.id.desc()).first()
+    if viaje:
+        return viaje.id
+    else:
+        return None

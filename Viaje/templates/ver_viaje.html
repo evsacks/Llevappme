@@ -2,7 +2,30 @@
 {% block section %}
     {% if viaje %}
         <section>
-            <div class="row gtr-200">
+            <div class="row gtr-200" id="idViaje" data-id-viaje="{{viaje.id}}">
+                {% if proximos_al_viaje(viaje.fecha_inicio) %}
+                    {% if not viaje.fecha_inicio_real %}
+                        <div class="col-6 col-12-medium">
+                            <ul class="actions stacked">
+                                <li>
+                                    <a href="{{url_for('viaje_bp.IniciarViaje', idViaje=viaje.id)}}" class="button primary fit">INICIAR VIAJE</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-6 col-12-medium"></div>
+                    {% else %}
+                        {% if not viaje.fecha_final_real %}
+                            <div class="col-6 col-12-medium"></div>
+                            <div class="col-6 col-12-medium">
+                                <ul class="actions stacked">
+                                    <li>
+                                        <a href="{{url_for('viaje_bp.FinalizarViaje', idViaje=viaje.id)}}" class="button primary fit">FINALIZAR VIAJE</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
                 <div class="col-6 col-12-medium">
                     <ul class="alt">
                         <li>
@@ -18,7 +41,7 @@
                                 {{viaje.ubicacion.direccion_final}}
                             </h3>
                         </li>
-                        <li>
+                        <li id="fecha_inicio" data-fecha-hora="{{viaje.fecha_inicio}}">
                             Fecha Salida: {{ formato_fecha(viaje.fecha_inicio) }}
                             <br>
                             Hora Salida: {{ formato_hora(viaje.fecha_inicio) }}
@@ -54,4 +77,9 @@
     {% if mensaje %}
         {{mensaje}}
     {% endif %}
+    {{fechaInicio}}
+    
+{% endblock %}
+{% block script %}
+            <script src="{{url_for('static', filename = 'assets/js/ubicacion.js')}}" defer></script>
 {% endblock %}

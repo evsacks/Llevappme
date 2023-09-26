@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, url_for, redirect, flash, request
+from flask import Blueprint, render_template, url_for, redirect, flash, request, session
 import models as model
 from flask_login import login_required,current_user
 from datetime import datetime, timedelta
@@ -169,14 +169,14 @@ def VerViaje(idViaje):
         print("Es un pasajero: ", es_pasajero)
 
         if es_pasajero:
-            return render_template('ver_viaje.html', viaje=viaje, solicitud="Enviada")
+            return render_template('ver_viaje.html', viaje=viaje, solicitud="Enviada", fechaInicio = viaje.fecha_inicio)
         else:
             print("No es pasajero, muestro viaje", viaje)
-            return render_template('ver_viaje.html', viaje=viaje, solicitud="Libre")
+            return render_template('ver_viaje.html', viaje=viaje, solicitud="Libre", fechaInicio = viaje.fecha_inicio)
 
     except Exception as e:
         mensaje = str(e) 
-        return render_template('ver_viaje.html', mensaje=mensaje)
+        return render_template('ver_viaje.html', mensaje=mensaje, fechaInicio = viaje.fecha_inicio)
 
 @viaje_bp.route('/buscar', methods=['GET', 'POST'])
 @login_required
@@ -195,6 +195,54 @@ def GrupoDeViaje(idViaje):
     # Estado 1  = Confirmados
     pasajeros = fsov.pasajeros_viaje(idViaje, 1)
     return render_template('grupo_de_viaje.html', pasajeros = pasajeros, viaje = viaje)
+
+@viaje_bp.route('/<idViaje>/iniciar', methods=['GET', 'POST'])
+@login_required
+def IniciarViaje(idViaje):
+    viaje = model.Viaje.query.get(idViaje)
+    if viaje:
+        
+        pasajeros = model.Pasajero.query.filter_by(id_viaje = idViaje, id_estado_pasajero = 1).all()
+        for pasajero in pasajeros:
+            pasajero.id_estado_pasajero = 5
+            pasajero.fecha_actualizacion = datetime.now()
+            db.session.commit()
+
+        viaje.fecha_inicio_real = datetime.now()
+        viaje.id_estado_viaje = 1
+        db.session.commit()
+        
+        return redirect(url_for('viaje_bp.VerViaje', idViaje = idViaje))
+    
+@viaje_bp.route('/<idViaje>/finalizar', methods=['GET', 'POST'])
+@login_required
+def FinalizarViaje(idViaje):
+    viaje = model.Viaje.query.get(idViaje)
+    if viaje:
+
+        pasajeros = model.Pasajero.query.filter_by(id_viaje = idViaje, id_estado_pasajero = 5).all()
+        for pasajero in pasajeros:
+            pasajero.id_estado_pasajero = 6
+            pasajero.fecha_actualizacion = datetime.now()
+            db.session.commit()
+
+        viaje.fecha_final_real = datetime.now()
+        viaje.id_estado_viaje = 2
+        db.session.commit()
+
+        return redirect(url_for('viaje_bp.VerViaje', idViaje = idViaje))
+
+@viaje_bp.route('/activar/ubicacion', methods=['GET', 'POST'])
+@login_required
+def ActivarUbicacion():
+    session['ubicacion_activada'] = True
+    return redirect(url_for('viaje_bp.BuscarViaje'))
+
+@viaje_bp.route('/desactivar/ubicacion', methods=['GET', 'POST'])
+@login_required
+def DesactivarUbicacion():
+    session['ubicacion_activada'] = False
+    return redirect(url_for('viaje_bp.BuscarViaje'))
 
 ######################    
 ##### PASAJERO #######
@@ -265,19 +313,20 @@ def MisSolicitudes():
     return render_template('listado_solicitudes.html', solicitudesPasajero=solicitudesPasajero)
 
 
-@viaje_bp.route("/guardarUbicacion", methods=["POST"])
-def guardar_ubicacion():
+@viaje_bp.route("/guardar/ubicacion", methods=["POST"])
+@login_required
+def GuardarUbicacion():
+    
     data = request.get_json()
     latitud = data["latitud"]
     longitud = data["longitud"]
-
-    print("Latitud: ",latitud)
-    print("Longitud: ", longitud)
-
-    # Luego, puedes responder con un mensaje de éxito
+    idViaje = data["idViaje"]
+    
+    tracking = model.Tracking(latitud= latitud,
+                              longitud= longitud,
+                              id_viaje= idViaje,
+                              fecha= datetime.now())
+    model.Tracking.save_to_db(tracking)
+    
     return "Ubicación guardada con éxito", 200
-
-@viaje_bp.route("/comienza", methods=["GET","POST"])
-def comienza():
-    return render_template('ubicacion.html')
 

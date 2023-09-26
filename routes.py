@@ -8,6 +8,8 @@ from Vehiculo.routes import vehiculo_bp
 import models as model
 
 from flask import Blueprint, render_template, url_for, redirect
+from Viaje.functions.f_AccionesConductor import viaje_en_curso_como_conductor, viaje_en_curso_como_pasajero
+from datetime import datetime, timedelta
 
 #Blueprints
 app.register_blueprint(usuario_bp)
@@ -49,9 +51,38 @@ def formato_hora(time):
 
     return horario
 
+def viaje_en_curso(idUsuario):
+    conductor = viaje_en_curso_como_conductor(idUsuario)
+    pasajero = viaje_en_curso_como_pasajero(idUsuario)
+    print("conductor: ", conductor, "Pasajero: ", pasajero)
+    if conductor:
+        return conductor
+    elif pasajero:
+        return pasajero
+    else:
+        return False
+
+def proximos_al_viaje(fecha_objetivo):
+    # Obtenemos la fecha y hora actual
+    fecha_actual = datetime.now()
+
+    # Calculamos la diferencia entre la fecha objetivo y la fecha actual
+    diferencia = fecha_objetivo - fecha_actual
+
+    # Creamos un objeto timedelta con 15 minutos
+    quince_minutos = timedelta(minutes=15)
+    print("Diferencia: ", diferencia, "Comparacion: ", diferencia <= quince_minutos)
+    # Comparamos la diferencia con los 15 minutos
+    if diferencia <= quince_minutos:
+        return True
+    else:
+        return False
+
 app.jinja_env.globals.update(formato_fecha=formato_fecha)
 app.jinja_env.globals.update(formato_hora=formato_hora)
 app.jinja_env.globals.update(formato_fecha_corta=formato_fecha_corta)
+app.jinja_env.globals.update(viaje_en_curso=viaje_en_curso)
+app.jinja_env.globals.update(proximos_al_viaje=proximos_al_viaje)
 
 #Home
 @app.route('/', methods=['GET', 'POST'])
