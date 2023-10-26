@@ -10,5 +10,5 @@ import models as model
 class CrearVehiculo(FlaskForm):
     patente = StringField('Patente', validators=[DataRequired(), Length(min=6, max=7)])
     cantidad_asientos = IntegerField('Cantidad de asientos', validators=[DataRequired()])
-    descripcion = StringField('Descripcion', validators=[DataRequired(), Length(min=10, max=100)])
+    descripcion = TextAreaField('Descripcion', validators=[DataRequired()])
     submit = SubmitField('Agregar Vehiculo')

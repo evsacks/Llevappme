@@ -1,23 +1,52 @@
-<html>
-	<head>
-		<title>LLEVAPPME</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    </head>
-	<body>
-        <section>
-            {% from "_formhelpers.html" import render_field %}
-            <form method="post" action="{{url_for('vehiculo_bp.Vehiculo')}}">
-                {{ form.hidden_tag() }}
-            <dl>
-                {{ render_field(form.patente) }}
-                {{ render_field(form.cantidad_asientos) }}
-                {{ render_field(form.descripcion) }}
-            </dl>
-            {{ render_field(form.submit) }}
-            </form>
-        </section>						
-
-        <a href="{{url_for('usuario_bp.Logout')}}">Salir</a>
-	</body>
-</html>
+{% extends 'layout.html' %}
+{% block section %}
+<!-- Section -->
+<section>
+    <header class="major">
+        <h2>Nuevo Vehiculo</h2>
+    </header>
+    {% if resultado %}
+        <a> {{resultado}} </a>
+    {% endif%}    
+    {% if form %}
+        <form method="post" action="{{url_for('vehiculo_bp.Vehiculo')}}">
+        {{ form.hidden_tag() }}
+        <div class="row gtr-200">
+            <div class="col-9 col-12-medium">
+                <div class="row gtr-uniform">
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.patente(type="text",  id="patente", value="", placeholder="Patente") }}
+                        <div>
+                            {% for error in form.patente.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-6 col-12-xsmall">
+                        {{ form.cantidad_asientos(type="tel",  id="cant_asientos", value="", placeholder="Cantidad asientos disponibles") }}
+                        <div>
+                            {% for error in form.cantidad_asientos.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-12 col-12-xsmall">
+                        {{ form.descripcion(type="text",  id="descripcion", value="", placeholder="Describí tu vehiculo. Tipo de vehiculo, modelo, color...") }}
+                        <div>
+                            {% for error in form.descripcion.errors %}
+                                <span>{{ error }}</span> 
+                            {% endfor %}
+                        </div>
+                    </div>
+                
+                    <div class="col-12">
+                        <ul class="actions">
+                            <li>{{ form.submit(type="submit", value="Crear Vehiculo") }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    {% endif %}
+{% endblock %}
