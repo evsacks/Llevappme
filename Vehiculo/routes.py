@@ -3,21 +3,13 @@ from flask_login import login_user,logout_user,login_required,current_user
 from datetime import datetime, timedelta
 import models as model
 import Vehiculo.forms as formulario
+
+import Vehiculo.functions.f_EliminarVehiculo as felv
+import Vehiculo.functions.f_NuevoVehiculo as fnuv
+import Usuario.functions.f_AccionesUsuario as faccu
+
 vehiculo_bp = Blueprint('vehiculo_bp', __name__, url_prefix='/vehiculo', template_folder='templates', static_folder='static')
 
-def AltaConductor(idUsuario,idVehiculo):
-    nuevoConductor = model.Conductor(
-        id_usuario=idUsuario,
-        id_vehiculo=idVehiculo
-    )
-    model.Conductor.save_to_db(nuevoConductor)
-
-    usuario = model.Usuario.query.get(idUsuario)
-    usuario.id_tipo_usuario = 2
-    
-    model.Usuario.save_to_db(usuario)
-
-    return nuevoConductor
 
 #VIAJE SEGUN ESTADO
 @vehiculo_bp.route('/', methods=['GET', 'POST'])
@@ -30,23 +22,15 @@ def Vehiculo():
         cantidad_asientos = form.cantidad_asientos.data
         descripcion = form.descripcion.data
 
-        nuevoVehiculo = model.Vehiculo(
-            patente=patente,
-            cantidad_asientos=cantidad_asientos,
-            descripcion = descripcion,
-            fecha_actualizacion=datetime.now(),
-            fecha_creacion=datetime.now()
-        )
-        model.Vehiculo.save_to_db(nuevoVehiculo)
-
-        vehiculo = model.Vehiculo.query.get(nuevoVehiculo.id)
+        vehiculo = fnuv.CrearVehiculo(patente,cantidad_asientos,descripcion)
         
         if vehiculo:
             idUsuario = current_user.get_id()
-            AltaConductor(idUsuario, vehiculo.id)
+            fnuv.AltaConductor(idUsuario, vehiculo.id)
             
             return redirect(url_for('viaje_bp.BuscarViaje'))
-            
+        
+        #Agregar notificación            
         return redirect(url_for('viaje_bp.BuscarViaje'))
     
     return render_template('vehiculo.html', form = form)
@@ -56,18 +40,15 @@ def Vehiculo():
 def ListadoVehiculos():
     idUsuario = current_user.get_id()
     vehiculos = model.Conductor.query.filter_by(id_usuario=idUsuario).all()
-    print(vehiculos)
     return render_template('listado_vehiculos.html', vehiculos = vehiculos)
     
 @vehiculo_bp.route('/eliminar/<idVehiculo>', methods=['GET', 'POST'])
 @login_required
 def EliminarVehiculo(idVehiculo):
 
-    conductor = model.Conductor.query.filter_by(id_vehiculo = idVehiculo).first()
-    if conductor:
-        model.Conductor.delete_from_db(conductor)
-        vehiculo = model.Vehiculo.query.get(idVehiculo)
-        if vehiculo:
-            model.Vehiculo.delete_from_db(vehiculo)
-
-    return redirect(url_for('vehiculo_bp.ListadoVehiculos'))
+    felv.eliminarVehiculo(idVehiculo)
+    convertir = faccu.ConvertirEnPasajero(current_user.id)
+    if not convertir:
+        return redirect(url_for('vehiculo_bp.ListadoVehiculos'))
+    else:
+        return redirect(url_for('viaje_bp.BuscarViaje'))
