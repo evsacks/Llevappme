@@ -55,7 +55,19 @@ def Vehiculo():
 @login_required
 def ListadoVehiculos():
     idUsuario = current_user.get_id()
-    vehiculos = model.Conductor.query.filter_by(id_usuario=idUsuario)
+    vehiculos = model.Conductor.query.filter_by(id_usuario=idUsuario).all()
     print(vehiculos)
     return render_template('listado_vehiculos.html', vehiculos = vehiculos)
     
+@vehiculo_bp.route('/eliminar/<idVehiculo>', methods=['GET', 'POST'])
+@login_required
+def EliminarVehiculo(idVehiculo):
+
+    conductor = model.Conductor.query.filter_by(id_vehiculo = idVehiculo).first()
+    if conductor:
+        model.Conductor.delete_from_db(conductor)
+        vehiculo = model.Vehiculo.query.get(idVehiculo)
+        if vehiculo:
+            model.Vehiculo.delete_from_db(vehiculo)
+
+    return redirect(url_for('vehiculo_bp.ListadoVehiculos'))

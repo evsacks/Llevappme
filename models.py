@@ -639,6 +639,7 @@ class Vehiculo(db.Model):
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
+        
     def update_from_db():
         db.session.commit()
 

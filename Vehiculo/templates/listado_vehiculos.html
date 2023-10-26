@@ -1,33 +1,37 @@
-<html>
-	<head>
-		<title>LLEVAPPME</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    </head>
-	<body>
-        <section>
-            <table>
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Usuario</th>
-                        <th scope="col">Patente</th>
-                        <th scope="col">Max # Asientos</th>
-                        <th scope="col">Descripcion</th>
-                    </tr>
-                </thead>
-                    
-                <tbody>
-                    {% for vehiculo in vehiculos %}
+{% extends 'layout.html' %}
+{% block section %}
+<section>
+    <!-- Elements -->
+    <h2 id="elements">Mis Vehiculos</h2>
+        {% if vehiculos %}
+            <div class="table-wrapper">
+                <table class="alt">
+                    <thead>
                         <tr>
-                            <td> {{ vehiculo.usuario.email}}</td>
-                            <td> {{ vehiculo.vehiculo.patente}}</td>
-                            <td> {{ vehiculo.vehiculo.cantidad_asientos}}</td>
-                            <td> {{ vehiculo.vehiculo.descripcion}}</td>
+                            <th scope="col">Patente</th>
+                            <th scope="col">Asientos</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Acciones</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>						
+                    </thead>
+                    <tbody>
+                        {% for v in vehiculos %}
+                            <tr>
+                                <td> {{ v.vehiculo.patente}}</td>
+                                <td> {{ v.vehiculo.cantidad_asientos}}</td>
+                                <td> {{ v.vehiculo.descripcion}}</td>
+                                <td> 
+                                    <a href="{{url_for('vehiculo_bp.EliminarVehiculo', idVehiculo=v.id_vehiculo)}}">Eliminar vehiculo</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+        {% if mensaje %}
+            <a>{{mensaje}}</a>
+        {% endif %}
+</section>
 
-        <a href="{{url_for('usuario_bp.Logout')}}">Salir</a>
-	</body>
-</html>
+{% endblock %}
