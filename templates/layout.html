@@ -55,14 +55,28 @@
 									</header>
 									<ul>
 										<li><a href="{{url_for('viaje_bp.BuscarViaje')}}">Inicio</a></li>
+										{% if modo_conductor() %}
+											<li><a href="{{url_for('viaje_bp.PublicarViaje')}}">Publicar Viaje</a></li>
+										{% endif %}
 										<li>
 											<span class="opener">Mis viajes</span>
 											<ul>
 												<li><a href="{{url_for('viaje_bp.MisSolicitudes')}}">Suscripciones</a></li>
-												<li><a href="{{url_for('viaje_bp.ViajesPublicados')}}">Viajes Publicados</a></li>
 												<li><a href="#">Viajes realizados</a></li>
+												{% if modo_conductor() %}
+													<li><a href="{{url_for('viaje_bp.ViajesPublicados')}}">Viajes Publicados</a></li>
+												{% endif %}
 											</ul>
 										</li>
+										{% if modo_conductor() %}
+											<li>
+												<span class="opener">Mis Vehiculos</span>
+												<ul>
+													<li><a href="{{url_for('vehiculo_bp.Vehiculo')}}">Nuevo Vehiculo</a></li>
+													<li><a href="{{url_for('vehiculo_bp.ListadoVehiculos')}}">Mis Vehiculos</a></li>
+												</ul>
+											</li>
+										{% endif %}
 										<li><a href="#">Perfil</a></li>
 										<li><a href="{{url_for('usuario_bp.Logout')}}">Salir</a></li>
 									</ul>

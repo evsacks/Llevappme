@@ -185,7 +185,8 @@ def BuscarViaje():
     if form.validate_on_submit():
         print("validado, dispara buscar_viaje()")
         return fbuv.buscar_viaje()
-    return render_template('buscar_viaje.html', form=form)
+    viajes = fbuv.obtener_dos_ultimos_viajes()
+    return render_template('buscar_viaje.html', form=form, viajes = viajes)
 
 @viaje_bp.route('/<idViaje>/grupo', methods=['GET', 'POST'])
 @login_required

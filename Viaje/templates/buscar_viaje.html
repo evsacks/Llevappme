@@ -96,66 +96,40 @@
     </div>
 </section>
 
-<!-- Section -->
-<section>
-    <header class="major">
-        <h2>Últimos viajes agregados.</h2>
-    </header>
-    <div class="posts">
-        <article>
-            <h3 style="margin-bottom: 0px;">
-                <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
-                Pilar, Buenos Aires
-            </h3>
-            <h3 style="margin-bottom: 0px;">
-                <a class="fas fa-chevron-down fa-xs"></a>
-            </h3>
-            <h3>
-                <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
-                Colón, Entre Ríos
-            </h3>
-            <p style="margin-bottom: 0px;">
-                <a class="fas fa-calendar-day" style="margin-right: 10px;"></a>
-                Domingo 15 de Argosto 2023
-            </p>
-            <p>
-                <a class="fas fa-clock" style="margin-right: 10px;"></a>
-                15.00 hs.
-            </p>
-            <ul class="actions">
-                <li><a href="#" class="button">Ver</a></li>
-            </ul>
-        </article>
-        <article>
-            <h3 style="margin-bottom: 0px;">
-                <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
-                Pilar, Buenos Aires
-            </h3>
-            <h3 style="margin-bottom: 0px;">
-                <a class="fas fa-chevron-down fa-xs"></a>
-            </h3>
-            <h3>
-                <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
-                Colón, Entre Ríos
-            </h3>
-            <p style="margin-bottom: 0px;">
-                <a class="fas fa-calendar-day" style="margin-right: 10px;"></a>
-                Domingo 15 de Argosto 2023
-            </p>
-            <p>
-                <a class="fas fa-clock" style="margin-right: 10px;"></a>
-                15.00 hs.
-            </p>
-            <ul class="actions">
-                <li><a href="#" class="button">Ver</a></li>
-            </ul>
-        </article>
-    </div>
-</section>
-                
-<h2 class="major">ACCIONES</h2>
-<a class="special" href="{{url_for('vehiculo_bp.Vehiculo')}}">Nuevo Vehiculo</a>
-<a class="special" href="{{url_for('viaje_bp.PublicarViaje')}}">Publicar viaje</a>
-
-
+{% if viajes %}
+    <!-- Section -->
+    <section>
+        <header class="major">
+            <h2>Últimos viajes agregados.</h2>
+        </header>
+        <div class="posts">
+            {% for viaje in viajes %}
+                <article>
+                    <h3 style="margin-bottom: 0px;">
+                        <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
+                        {{viaje.ubicacion.direccion_inicial}}
+                    </h3>
+                    <h3 style="margin-bottom: 0px;">
+                        <a class="fas fa-chevron-down fa-xs"></a>
+                    </h3>
+                    <h3>
+                        <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
+                        {{viaje.ubicacion.direccion_final}}
+                    </h3>
+                    <p style="margin-bottom: 0px;">
+                        <a class="fas fa-calendar-day" style="margin-right: 10px;"></a>
+                        {{formato_fecha(viaje.fecha_inicio)}}
+                    </p>
+                    <p>
+                        <a class="fas fa-clock" style="margin-right: 10px;"></a>
+                        {{formato_hora(viaje.fecha_inicio)}}
+                    </p>
+                    <ul class="actions">
+                        <li><a href="{{url_for('viaje_bp.VerViaje',idViaje=viaje.id)}}" class="button">Ver</a></li>
+                    </ul>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}  
 {% endblock %}

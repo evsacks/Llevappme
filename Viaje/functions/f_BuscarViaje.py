@@ -5,6 +5,7 @@ from app import model, maps, db
 from sqlalchemy import or_
 from datetime import datetime, timedelta
 import Viaje.forms as formulario
+import random
 
 def comparacion_fecha(fechaInicio,horaInicio):
     print(fechaInicio, horaInicio)
@@ -17,7 +18,6 @@ def comparacion_fecha(fechaInicio,horaInicio):
     print(fechaInicio0000)
     print(fechaInicio2359)
     return (fechaInicio0000, fechaInicio2359)
-
 
 def buscar_viaje():
     form = formulario.BuscarViaje()
@@ -63,3 +63,9 @@ def buscar_viaje():
 
 def resultados_busqueda(viajes):
     return render_template('resultado_busqueda.html', viajes = viajes)
+
+def obtener_dos_ultimos_viajes():
+    # Realiza una consulta para obtener los dos últimos viajes por fecha de creación
+    ultimos_viajes = model.Viaje.query.order_by(model.Viaje.id.desc()).limit(2).all()
+    
+    return ultimos_viajes

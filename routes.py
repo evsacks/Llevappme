@@ -9,6 +9,7 @@ import models as model
 
 from flask import Blueprint, render_template, url_for, redirect
 from Viaje.functions.f_AccionesConductor import viaje_en_curso_como_conductor, viaje_en_curso_como_pasajero
+from Usuario.functions.f_AccionesUsuario import esConductor
 from datetime import datetime, timedelta
 
 #Blueprints
@@ -78,11 +79,16 @@ def proximos_al_viaje(fecha_objetivo):
     else:
         return False
 
+def modo_conductor():
+    return esConductor()
+    
+
 app.jinja_env.globals.update(formato_fecha=formato_fecha)
 app.jinja_env.globals.update(formato_hora=formato_hora)
 app.jinja_env.globals.update(formato_fecha_corta=formato_fecha_corta)
 app.jinja_env.globals.update(viaje_en_curso=viaje_en_curso)
 app.jinja_env.globals.update(proximos_al_viaje=proximos_al_viaje)
+app.jinja_env.globals.update(modo_conductor=modo_conductor)
 
 #Home
 @app.route('/', methods=['GET', 'POST'])

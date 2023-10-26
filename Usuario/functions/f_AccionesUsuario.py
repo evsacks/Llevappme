@@ -1,13 +1,8 @@
-from flask import redirect, url_for, flash, render_template
-from flask_login import current_user
-from datetime import datetime
-from app import model, maps, db
-from sqlalchemy import or_
-from datetime import datetime, timedelta
-import Usuario.forms as formulario
+from app import model, db
+from flask_login import login_user,logout_user,login_required,current_user
 
-
-def EsConductor(idUsuario):
+def esConductor():
+    idUsuario = current_user.get_id()
     usuario = model.Usuario.query.get(idUsuario)
     if usuario.id_tipo_usuario == 2:
         return True
