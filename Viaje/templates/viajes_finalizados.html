@@ -1,0 +1,69 @@
+{% extends 'layout.html' %}
+{% block section %}
+
+{% if viajesPasajero %}
+    <section>    
+        <h2 id="elements">Viajes Finalizados: Modo PASAJERO</h2>
+        <div class="table-wrapper">
+            <table class="alt">
+                <thead>
+                    <tr>
+                        <th scope="col">Origen</th>
+                        <th scope="col">Destino</th>
+                        <th scope="col">Conductor</th>
+                        <th scope="col">Asientos ocupados</th>
+                        <th scope="col">Fecha viaje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for viaje in viajesPasajero %}
+                        <tr>
+                            <td> {{ viaje.ubicacion.direccion_inicial}}</td>
+                            <td> {{ viaje.ubicacion.direccion_final}}</td>
+                            <td> {{ viaje.conductor.usuario.email }}</td>
+                            <td> {{ viaje.conductor.vehiculo.cantidad_asientos - viaje.asientos_disponibles }}</td>
+                            <td> {{ viaje.fecha_inicio_real.date() }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endif %}
+
+{% if viajesConductor %}
+    <section>
+        <h2 id="elements">Viajes Finalizados: Modo CONDUCTOR</h2>
+        <div class="table-wrapper">
+            <table class="alt">
+                <thead>
+                    <tr>
+                        <th scope="col">Origen</th>
+                        <th scope="col">Destino</th>
+                        <th scope="col">Conductor</th>
+                        <th scope="col">Asientos ocupados</th>
+                        <th scope="col">Fecha viaje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for viaje in viajesConductor %}
+                        <tr>
+                            <td> {{ viaje.ubicacion.direccion_inicial}}</td>
+                            <td> {{ viaje.ubicacion.direccion_final}}</td>
+                            <td> {{ viaje.conductor.usuario.email }}</td>
+                            <td> {{ viaje.conductor.vehiculo.cantidad_asientos - viaje.asientos_disponibles }}</td>
+                            <td> {{ viaje.fecha_inicio_real.date() }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endif %}
+
+{% if (not viajesPasajero) and (not viajesConductor) %}
+    <h4 id="elements">Usted aún no ha finalizado ningún viaje</h4>
+{% endif %}
+
+{% endblock %}
+

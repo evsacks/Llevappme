@@ -313,6 +313,15 @@ def MisSolicitudes():
     solicitudesPasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario)
     return render_template('listado_solicitudes.html', solicitudesPasajero=solicitudesPasajero)
 
+@viaje_bp.route("/finalizados", methods=["get"])
+@login_required
+def ViajesFinalizados():
+    idUsuario = current_user.get_id()
+    viajesPasajero = model.Pasajero.query.filter_by(id_usuario = idUsuario, id_estado_pasajero = 6).all()
+    viajesConductor = model.Viaje.query.filter_by(id_conductor = idUsuario, id_estado_viaje = 2).all()
+    return render_template('viajes_finalizados.html', viajesPasajero = viajesPasajero, viajesConductor = viajesConductor)
+
+
 
 @viaje_bp.route("/guardar/ubicacion", methods=["POST"])
 @login_required
