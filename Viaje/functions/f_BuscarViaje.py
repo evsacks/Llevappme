@@ -31,6 +31,7 @@ def buscar_viaje():
         fechaInicio = form.fecha_inicio.data
         horaInicio = form.hora_inicio.data
 
+        print(origen, destino, fechaInicio, horaInicio)
         viajes_query = model.Viaje.query
 
         if origen:

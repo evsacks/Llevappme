@@ -15,7 +15,7 @@
             <div class="col-9 col-12-medium">
                 <div class="row gtr-uniform">
                     <div class="col-6 col-12-xsmall">
-                        {{ form.origen(type="text",  id="origen", value="", placeholder="Origen") }}
+                        {{ form.origen(type="text",  id="origen", onclick='autocompletar("origen")', placeholder="Origen") }}
                         <div>
                             {% for error in form.origen.errors %}
                                 <span>{{ error }}</span> 
@@ -23,7 +23,7 @@
                         </div>
                     </div>
                     <div class="col-6 col-12-xsmall">
-                        {{ form.destino(type="text",  id="destino", value="", placeholder="Destino") }}
+                        {{ form.destino(type="text",  id="destino", onclick='autocompletar("destino")', placeholder="Destino") }}
                         <div>
                             {% for error in form.destino.errors %}
                                 <span>{{ error }}</span> 

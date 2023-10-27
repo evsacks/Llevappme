@@ -92,3 +92,13 @@ def Perfil():
 
     edad = fper.calcular_edad(usuario.fecha_nacimiento)
     return render_template('perfil.html', edad = edad, viajesPasajero = viajesPasajero, viajesConductor = viajesConductor, usuario = usuario)
+
+@usuario_bp.route('/perfil/editar', methods=['GET', 'POST'])
+@login_required
+def EditarPerfil():
+    return True
+
+@usuario_bp.route('/perfil/eliminar', methods=['GET', 'POST'])
+@login_required
+def EliminarCuenta():
+    return True

@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import googlemaps
 from pprint import pprint
-API_KEY = 'AIzaSyDt5KdV_gWgU2L_W7yNsJucH5XvQ_dcHq0'
+API_KEY = 'AIzaSyBPrNn6olS4yqaOK9v7ppvXnu4kXQ_x_98'
 #basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
