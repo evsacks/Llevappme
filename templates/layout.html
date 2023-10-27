@@ -61,8 +61,8 @@
 										<li>
 											<span class="opener">Mis viajes</span>
 											<ul>
-												<li><a href="{{url_for('viaje_bp.MisSolicitudes')}}">Suscripciones</a></li>
-												<li><a href="#">Viajes realizados</a></li>
+												<li><a href="{{url_for('viaje_bp.MisSolicitudes')}}">Mis solicitudes</a></li>
+												<li><a href="{{url_for('viaje_bp.ViajesFinalizados')}}">Viajes Finalizados</a></li>
 												{% if modo_conductor() %}
 													<li><a href="{{url_for('viaje_bp.ViajesPublicados')}}">Viajes Publicados</a></li>
 												{% endif %}
@@ -77,7 +77,7 @@
 												</ul>
 											</li>
 										{% endif %}
-										<li><a href="#">Perfil</a></li>
+										<li><a href="{{url_for('usuario_bp.Perfil')}}">Perfil</a></li>
 										<li><a href="{{url_for('usuario_bp.Logout')}}">Salir</a></li>
 									</ul>
 								</nav>

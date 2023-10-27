@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+{% block section %}
+
+<section>
+    <header class="major">
+        <h2 style="margin-bottom: 5px;">{{ usuario.nombre }} {{ usuario.apellido }}</h2>
+    </header>
+    <p> Registrado desde: {{ formato_fecha(usuario.fecha_creacion) }} </p>
+    <div class="posts">
+        <article>
+            <h3> Información </h3>
+            
+            <div>
+                <h3 style="display: inline;"><a class="fa-solid fa-user"></a></h3>
+                <p style="display: inline;margin-bottom: 10px;">    Edad: {{ edad }}</p>
+            </div>
+            <div>
+                <h3 style="display: inline;"><a class="fa-solid fa-envelope"></a></h3>
+                <p style="display: inline;margin-bottom: 10px;">    Correo Electrónico: {{ usuario.email }}</p>
+            </div>
+            <div>
+                <h3 style="display: inline;"><a class="fa-solid fa-mobile-screen"></a></h3>
+                <p style="display: inline;">    Teléfono: {{ usuario.telefono }}</p>
+            </div>
+        </article>
+        <article>
+            <h3> Historial de viajes </h3>
+            <div>
+                <h3 style="display: inline;"><a class="fa-solid fa-child-reaching"></a></h3>
+                <p style="display: inline;margin-bottom: 10px;">    Viajes finalizados como Pasajero: {{ viajesPasajero }}</p>
+            </div>
+            <div>
+                <h3 style="display: inline;"><a class="fa-solid fa-car"></a></h3>
+                <p style="display: inline;">    Viajes finalizados como Conductor: {{ viajesConductor }}</p>
+            </div>
+        </article>
+    </div>
+</section>
+
+{% if not modo_conductor() %}
+    <section>
+        <div class="features">
+            <article>
+                <span class="icon solid fa-car"></span>
+                <div class="content">
+                    <h3>Conviertete en conductor</h3>
+                    <p>Se un conductor en un simple paso, registra el vehículo con el que vas a conducir y listo!</p>
+                    <ul class="actions">
+                        <li>
+                            <a href="{{url_for('vehiculo_bp.Vehiculo')}}" class="button fit">¡Vamos!</a>
+                        </li>
+                    </ul>
+                </div>
+            </article>
+            
+        </div>
+    </section>
+{% endif %}
+
+{% endblock %}

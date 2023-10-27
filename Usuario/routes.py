@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 import models as model
 import Usuario.forms as formulario
+import Usuario.functions.f_perfil as fper
 
 usuario_bp = Blueprint('usuario_bp', __name__, url_prefix='/usuario', template_folder='templates', static_folder='static')
 
@@ -80,4 +81,14 @@ def Logout():
     return redirect(url_for('usuario_bp.Login'))
 
 
+@usuario_bp.route('/perfil', methods=['GET', 'POST'])
+@login_required
+def Perfil():
+    idUsuario = current_user.get_id()
+    usuario = model.Usuario.query.get(idUsuario)
     
+    viajesPasajero = len(model.Pasajero.query.filter_by(id_usuario = idUsuario, id_estado_pasajero = 6).all())
+    viajesConductor = len(model.Viaje.query.filter_by(id_conductor = idUsuario, id_estado_viaje = 2).all())
+
+    edad = fper.calcular_edad(usuario.fecha_nacimiento)
+    return render_template('perfil.html', edad = edad, viajesPasajero = viajesPasajero, viajesConductor = viajesConductor, usuario = usuario)
