@@ -3,7 +3,7 @@
     {% if viaje %}
         <section>
             <div class="row gtr-200" id="idViaje" data-id-viaje="{{viaje.id}}">
-                {% if proximos_al_viaje(viaje.fecha_inicio) %}
+                {% if (proximos_al_viaje(viaje.fecha_inicio)) and (current_user.id == viaje.conductor.id_usuario) %}
                     {% if not viaje.fecha_inicio_real %}
                         <div class="col-6 col-12-medium">
                             <ul class="actions stacked">
@@ -14,7 +14,7 @@
                         </div>
                         <div class="col-6 col-12-medium"></div>
                     {% else %}
-                        {% if not viaje.fecha_final_real %}
+                        {% if (not viaje.fecha_final_real) and (viaje.fecha_inicio_real) %}
                             <div class="col-6 col-12-medium"></div>
                             <div class="col-6 col-12-medium">
                                 <ul class="actions stacked">
