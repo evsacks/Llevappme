@@ -7,30 +7,50 @@
     <div class="posts">
         {% if viajes %}
             {% for viaje in viajes %}
-                <article>
-                    <h3 style="margin-bottom: 0px;">
-                        <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
-                        {{viaje.ubicacion.direccion_inicial}}
-                    </h3>
-                    <h3 style="margin-bottom: 0px;">
-                        <a class="fas fa-chevron-down fa-xs"></a>
-                    </h3>
-                    <h3>
-                        <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
-                        {{viaje.ubicacion.direccion_final}}
-                    </h3>
-                    <p style="margin-bottom: 0px;">
-                        <a class="fas fa-calendar-day" style="margin-right: 10px;"></a>
-                        {{ formato_fecha(viaje.fecha_inicio) }}
-                    </p>
-                    <p>
-                        <a class="fas fa-clock" style="margin-right: 10px;"></a>
-                        {{ formato_hora(viaje.fecha_inicio) }}
-                    </p>
-                    <ul class="actions">
-                        <li><a href="{{url_for('viaje_bp.VerViaje',idViaje=viaje.id)}}" class="button">Ver</a></li>
+            <article>
+                <a href="{{url_for('viaje_bp.VerViaje',idViaje=viaje.id)}}" class="image">
+                    <div class="map-container" style="height: 200px;"
+                    data-map-id = "{{viaje.id}}"
+                    data-lat-inicial="{{ viaje.ubicacion.latitud_inicial }}"
+                    data-lng-inicial="{{ viaje.ubicacion.longitud_inicial }}"
+                    data-lat-final="{{ viaje.ubicacion.latitud_final }}"
+                    data-lng-final="{{ viaje.ubicacion.longitud_final }}">
+                </div>
+                </a>
+                <h3 style="margin-bottom: 0px;">
+                    <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
+                    {{viaje.ubicacion.direccion_inicial}}
+                </h3>
+                <h3 style="margin-bottom: 0px;">
+                    <a class="fas fa-chevron-down fa-xs"></a>
+                </h3>
+                <h3>
+                    <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
+                    {{viaje.ubicacion.direccion_final}}
+                </h3>
+                <div>
+                    <ul class="icons" style="display: inline;">
+                        <li><a class="icon solid fa-calendar-day"></a></li>
                     </ul>
-                </article>
+                    <p style="display: inline;margin-bottom: 0px;">Fecha de salida: {{formato_fecha(viaje.fecha_inicio)}}</p>
+                </div>
+                <div>
+                    <ul class="icons" style="display: inline;">
+                        <li><a class="icon solid fa-clock"></a></li>
+                    </ul>
+                    <p style="display: inline;margin-bottom: 0px;">Horario de salida: {{formato_hora(viaje.fecha_inicio)}}</p>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <ul class="icons" style="display: inline;">
+                        <li><a class="icon solid fa-chair"></a></li>
+                    </ul>
+                    <p style="display: inline;"> Asientos disponibles: {{viaje.asientos_disponibles}}</p>
+                </div>
+                
+                <ul class="actions">
+                    <li><a href="{{url_for('viaje_bp.VerViaje',idViaje=viaje.id)}}" class="button">Ver</a></li>
+                </ul>
+            </article>
             {% endfor %}
         {% endif %}
     </div>

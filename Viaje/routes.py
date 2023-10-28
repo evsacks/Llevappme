@@ -166,13 +166,14 @@ def VerViaje(idViaje):
 
         idUsuario = current_user.get_id()
         es_pasajero = fsov.usuario_solicito_viaje(idUsuario,viaje.id)
-        print("Es un pasajero: ", es_pasajero)
-
-        if es_pasajero:
-            return render_template('ver_viaje.html', viaje=viaje, solicitud="Enviada", fechaInicio = viaje.fecha_inicio)
+        coordenadas_y_distancia = fpuv.obtener_coordenadas_y_distancia(viaje.ubicacion.direccion_inicial, viaje.ubicacion.direccion_final)
+        _, _, _, _, distancia, duracion = coordenadas_y_distancia
+        
+        if es_pasajero: 
+            return render_template('ver_viaje.html', viaje=viaje, solicitud="Enviada", fechaInicio = viaje.fecha_inicio, distancia = distancia, duracion = duracion)
         else:
             print("No es pasajero, muestro viaje", viaje)
-            return render_template('ver_viaje.html', viaje=viaje, solicitud="Libre", fechaInicio = viaje.fecha_inicio)
+            return render_template('ver_viaje.html', viaje=viaje, solicitud="Libre", fechaInicio = viaje.fecha_inicio, distancia = distancia, duracion = duracion)
 
     except Exception as e:
         mensaje = str(e) 

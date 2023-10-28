@@ -28,14 +28,16 @@ def obtener_coordenadas_y_distancia(origen, destino):
     coordenadas_origen = maps.geocode(origen)
     coordenadas_destino = maps.geocode(destino)
     matrix_distance = maps.distance_matrix(origen, destino)
-
+    print(coordenadas_origen)
+    print(coordenadas_destino)
+    print(matrix_distance)
     if all('error' not in data for data in [coordenadas_origen, coordenadas_destino, matrix_distance]):
         latitud_origen = coordenadas_origen[0]['geometry']['location']['lat']
         longitud_origen = coordenadas_origen[0]['geometry']['location']['lng']
         latitud_destino = coordenadas_destino[0]['geometry']['location']['lat']
         longitud_destino = coordenadas_destino[0]['geometry']['location']['lng']
-        distancia = matrix_distance['rows'][0]['elements'][0]['distance']['value']
-        duracion = matrix_distance['rows'][0]['elements'][0]['duration']['value']
+        distancia = matrix_distance['rows'][0]['elements'][0]['distance']['text']
+        duracion = matrix_distance['rows'][0]['elements'][0]['duration']['text']
 
         return latitud_origen, longitud_origen, latitud_destino, longitud_destino, distancia, duracion
 
