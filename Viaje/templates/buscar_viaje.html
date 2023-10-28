@@ -14,6 +14,7 @@
             {{ form.hidden_tag() }}
             <div class="row gtr-uniform">
                 <div class="col-6 col-12-xsmall">
+                    <h5>Origen</h5>
                     {{ form.origen(type="text",  id="origen", onclick='autocompletar("origen")', placeholder="Origen") }}
                     <div>
                         {% for error in form.origen.errors %}
@@ -22,6 +23,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-12-xsmall">
+                    <h5>Destino</h5>
                     {{ form.destino(type="text",  id="destino", onclick='autocompletar("destino")', placeholder="Destino") }}
                     <div>
                         {% for error in form.destino.errors %}
@@ -30,6 +32,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-12-xsmall">
+                    <h5>Fecha</h5>
                     {{ form.fecha_inicio(type="date",  id="fecha_inicio", value="", placeholder="Fecha") }}
                     <div>
                         {% for error in form.fecha_inicio.errors %}
@@ -38,6 +41,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-12-xsmall">
+                    <h5>Horario</h5>
                     {{ form.hora_inicio(type="time",  id="hora_inicio", value="", placeholder="Horario") }}
                     <div>
                         {% for error in form.hora_inicio.errors %}
@@ -66,31 +70,31 @@
     </header>
     <div class="features">
         <article>
-            <span class="icon fa-gem"></span>
+            <span class="icon solid fa-sack-dollar"></span>
             <div class="content">
                 <h3>Ahorrás</h3>
-                <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
+                <p>Permite ahorrar grandes cantidades de combustible, costes de los peajes o tasas de parking tanto a pasajeros como a conductores, ya que los gastos se dividen entre todos los viajeros.</p>
             </div>
         </article>
         <article>
-            <span class="icon solid fa-paper-plane"></span>
-            <div class="content">
-                <h3>Socializás</h3>
-                <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-            </div>
-        </article>
-        <article>
-            <span class="icon solid fa-rocket"></span>
+            <span class="icon solid fa-earth-americas"></span>
             <div class="content">
                 <h3>Cuidas el planeta</h3>
-                <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
+                <p>Disminuye las emisiones de CO2 al reducir el número de coches en circulación, sobre todo en grandes ciudades donde las emisiones de dióxido de carbono por parte de los vehículos son preocupantes.</p>
             </div>
         </article>
         <article>
-            <span class="icon solid fa-signal"></span>
+            <span class="icon solid fa-users"></span>
+            <div class="content">
+                <h3>Socializás</h3>
+                <p>Permite crear o afianzar relaciones sociales entre pasajeros y conductores.</p>
+            </div>
+        </article>
+        <article>
+            <span class="icon solid fa-car-burst"></span>
             <div class="content">
                 <h3>y muchas cosas mas...</h3>
-                <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
+                <p>Hay menos coches en la carretera, por lo que disminuye el tráfico y se reduce el número de accidentes.</p>
             </div>
         </article>
     </div>
