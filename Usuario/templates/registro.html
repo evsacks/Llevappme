@@ -11,6 +11,7 @@
             {{ form.hidden_tag() }}
             <div class="row gtr-uniform">
                 <div class="col-6 col-12-xsmall">
+                    <h5>Nombre</h5>
                     {{ form.nombreUsuario(type="text",  id="nombre", value="", placeholder="Nombre") }}
                     <div>
                         {% for error in form.nombreUsuario.errors %}
@@ -19,6 +20,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-12-xsmall">
+                    <h5>Apellido</h5>
                     {{ form.apellidoUsuario(type="text",  id="apellido", value="", placeholder="Apellido") }}
                     <div>
                         {% for error in form.apellidoUsuario.errors %}
@@ -27,6 +29,7 @@
                     </div>
                 </div>
                 <div class="col-12">
+                    <h5>Email</h5>
                     {{ form.email(type="email",  id="email", value="", placeholder="Email") }}
                     <div>
                         {% for error in form.email.errors %}
@@ -35,6 +38,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-12-xsmall">
+                    <h5>Teléfono</h5>
                     {{ form.telefono(type="tel",  id="telefono", value="", placeholder="Teléfono") }}
                     <div>
                         {% for error in form.telefono.errors %}
@@ -43,6 +47,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-12-xsmall">
+                    <h5>Fecha de nacimiento</h5>
                     {{ form.fecha_nacimiento(type="date",  id="fecha_nacimiento", value="", placeholder="Fecha de nacimiento") }}
                     <div>
                         {% for error in form.fecha_nacimiento.errors %}
@@ -51,6 +56,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-12-xsmall">
+                    <h5>Contraseña</h5>
                     {{ form.password(type="password",  id="password", value="", placeholder="Contraseña") }}
                     <div>
                         {% for error in form.password.errors %}
@@ -59,6 +65,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-12-xsmall">
+                    <h5>Repetir Contraseña</h5>
                     {{ form.confirm(type="password",  id="contrasenia_confirm", value="", placeholder="Vuelva a escribir la contraseña") }}
                     <div>
                         {% for error in form.confirm.errors %}
