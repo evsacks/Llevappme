@@ -13,6 +13,7 @@ import Viaje.functions.f_PublicarViaje as fpuv
 import Viaje.functions.f_SolicitudViaje as fsov
 import Viaje.functions.f_AccionesConductor as facc
 import Viaje.functions.f_BuscarViaje as fbuv
+import Viaje.functions.f_IniciarViaje as finv
 
 viaje_bp = Blueprint('viaje_bp', __name__, url_prefix='/viaje', template_folder='templates', static_folder='static')
 
@@ -168,7 +169,7 @@ def VerViaje(idViaje):
         es_pasajero = fsov.usuario_solicito_viaje(idUsuario,viaje.id)
         coordenadas_y_distancia = fpuv.obtener_coordenadas_y_distancia(viaje.ubicacion.direccion_inicial, viaje.ubicacion.direccion_final)
         _, _, _, _, distancia, duracion = coordenadas_y_distancia
-        
+
         if es_pasajero: 
             return render_template('ver_viaje.html', viaje=viaje, solicitud="Enviada", fechaInicio = viaje.fecha_inicio, distancia = distancia, duracion = duracion)
         else:
@@ -202,19 +203,20 @@ def GrupoDeViaje(idViaje):
 @login_required
 def IniciarViaje(idViaje):
     viaje = model.Viaje.query.get(idViaje)
-    if viaje:
-        
-        pasajeros = model.Pasajero.query.filter_by(id_viaje = idViaje, id_estado_pasajero = 1).all()
-        for pasajero in pasajeros:
-            pasajero.id_estado_pasajero = 5
-            pasajero.fecha_actualizacion = datetime.now()
-            db.session.commit()
+    return render_template('iniciar_viaje.html', viaje=viaje)
 
-        viaje.fecha_inicio_real = datetime.now()
-        viaje.id_estado_viaje = 1
-        db.session.commit()
-        
-        return redirect(url_for('viaje_bp.VerViaje', idViaje = idViaje))
+@viaje_bp.route('/<idViaje>/confirmar', methods=['GET', 'POST'])
+@login_required
+def ConfirmarInicioViaje(idViaje):
+    viaje = model.Viaje.query.get(idViaje)
+    pasajerosConfirmados = request.form.getlist("grupo-viaje")
+
+    for p in pasajerosConfirmados:
+        pasajero = model.Pasajero.query.get(p)
+        finv.confirmarPasajero(pasajero.id)
+        finv.iniciarViaje(idViaje)
+    
+    return redirect(url_for('viaje_bp.VerViaje', idViaje = idViaje))
     
 @viaje_bp.route('/<idViaje>/finalizar', methods=['GET', 'POST'])
 @login_required
@@ -321,8 +323,6 @@ def ViajesFinalizados():
     viajesPasajero = model.Pasajero.query.filter_by(id_usuario = idUsuario, id_estado_pasajero = 6).all()
     viajesConductor = model.Viaje.query.filter_by(id_conductor = idUsuario, id_estado_viaje = 2).all()
     return render_template('viajes_finalizados.html', viajesPasajero = viajesPasajero, viajesConductor = viajesConductor)
-
-
 
 @viaje_bp.route("/guardar/ubicacion", methods=["POST"])
 @login_required

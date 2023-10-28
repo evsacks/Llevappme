@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+{% block section %}
+    {% if viaje %}
+        <section>
+            <header class="major">
+                <h2 style="margin-bottom: 20px;">Grupo de viaje</h2>
+            </header>
+            <div class="box">
+                <p>Por favor indicanos quienes estan listos para viajar:</p>
+                <form method="post" action="{{url_for('viaje_bp.ConfirmarInicioViaje', idViaje=viaje.id)}}">
+                    <div class="row gtr-uniform">
+                        <!-- Break -->
+                        {% for p in viaje.pasajeros %}
+                            <div class="col-6 col-12-small">
+                                <input type="checkbox" id="{{p.id}}" name="grupo-viaje" value="{{p.id}}">
+                                <label for="{{p.id}}">{{ p.usuario.nombre }} {{ p.usuario.apellido }}</label>
+                            </div>
+                        {% endfor %}
+                        <!-- Break -->
+                        <div class="col-12">
+                            <ul class="actions">
+                                <li><input type="submit" value="Iniciar viaje" class="primary" /></li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    {% endif %}
+    {% if mensaje %}
+        {{mensaje}}
+    {% endif %}
+    
+{% endblock %}
+
