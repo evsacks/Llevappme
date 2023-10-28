@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block section %}
     {% if viaje %}
-        <section>
+        <section style = "padding-top: 20px;">
             <div class="row gtr-200" id="idViaje" data-id-viaje="{{viaje.id}}">
                 {% if ((proximos_al_viaje(viaje.fecha_inicio)) and (current_user.id == viaje.conductor.id_usuario)) or (viaje.fecha_inicio_real) %}
                     {% if not viaje.fecha_inicio_real %}

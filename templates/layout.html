@@ -8,38 +8,51 @@
 		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 	</head>
 	<body class="is-preload">
-
 		<!-- Wrapper -->
 			<div id="wrapper">
-
 				<!-- Main -->
 					<div id="main">
 						<div class="inner">
-
 							<!-- Header -->
-								<header id="header">
-									<a href="{{url_for('viaje_bp.BuscarViaje')}}" class="logo"><strong>LLEVAPPME</strong></a>
-									{% if viaje_en_curso(current_user.id) %}
-										<ul id= "idViaje" data-id-viaje= "{{viaje_en_curso(current_user.id)}}" class="icons">
-											{% if session.ubicacion_activada|default(False) %}
-												<li><a style="color: rgba(3, 177, 61, 0.493)"><span>Ubicación activada</span></a></li>
-												<li><a href="{{url_for('viaje_bp.DesactivarUbicacion')}}" style="color: rgba(3, 177, 61, 0.493)" class="fa-solid fa-toggle-on"><span class="label"></span></a></li>
-												<li><a href="#" style="color: rgba(3, 177, 61, 0.493)" class="fa-brands fa-whatsapp"><span class="label"></span></a></li>
-											{% else %}
-												<li><a style="color: rgba(177, 3, 3, 0.493)"><span>Ubicación desactivada</span></a></li>
-												<li><a href="{{url_for('viaje_bp.ActivarUbicacion')}}" style="color: rgba(177, 3, 3, 0.493)" class="fa-solid fa-toggle-off"><span class="label"></span></a></li>
-											{% endif %}
-										</ul>
-									{% endif %}
-								</header>
-
+							<header id="header">
+								<a href="{{url_for('viaje_bp.BuscarViaje')}}" class="logo"><strong>LLEVAPPME</strong></a>
+								{% if viaje_en_curso(current_user.id) %}
+									<ul id= "idViaje" data-id-viaje= "{{viaje_en_curso(current_user.id)}}" class="icons">
+										{% if session.ubicacion_activada|default(False) %}
+											<li><a style="color: rgba(3, 177, 61, 0.493)"><span>Ubicación activada</span></a></li>
+											<li><a href="{{url_for('viaje_bp.DesactivarUbicacion')}}" style="color: rgba(3, 177, 61, 0.493)" class="fa-solid fa-toggle-on"><span class="label"></span></a></li>
+											<li><a href="#" style="color: rgba(3, 177, 61, 0.493)" class="fa-brands fa-whatsapp"><span class="label"></span></a></li>
+										{% else %}
+											<li><a style="color: rgba(177, 3, 3, 0.493)"><span>Ubicación desactivada</span></a></li>
+											<li><a href="{{url_for('viaje_bp.ActivarUbicacion')}}" style="color: rgba(177, 3, 3, 0.493)" class="fa-solid fa-toggle-off"><span class="label"></span></a></li>
+										{% endif %}
+									</ul>
+								{% endif %}
+							</header>
+							
+							<!-- Flash messages -->
+							{% with messages = get_flashed_messages() %}
+								{% if messages %}
+									<ul class=flashes>
+									{% for message in messages %}
+										<div id= "alerta" class="box" style="background-color: bisque;margin-top: 25px;margin-bottom: 0px;">
+											<ul class="icons" style="margin-bottom: 0px;">
+												<li><a href="" onclick="ocultarAlerta()" class="icon solid fa-xmark"></a></li>
+											</ul>
+											<p style="margin-top: 0px;">{{ message }}</p>
+										</div>
+									{% endfor %}
+									</ul>
+								{% endif %}
+							{% endwith %}
+							
 							<!-- Banner -->
-								{% block banner %}   
-								{% endblock %}
+							{% block banner %}   
+							{% endblock %}
 
 							<!-- Section -->
-								{% block section %}   
-								{% endblock %}
+							{% block section %}   
+							{% endblock %}
 								
 						</div>
 					</div>
@@ -163,6 +176,14 @@
 					});
 				}
 				
+				function ocultarAlerta() {
+					const alerta = document.getElementById("alerta");
+					if (alerta.style.display === 'block') {
+						// Si está oculto, mostrarlo
+						alerta.style.display = 'none';
+					}
+				}
+
 				// Llama a la función para activar la ubicación automáticamente al cargar la página
 				window.addEventListener('load', activarUbicacionAutomaticamente);
 			</script>

@@ -18,7 +18,7 @@ def modificar_estado_pasajero(idPasajero, nuevo_estado):
         return True
     else:
         mensaje = "No puede modificar el estado del pasajero. Ya fue {}".format(pasajero.estado.descripcion)
-        return render_template('grupo_de_viaje.html', viaje=pasajero.viaje, pasajeros = pasajero.viaje.pasajeros, mensaje=mensaje)
+        return render_template('grupo_de_viaje.html', viaje=pasajero.viaje, pasajeros = pasajero.viaje.pasajeros)
            
 def viaje_en_curso_como_conductor(idUsuario):
     # Obtén todos los conductores correspondientes al usuario

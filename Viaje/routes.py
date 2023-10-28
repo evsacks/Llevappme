@@ -50,13 +50,11 @@ def PublicarViaje():
             else:
                 flash('Hubo un error al obtener detalles de ubicación o distancia', 'error')
         else:
-            flash('No existe conductor asociado', 'error')
-        
-        return render_template('publicar_viaje.html', form=form)
+            return render_template('publicar_viaje.html', form=form)
     except Exception as e:
         print(f"Se produjo una excepción: {e}")
-        mensaje = "No se pudo publicar el viaje. Inténtalo de nuevo más tarde."
-        return render_template('publicar_viaje.html', mensaje=mensaje)
+        flash('No se pudo publicar el viaje. Inténtalo de nuevo más tarde.')
+        return render_template('publicar_viaje.html', form=form)
 
 @viaje_bp.route('/editar/<idViaje>', methods=['GET', 'POST'])
 @login_required
@@ -122,7 +120,7 @@ def ViajesPublicados():
         # Manejar la excepción si no se encuentran viajes correspondientes.
         print(f"Se produjo una excepción: {e}")
         mensaje = "No hay viajes Publicados."
-        return render_template('listado_viajes.html', mensaje=mensaje)
+        return render_template('listado_viajes.html')
 
 @viaje_bp.route('pasajero/<idPasajero>/confirmar', methods=['GET', 'POST'])
 @login_required
@@ -178,7 +176,7 @@ def VerViaje(idViaje):
 
     except Exception as e:
         mensaje = str(e) 
-        return render_template('ver_viaje.html', mensaje=mensaje, fechaInicio = viaje.fecha_inicio)
+        return render_template('ver_viaje.html', fechaInicio = viaje.fecha_inicio)
 
 @viaje_bp.route('/buscar', methods=['GET', 'POST'])
 @login_required
@@ -284,7 +282,7 @@ def SolicitudViaje(idViaje):
                     mensaje = "Solicitaste el viaje"
                     return redirect(url_for("viaje_bp.VerViaje", idViaje = idViaje))
 
-    return render_template('ver_viaje.html', viaje=viaje, mensaje=mensaje)
+    return render_template('ver_viaje.html', viaje=viaje)
 
 @viaje_bp.route('/cancelar/solicitud/<idViaje>', methods=['GET', 'POST'])
 @login_required
@@ -307,7 +305,7 @@ def CancelarSolicitudViaje(idViaje):
             return redirect(url_for("viaje_bp.VerViaje", idViaje = idViaje))
         else:
             return redirect(url_for("viaje_bp.VerViaje", idViaje = idViaje))
-    return render_template('ver_viaje.html', viaje=viaje, mensaje=mensaje)
+    return render_template('ver_viaje.html', viaje=viaje)
 
 @viaje_bp.route('/ver/solicitudes', methods=['GET', 'POST'])
 @login_required

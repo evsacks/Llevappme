@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block section %}
     {% if (viaje) and (current_user.id == viaje.conductor.id_usuario) %}
-        <section>
+        <section style = "padding-top: 20px;">
             <header class="major">
                 <h2 style="margin-bottom: 20px;">Grupo de viaje</h2>
             </header>
