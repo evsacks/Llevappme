@@ -6,18 +6,20 @@
             </li>
         </ul>
     </div>
-    <div class="col-6 col-12-medium">
-        <ul class="actions stacked">
-            <li>
-                <a href="{{ url_for('viaje_bp.EditarViaje', idViaje=viaje.id) }}" class="button fit">Editar</a>
-            </li>
-        </ul>
-    </div>
-    <div class="col-6 col-12-medium">
-        <ul class="actions stacked">
-            <li>
-                <a href="#" class="button primary fit">Eliminar</a>
-            </li>
-        </ul>
-    </div>
+    {% if not viaje.fecha_inicio_real %}
+        <div class="col-6 col-12-medium">
+            <ul class="actions stacked">
+                <li>
+                    <a href="{{ url_for('viaje_bp.EditarViaje', idViaje=viaje.id) }}" class="button fit">Editar</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-6 col-12-medium">
+            <ul class="actions stacked">
+                <li>
+                    <a href="#" class="button primary fit">Eliminar</a>
+                </li>
+            </ul>
+        </div>
+    {% endif %}
 </div>

@@ -3,7 +3,7 @@
 
 {% if viajesPasajero %}
     <section>    
-        <h2 id="elements">Viajes Finalizados: Modo PASAJERO</h2>
+        <h2 class="major">PASAJERO</h2>
         <div class="table-wrapper">
             <table class="alt">
                 <thead>
@@ -11,7 +11,6 @@
                         <th scope="col">Origen</th>
                         <th scope="col">Destino</th>
                         <th scope="col">Conductor</th>
-                        <th scope="col">Asientos ocupados</th>
                         <th scope="col">Fecha viaje</th>
                     </tr>
                 </thead>
@@ -21,7 +20,6 @@
                             <td> {{ viaje.ubicacion.direccion_inicial}}</td>
                             <td> {{ viaje.ubicacion.direccion_final}}</td>
                             <td> {{ viaje.conductor.usuario.email }}</td>
-                            <td> {{ viaje.conductor.vehiculo.cantidad_asientos - viaje.asientos_disponibles }}</td>
                             <td> {{ viaje.fecha_inicio_real.date() }}</td>
                         </tr>
                     {% endfor %}
@@ -33,7 +31,7 @@
 
 {% if viajesConductor %}
     <section>
-        <h2 id="elements">Viajes Finalizados: Modo CONDUCTOR</h2>
+        <h2 class="major">CONDUCTOR</h2>
         <div class="table-wrapper">
             <table class="alt">
                 <thead>
@@ -41,7 +39,6 @@
                         <th scope="col">Origen</th>
                         <th scope="col">Destino</th>
                         <th scope="col">Conductor</th>
-                        <th scope="col">Asientos ocupados</th>
                         <th scope="col">Fecha viaje</th>
                     </tr>
                 </thead>
@@ -51,7 +48,6 @@
                             <td> {{ viaje.ubicacion.direccion_inicial}}</td>
                             <td> {{ viaje.ubicacion.direccion_final}}</td>
                             <td> {{ viaje.conductor.usuario.email }}</td>
-                            <td> {{ viaje.conductor.vehiculo.cantidad_asientos - viaje.asientos_disponibles }}</td>
                             <td> {{ viaje.fecha_inicio_real.date() }}</td>
                         </tr>
                     {% endfor %}
