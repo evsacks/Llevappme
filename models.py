@@ -89,6 +89,10 @@ class Usuario(db.Model, UserMixin):
     def find_by_email(cls, mail):
         return cls.query.filter_by(email=mail).first()
     
+    @classmethod
+    def find_by_telefono(cls, telefono):
+        return cls.query.filter_by(telefono=telefono).first()
+
     def set_contrasenia(self, contrasenia):
         self.contrasenia = generate_password_hash(contrasenia)
     

@@ -17,7 +17,7 @@ def Registro():
     form = formulario.RegistroUsuario()
     print("Cargo formulario")
     if form.validate_on_submit():
-        print("Validacion ok")
+
         nombre= form.nombreUsuario.data
         apellido = form.apellidoUsuario.data
         email = form.email.data.strip()
@@ -25,10 +25,13 @@ def Registro():
         fecha_nacimiento = form.fecha_nacimiento.data
         passw = form.password.data
 
-        usuario = model.Usuario.find_by_email(email)
+        usuario_email = model.Usuario.find_by_email(email)
+        usuario_telefono = model.Usuario.find_by_telefono(telefono)
 
-        if usuario:
-            return "Ya existe usuario con ese email"
+
+        if usuario_email or usuario_telefono:
+            flash("El email o teléfono especificado ya esta en uso")
+            return render_template('registro.html', form=form)
         else:
             nuevoUsuario = model.Usuario(
                 nombre=nombre,
@@ -44,8 +47,8 @@ def Registro():
             )
             print(model.Usuario.serialize(nuevoUsuario))
             model.Usuario.save_to_db(nuevoUsuario)
-
-            return redirect(url_for('viaje_bp.BuscarViaje'))
+            flash("Usuario creado exitosamente, ingrese sus credenciales para iniciar.")
+            return redirect(url_for('viaje_bp.Login'))
         
     return render_template('registro.html', form=form)
 
