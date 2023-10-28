@@ -65,11 +65,13 @@
                 </div>
                 <div class="col-6 col-12-medium">
                     <h3>Mapa</h3>
-                    <div id="map" style="height: 300px;"
+                    <div class="map-container" style="height: 300px;"
+                        data-map-id = "{{viaje.id}}"
                         data-lat-inicial="{{ viaje.ubicacion.latitud_inicial }}"
                         data-lng-inicial="{{ viaje.ubicacion.longitud_inicial }}"
                         data-lat-final="{{ viaje.ubicacion.latitud_final }}"
-                        data-lng-final="{{ viaje.ubicacion.longitud_final }}"></div>
+                        data-lng-final="{{ viaje.ubicacion.longitud_final }}">
+                    </div>
                 </div>
             </div>
         </section>
@@ -80,6 +82,4 @@
     {{fechaInicio}}
     
 {% endblock %}
-{% block script %}
-            <script src="{{url_for('static', filename = 'assets/js/ubicacion.js')}}" defer></script>
-{% endblock %}
+

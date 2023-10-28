@@ -1,6 +1,4 @@
-function initMap() {
-    var mapContainer = document.getElementById('map');
-
+function initMap(mapContainer, mapId) {
     if (mapContainer) {
         var latInicial = parseFloat(mapContainer.getAttribute('data-lat-inicial'));
         var lngInicial = parseFloat(mapContainer.getAttribute('data-lng-inicial'));
@@ -41,9 +39,10 @@ function initMap() {
             console.log('La solicitud falló debido a un valor erróneo en Latitud o Longitud');
         }
     } else {
-        console.log('No hay mapa para mostrar');
+        console.log('No hay mapa para mostrar para el mapa con el ID: ' + mapId);
     }
 }
+
 function calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB) {
     directionsService.route({
         origin: pointA,
@@ -66,4 +65,26 @@ function autocompletar(id) {
     console.log(search)
 }
 
-window.initMap = initMap;
+function loadMultipleMaps() {
+    // Buscar todos los elementos con la clase "map-container" y recorrerlos
+    var mapContainers = document.getElementsByClassName('map-container');
+    if (mapContainers) {
+        console.log(mapContainers)
+        console.log(mapContainers[0].getAttribute("data-map-id"))
+    }
+        
+    for (var i = 0; i < mapContainers.length; i++) {
+        var mapContainer = mapContainers[i];
+        
+        var mapId = mapContainer.getAttribute("data-map-id");
+
+        if (mapContainer && mapId) {
+            initMap(mapContainer, mapId);
+        }
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+loadMultipleMaps();
+});
+window.autocompletar = autocompletar;
