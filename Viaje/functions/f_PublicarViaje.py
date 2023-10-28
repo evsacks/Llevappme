@@ -37,7 +37,7 @@ def obtener_coordenadas_y_distancia(origen, destino):
         latitud_destino = coordenadas_destino[0]['geometry']['location']['lat']
         longitud_destino = coordenadas_destino[0]['geometry']['location']['lng']
         distancia = matrix_distance['rows'][0]['elements'][0]['distance']['text']
-        duracion = matrix_distance['rows'][0]['elements'][0]['duration']['text']
+        duracion = matrix_distance['rows'][0]['elements'][0]['duration']['value']
 
         return latitud_origen, longitud_origen, latitud_destino, longitud_destino, distancia, duracion
 
