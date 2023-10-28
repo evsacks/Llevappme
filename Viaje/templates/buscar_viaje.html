@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-12-xsmall">
-                    {{ form.fecha_inicio(type="text",  id="fecha_inicio", value="", placeholder="Fecha") }}
+                    {{ form.fecha_inicio(type="date",  id="fecha_inicio", value="", placeholder="Fecha") }}
                     <div>
                         {% for error in form.fecha_inicio.errors %}
                             <span>{{ error }}</span> 
@@ -38,7 +38,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-12-xsmall">
-                    {{ form.hora_inicio(type="text",  id="hora_inicio", value="", placeholder="Horario") }}
+                    {{ form.hora_inicio(type="time",  id="hora_inicio", value="", placeholder="Horario") }}
                     <div>
                         {% for error in form.hora_inicio.errors %}
                             <span>{{ error }}</span> 

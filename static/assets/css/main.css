@@ -1170,6 +1170,37 @@ input[type="radio"] + label:before {
   color: #9fa3a6 !important;
   opacity: 1.0; }
 
+/* Aplicar los estilos de campos de entrada a type="date" y type="time" */
+input[type="date"],
+input[type="time"] {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  background: #ffffff;
+  border-radius: 0.375em;
+  border: none;
+  border: solid 1px rgba(210, 215, 217, 0.75);
+  color: inherit;
+  display: block;
+  outline: 0;
+  padding: 0.50em 1em; /* Ajusta el relleno aquí */
+  text-decoration: none;
+  width: 100%;
+}
+
+/* Estilos específicos para campos de fecha y hora */
+input[type="date"]:focus,
+input[type="time"]:focus {
+  border-color: #6e99ff;
+  box-shadow: 0 0 0 1px #6e99ff;
+}
+
+/* Estilos para campos de entrada inválidos */
+input[type="date"]:invalid,
+input[type="time"]:invalid {
+  box-shadow: none;
+}
 /* Box */
 .box {
   border-radius: 0.375em;
