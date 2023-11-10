@@ -8,15 +8,13 @@ import Viaje.forms as formulario
 import random
 
 def comparacion_fecha(fechaInicio,horaInicio):
-    print(fechaInicio, horaInicio)
     if horaInicio:
         fechaInicio0000 = datetime.combine(fechaInicio,horaInicio)
         fechaInicio2359 = datetime.combine(fechaInicio,datetime.strptime('23:59:59', '%H:%M:%S').time())
     else:
         fechaInicio0000 = datetime.combine(fechaInicio,datetime.strptime('00:00:00', '%H:%M:%S').time())
         fechaInicio2359 = datetime.combine(fechaInicio,datetime.strptime('23:59:59', '%H:%M:%S').time())
-    print(fechaInicio0000)
-    print(fechaInicio2359)
+
     return (fechaInicio0000, fechaInicio2359)
 
 def buscar_viaje():
@@ -31,7 +29,6 @@ def buscar_viaje():
         fechaInicio = form.fecha_inicio.data
         horaInicio = form.hora_inicio.data
 
-        print(origen, destino, fechaInicio, horaInicio)
         viajes_query = model.Viaje.query
 
         if origen:
@@ -53,7 +50,7 @@ def buscar_viaje():
         viajes = viajes_query.all()
 
         if not viajes:
-            resultado = "No se encontraron coincidencias"
+            resultado = "No se encontraron resultados"
         else:
             return resultados_busqueda(viajes)
     

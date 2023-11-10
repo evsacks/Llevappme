@@ -165,6 +165,7 @@ def VerViaje(idViaje):
 
         idUsuario = current_user.get_id()
         es_pasajero = fsov.usuario_solicito_viaje(idUsuario,viaje.id)
+        print(viaje)
         coordenadas_y_distancia = fpuv.obtener_coordenadas_y_distancia(viaje.ubicacion.direccion_inicial, viaje.ubicacion.direccion_final)
         _, _, _, _, distancia, duracion = coordenadas_y_distancia
 
@@ -183,7 +184,6 @@ def VerViaje(idViaje):
 def BuscarViaje():
     form = formulario.BuscarViaje()
     if form.validate_on_submit():
-        print("validado, dispara buscar_viaje()")
         return fbuv.buscar_viaje()
     viajes = fbuv.obtener_dos_ultimos_viajes()
     return render_template('buscar_viaje.html', form=form, viajes = viajes)

@@ -15,7 +15,7 @@ def Registro():
         return redirect(url_for('viaje_bp.BuscarViaje'))
     
     form = formulario.RegistroUsuario()
-    print("Cargo formulario")
+
     if form.validate_on_submit():
 
         nombre= form.nombreUsuario.data
@@ -45,7 +45,7 @@ def Registro():
                 id_tipo_usuario=1,
                 id_estado_usuario=1
             )
-            print(model.Usuario.serialize(nuevoUsuario))
+
             model.Usuario.save_to_db(nuevoUsuario)
             flash("Usuario creado exitosamente, ingrese sus credenciales para iniciar.")
             return redirect(url_for('viaje_bp.Login'))

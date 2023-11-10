@@ -55,7 +55,6 @@ def formato_hora(time):
 def viaje_en_curso(idUsuario):
     conductor = viaje_en_curso_como_conductor(idUsuario)
     pasajero = viaje_en_curso_como_pasajero(idUsuario)
-    print("conductor: ", conductor, "Pasajero: ", pasajero)
     if conductor:
         return conductor
     elif pasajero:
@@ -72,7 +71,6 @@ def proximos_al_viaje(fecha_objetivo):
 
     # Creamos un objeto timedelta con 15 minutos
     quince_minutos = timedelta(minutes=15)
-    print("Diferencia: ", diferencia, "Comparacion: ", diferencia <= quince_minutos)
     # Comparamos la diferencia con los 15 minutos
     if diferencia <= quince_minutos:
         return True
