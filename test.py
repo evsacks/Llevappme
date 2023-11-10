@@ -275,7 +275,8 @@ class TestBuscarViaje(TestCase):
 
     def test_unirse_viaje_exitoso(self):
         # Simula el proceso de inicio de sesión antes de unirse a un viaje
-        login_response = self.login('otro_usuario@gmail.com', 'otro_usuario')
+        login_response = self.login('evelyn@gmail.com', 'evelyn')
+
 
         # Simula la solicitud para unirse a un viaje
         with self.client as client:

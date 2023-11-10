@@ -165,14 +165,12 @@ def VerViaje(idViaje):
 
         idUsuario = current_user.get_id()
         es_pasajero = fsov.usuario_solicito_viaje(idUsuario,viaje.id)
-        print(viaje)
         coordenadas_y_distancia = fpuv.obtener_coordenadas_y_distancia(viaje.ubicacion.direccion_inicial, viaje.ubicacion.direccion_final)
         _, _, _, _, distancia, duracion = coordenadas_y_distancia
 
         if es_pasajero: 
             return render_template('ver_viaje.html', viaje=viaje, solicitud="Enviada", fechaInicio = viaje.fecha_inicio, distancia = distancia, duracion = duracion)
         else:
-            print("No es pasajero, muestro viaje", viaje)
             return render_template('ver_viaje.html', viaje=viaje, solicitud="Libre", fechaInicio = viaje.fecha_inicio, distancia = distancia, duracion = duracion)
 
     except Exception as e:
@@ -300,7 +298,6 @@ def CancelarSolicitudViaje(idViaje):
             mensaje = "Eres el conductor de este viaje"
         elif pasajero:
             pasajero_cancelado = fsov.cancelar_solicitud_viaje(idUsuario, idViaje)
-            print("Cancelado:", pasajero_cancelado)
             mensaje = "cancelaste tu solicitud"
             return redirect(url_for("viaje_bp.VerViaje", idViaje = idViaje))
         else:
@@ -320,7 +317,6 @@ def ViajesFinalizados():
     idUsuario = current_user.get_id()
     viajesPasajero = model.Pasajero.query.filter_by(id_usuario = idUsuario, id_estado_pasajero = 6).all()
     viajesConductor = facc.viajes_finalizados_como_conductor(idUsuario)
-    print(viajesConductor)
     return render_template('viajes_finalizados.html', viajesPasajero = viajesPasajero, viajesConductor = viajesConductor)
 
 @viaje_bp.route("/guardar/ubicacion", methods=["POST"])
