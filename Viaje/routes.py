@@ -134,6 +134,28 @@ def ViajesPublicados():
         mensaje = "Usted aún no ha publicado ningún viaje."
         return render_template('viajes_publicados.html', mensaje = mensaje)
 
+@viaje_bp.route('/cancelados', methods=['GET', 'POST'])
+@login_required
+def ViajesCancelados():
+    try:
+        idUsuario = current_user.get_id()
+        # Busco viajes de ese usuario, es decir siendo conductor.
+        conductores = model.Conductor.query.filter_by(id_usuario=idUsuario).all()
+
+        viajes_por_conductor = []
+
+        for conductor in conductores:
+            viajes = model.Viaje.query.filter_by(id_conductor=conductor.id, id_estado_viaje = 4).all()
+            viajes_por_conductor.extend(viajes)
+
+        if not viajes_por_conductor:
+            raise Exception("No se encontraron viajes correspondientes al conductor.")
+
+        return render_template('viajes_cancelados.html', viajes=viajes_por_conductor)
+    except Exception as e:
+        mensaje = "Usted aún no ha cancelado ningún viaje."
+        return render_template('viajes_cancelados.html', mensaje = mensaje)
+
 @viaje_bp.route('pasajero/<idPasajero>/confirmar', methods=['GET', 'POST'])
 @login_required
 def AceptarPasajero(idPasajero):

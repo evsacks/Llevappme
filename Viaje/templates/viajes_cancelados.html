@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% block section %}
+
+<section style = "padding-top: 20px;">
+    <header class="major">
+        <h2>Viajes Cancelados</h2>
+    </header>
+    {% if viajes %}
+        <div class="table-wrapper">
+            <table class="alt">
+                <thead>
+                    <tr>
+                        <th scope="col">Origen</th>
+                        <th scope="col">Destino</th>
+                        <th scope="col">Fecha viaje</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for viaje in viajes %}
+                        <tr>
+                            <td> {{ viaje.ubicacion.direccion_inicial}}</td>
+                            <td> {{ viaje.ubicacion.direccion_final}}</td>
+                            <td> {{ viaje.fecha_inicio.date() }}</td>
+                            <td> 
+                                <a href="{{url_for('viaje_bp.VerViaje', idViaje=viaje.id)}}">Ver viaje</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <h4>{{ mensaje }}</h4>
+    {% endif %}
+</section>
+
+{% endblock %}
