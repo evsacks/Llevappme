@@ -52,10 +52,10 @@ def buscar_viaje():
             viajes_query = viajes_query.filter(func.extract('hour', model.Viaje.fecha_inicio) == hora_inicio.hour)
             viajes_query = viajes_query.filter(func.extract('minute', model.Viaje.fecha_inicio) == hora_inicio.minute)
 
-        viajes = viajes_query.all()
+        viajes = viajes_query.filter_by(id_estado_viaje = 3).all()
 
         if not viajes:
-            flash('No se encontraron coincidencias, por favor modifica los filtros de búsqueda.')
+            flash('No se encontraron coincidencias, por favor modifica los filtros de busqueda.')
             return redirect(url_for('viaje_bp.BuscarViaje'))
         else:
             return resultados_busqueda(viajes)

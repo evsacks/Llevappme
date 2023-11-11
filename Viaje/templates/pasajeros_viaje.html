@@ -46,6 +46,9 @@
                 </article>
             {% endfor %}
         </div>
+        {% if not pasajeros %}
+            <h4> No se encontraron pasajeros. </h4>
+        {% endif %}
     {% endif %}
 </section>
 {% endblock %}

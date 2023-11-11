@@ -62,13 +62,13 @@
                                 <h4 style="color: #6e99ff;margin-top: 14px;margin-bottom: 5px;">Ruta</h4>
                                 <div>
                                     <ul class="icons" style="display: inline;">
-                                        <li><a class="icon solid fa-calendar-day"></a></li>
+                                        <li><a class="icon solid fa-route"></a></li>
                                     </ul>
                                     <p style="display: inline;margin-bottom: 0px;">{{distancia}} de distancia</p>
                                 </div>
                                 <div>
                                     <ul class="icons" style="display: inline;">
-                                        <li><a class="icon solid fa-clock"></a></li>
+                                        <li><a class="icon solid fa-stopwatch"></a></li>
                                     </ul>
                                     <p style="display: inline;">{{ (duracion / 60) | round }} mins al destino.</p>
                                 </div>
@@ -80,6 +80,12 @@
                                         <li><a class="icon regular fa-id-card"></a></li>
                                     </ul>
                                     <p style="display: inline;margin-bottom: 0px;">{{viaje.conductor.usuario.nombre}} {{viaje.conductor.usuario.apellido}}</p>
+                                </div>
+                                <div>
+                                    <ul class="icons" style="display: inline;">
+                                        <li><a class="icon solid fa-car"></a></li>
+                                    </ul>
+                                    <p style="display: inline;margin-bottom: 0px;">Patente: {{viaje.conductor.vehiculo.patente}}</p>
                                 </div>
                                 <div>
                                     <ul class="icons" style="display: inline;">

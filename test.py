@@ -53,7 +53,8 @@ class TestBuscarViaje(TestCase):
             cantidad_asientos='5',
             fecha_creacion=datetime(2023,9,17,19,12,1,868),
             fecha_actualizacion=datetime(2023,9,17,19,12,1,868),
-            descripcion='CLIO MIO BLANCO'
+            descripcion='CLIO MIO BLANCO',
+            id_estado_vehiculo=1
         )
 
         db.session.add(self.vehiculo)
@@ -193,7 +194,7 @@ class TestBuscarViaje(TestCase):
             }, follow_redirects=True)
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'No se encontraron resultados', response.data)
+        self.assertIn(b'No se encontraron coincidencias, por favor modifica los filtros de busqueda.', response.data)
 
     def test_aceptar_pasajero_exitoso(self):
         # Simula el proceso de inicio de sesión antes de buscar un viaje
