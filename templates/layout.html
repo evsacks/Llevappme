@@ -94,6 +94,7 @@
 										<li><a href="{{url_for('usuario_bp.Logout')}}">Salir</a></li>
 									</ul>									
 								</nav>
+								{% if not modo_conductor() %}
 								<section>
 									<header class="major">
 										<h2>Conductor</h2>
@@ -101,6 +102,7 @@
 									<p>Conviertete en un conductor en un simple paso, registra el vehículo con el que vas a conducir y listo.</p>
 									<a href="{{url_for('vehiculo_bp.Vehiculo')}}" class="button fit">¡Vamos!</a>
 								</section>
+								{% endif %}
 							<!-- Footer -->
 								<footer id="footer">
 									<p class="copyright">
