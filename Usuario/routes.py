@@ -29,8 +29,11 @@ def Registro():
         usuario_telefono = model.Usuario.find_by_telefono(telefono)
 
 
-        if usuario_email or usuario_telefono:
-            flash("El email o teléfono especificado ya esta en uso")
+        if usuario_email:
+            flash("El email especificado ya esta en uso.")
+            return render_template('registro.html', form=form)
+        elif usuario_telefono:
+            flash("El número de teléfono especificado ya esta en uso.")
             return render_template('registro.html', form=form)
         else:
             nuevoUsuario = model.Usuario(
@@ -47,7 +50,7 @@ def Registro():
             )
 
             model.Usuario.save_to_db(nuevoUsuario)
-            flash("Usuario creado exitosamente, ingrese sus credenciales para iniciar.")
+            flash("Usuario creado exitosamente, complete sus credenciales para ingresar.")
             return redirect(url_for('viaje_bp.Login'))
         
     return render_template('registro.html', form=form)
@@ -72,9 +75,11 @@ def Login():
                 login_user(usuario)
                 return redirect(url_for('viaje_bp.BuscarViaje'))
             else: 
-                return "Usuario {}: contraseña incorrecta".format(email)
+                flash("La contraseña ingresada es incorrecta")
+                return redirect(url_for('usuario_bp.Login'))
         else: 
-            return "Usuario {} inexistente".format(email)
+            flash("El usuario ingresado es incorrecto")
+            return redirect(url_for('usuario_bp.Login'))
     return render_template('login.html', form=form)
 
 @usuario_bp.route('/logout', methods=['GET', 'POST'])
