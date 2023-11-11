@@ -48,7 +48,7 @@ def PublicarViaje():
                 flash('Viaje publicado con éxito', 'success')
                 return redirect(url_for('viaje_bp.BuscarViaje'))
             else:
-                flash('Hubo un error al obtener detalles de ubicación o distancia', 'error')
+                flash('Hubo un error al obtener detalles de ubicación.', 'error')
         else:
             return render_template('publicar_viaje.html', form=form)
     except Exception as e:

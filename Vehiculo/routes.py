@@ -27,10 +27,10 @@ def Vehiculo():
         if vehiculo:
             idUsuario = current_user.get_id()
             fnuv.AltaConductor(idUsuario, vehiculo.id)
-            
+            flash('Vehiculo creado con éxito.')    
             return redirect(url_for('viaje_bp.BuscarViaje'))
         
-        #Agregar notificación            
+        flash('No se ha podido crear el vehiculo.')
         return redirect(url_for('viaje_bp.BuscarViaje'))
     
     return render_template('vehiculo.html', form = form)
