@@ -70,6 +70,6 @@ def resultados_busqueda(viajes):
 
 def obtener_dos_ultimos_viajes():
     # Realiza una consulta para obtener los dos últimos viajes por fecha de creación
-    ultimos_viajes = model.Viaje.query.order_by(model.Viaje.id.desc()).limit(2).all()
+    ultimos_viajes = model.Viaje.query.filter_by(id_estado_viaje = 3).order_by(model.Viaje.id.desc()).limit(2).all()
     
     return ultimos_viajes

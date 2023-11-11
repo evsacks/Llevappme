@@ -80,6 +80,35 @@ def proximos_al_viaje(fecha_objetivo):
 def modo_conductor():
     return esConductor()
     
+def validar_viajes():
+    viajes = model.Viaje.query.all()
+
+    for viaje in viajes:
+        if not viaje.fecha_inicio_real:
+
+            fecha_limite = viaje.fecha_inicio + timedelta(days=1)
+            fecha_actual = datetime.utcnow()
+
+            if fecha_actual > fecha_limite:
+                viaje.fecha_final_real = fecha_actual
+                viaje.fecha_inicio_real = fecha_actual
+                viaje.id_estado_viaje = 4
+                viaje.save_to_db()
+
+        elif not viaje.fecha_final_real: 
+
+            fecha_limite = viaje.fecha_final + timedelta(days=1)
+            fecha_actual = datetime.utcnow()
+
+            if fecha_actual > fecha_limite:
+                viaje.fecha_final_real = fecha_actual
+                viaje.id_estado_viaje = 2
+                for pasajero in viaje.pasajeros:
+                    pasajero.id_estado_pasajero = 4
+                viaje.save_to_db()
+
+with app.app_context():
+    validar_viajes()
 
 app.jinja_env.globals.update(formato_fecha=formato_fecha)
 app.jinja_env.globals.update(formato_hora=formato_hora)

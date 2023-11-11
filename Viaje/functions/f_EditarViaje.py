@@ -21,8 +21,21 @@ def redireccionar_y_mostrar_error(mensaje, tipo, ruta):
 def inicializar_formulario(viaje):
     form = formulario.EditarViaje()
     idUsuario = current_user.get_id()
-    conductor = model.Conductor.query.filter_by(id_usuario=idUsuario).all()
-    form.vehiculo.choices = [(0, "Vehiculo")] + [(c.id, c.vehiculo.patente) for c in conductor]
+    # Obtener vehículos activos directamente desde Conductor
+    vehiculos_activos = (
+        model.Conductor.query
+        .join(model.Vehiculo)
+        .filter(
+            model.Conductor.id_usuario == idUsuario,
+            model.Vehiculo.id_estado_vehiculo == 1
+        )
+        .all()
+    )
+
+    # Asignar las opciones al campo de selección
+    form.vehiculo.choices = [(0, "Vehículo")] + [(c.id, c.vehiculo.patente) for c in vehiculos_activos]
+
+
     return form
 
 def actualizar_viaje_con_formulario(viaje, form):

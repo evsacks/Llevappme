@@ -15,6 +15,7 @@
             <div class="col-9 col-12-medium">
                 <div class="row gtr-uniform">
                     <div class="col-6 col-12-xsmall">
+                        <h5>Origen</h5>
                         {{ form.origen(type="text",  id="origen", readonly=true) }}
                         <div>
                             {% for error in form.origen.errors %}
@@ -23,6 +24,7 @@
                         </div>
                     </div>
                     <div class="col-6 col-12-xsmall">
+                        <h5>Destino</h5>
                         {{ form.destino(type="text",  id="destino", readonly=true) }}
                         <div>
                             {% for error in form.destino.errors %}
@@ -31,6 +33,7 @@
                         </div>
                     </div>
                     <div class="col-6 col-12-xsmall">
+                        <h5>Vehiculo</h5>
                         {{ form.vehiculo(type="text",  id="vehiculo", readonly=true) }}
                         <div>
                             {% for error in form.vehiculo.errors %}
@@ -39,7 +42,8 @@
                         </div>
                     </div>
                     <div class="col-6 col-12-xsmall">
-                        {{ form.cantidad_asientos(type="tel",  id="telefono") }}
+                        <h5>Asientos disponibles</h5>
+                        {{ form.cantidad_asientos(type="tel",  id="cantidad_asientos") }}
                         <div>
                             {% for error in form.cantidad_asientos.errors %}
                                 <span>{{ error }}</span> 
@@ -47,7 +51,8 @@
                         </div>
                     </div>
                     <div class="col-6 col-12-xsmall">
-                        {{ form.fecha_inicio(type="text",  id="fecha_inicio") }}
+                        <h5>Fecha de salida</h5>
+                        {{ form.fecha_inicio(type="date",  id="fecha_inicio") }}
                         <div>
                             {% for error in form.fecha_inicio.errors %}
                                 <span>{{ error }}</span> 
@@ -55,7 +60,8 @@
                         </div>
                     </div>
                     <div class="col-6 col-12-xsmall">
-                        {{ form.hora_inicio(type="text",  id="hora_inicio") }}
+                        <h5>Horario de salida</h5>
+                        {{ form.hora_inicio(type="time",  id="hora_inicio") }}
                         <div>
                             {% for error in form.hora_inicio.errors %}
                                 <span>{{ error }}</span> 
@@ -97,7 +103,7 @@
                 </div>
             </div>
             <!-- Break -->
-            <div class="col-12">
+            <div class="col-12" style="margin-top: 20px;">
                 <ul class="actions">
                     <li>{{ form.submit(type="submit", value="Publicar") }}</li>
                 </ul>

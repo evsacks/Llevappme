@@ -12,9 +12,12 @@ import Viaje.forms as formulario
 ######################
 
 def eliminar_viaje(viaje):
-    model.Ubicacion.delete_from_db(viaje.ubicacion)
-    model.Adicional.delete_from_db(viaje.adicional)
+    adicional = viaje.adicional
+    ubicacion = viaje.ubicacion
     model.Viaje.delete_from_db(viaje)
+    model.Adicional.delete_from_db(adicional)
+    model.Ubicacion.delete_from_db(ubicacion)
+    flash('Se eliminó el viaje correctamente.')
 
 def tiene_permiso_para_eliminar(viaje):
     idUsuario = current_user.get_id()
