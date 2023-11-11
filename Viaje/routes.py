@@ -115,12 +115,10 @@ def ViajesPublicados():
         if not viajes_por_conductor:
             raise Exception("No se encontraron viajes correspondientes al conductor.")
 
-        return render_template('listado_viajes.html', viajes=viajes_por_conductor)
+        return render_template('viajes_publicados.html', viajes=viajes_por_conductor)
     except Exception as e:
-        # Manejar la excepción si no se encuentran viajes correspondientes.
-        print(f"Se produjo una excepción: {e}")
-        mensaje = "No hay viajes Publicados."
-        return render_template('listado_viajes.html')
+        mensaje = "Usted aún no ha publicado ningún viaje."
+        return render_template('viajes_publicados.html', mensaje = mensaje)
 
 @viaje_bp.route('pasajero/<idPasajero>/confirmar', methods=['GET', 'POST'])
 @login_required
