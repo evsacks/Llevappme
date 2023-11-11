@@ -17,11 +17,11 @@
                     <tbody>
                         {% for v in vehiculos %}
                             <tr>
-                                <td> {{ v.vehiculo.patente}}</td>
-                                <td> {{ v.vehiculo.cantidad_asientos}}</td>
-                                <td> {{ v.vehiculo.descripcion}}</td>
+                                <td> {{ v.patente }}</td>
+                                <td> {{ v.cantidad_asientos }}</td>
+                                <td> {{ v.descripcion }}</td>
                                 <td> 
-                                    <a href="{{url_for('vehiculo_bp.EliminarVehiculo', idVehiculo=v.id_vehiculo)}}">Eliminar vehiculo</a>
+                                    <a href="{{url_for('vehiculo_bp.EliminarVehiculo', idVehiculo=v.id)}}">Eliminar vehiculo</a>
                                 </td>
                             </tr>
                         {% endfor %}

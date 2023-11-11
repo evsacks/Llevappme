@@ -609,12 +609,14 @@ class Vehiculo(db.Model):
     
     id_estado_vehiculo = db.Column(db.Integer, db.ForeignKey('estado_vehiculo.id'), nullable = False)
 
-    def __init__(self, patente, cantidad_asientos, descripcion, fecha_creacion, fecha_actualizacion):
+    def __init__(self, patente, cantidad_asientos, descripcion, fecha_creacion, fecha_actualizacion, id_estado_vehiculo):
         self.patente = patente
         self.cantidad_asientos = cantidad_asientos
         self.descripcion = descripcion
         self.fecha_creacion = fecha_creacion
         self.fecha_actualizacion = fecha_actualizacion
+        self.id_estado_vehiculo = 1
+
 
     def __repr__(self):
         id = self.id,
@@ -623,9 +625,10 @@ class Vehiculo(db.Model):
         descripcion = self.descripcion
         fecha_creacion = self.fecha_creacion
         fecha_actualizacion = self.fecha_actualizacion
+        estado = self.id_estado_vehiculo
         vehiculo = '<Vehiculo(id={},patente={}, cantidad asientos={}, descripcion={}\
-                             fecha creacion={}, fecha actualizacion={})>'\
-                   .format(id,patente, cantidad_asientos, descripcion, fecha_creacion, fecha_actualizacion)
+                             fecha creacion={}, fecha actualizacion={}, estado={})>'\
+                   .format(id,patente, cantidad_asientos, descripcion, fecha_creacion, fecha_actualizacion,estado)
         return vehiculo
 
     def serialize(self):
@@ -635,7 +638,8 @@ class Vehiculo(db.Model):
             'cantidad_asientos': self.cantidad_asientos,
             'descripcion':self.descripcion,
             'fecha_creacion': self.fecha_creacion,
-            'fecha_actualizacion': self.fecha_actualizacion
+            'fecha_actualizacion': self.fecha_actualizacion,
+            'estado_vehiculo':self.id_estado_vehiculo
     }
 
     def save_to_db(self):

@@ -11,13 +11,22 @@ def esConductor():
     
 def ConvertirEnPasajero(idUsuario):
     usuario = model.Usuario.query.get(idUsuario)
+    # Verificar si el usuario es un conductor
     if usuario.id_tipo_usuario == 2:
-        vehiculo_conductor = model.Conductor.query.filter_by(id_usuario=idUsuario).first()
-        if not vehiculo_conductor:
+        vehiculos_conductor = model.Conductor.query.filter_by(id_usuario=idUsuario).all()
+        # Verificar si todos los vehículos están inactivos
+        if all(vehiculo.vehiculo.estado_vehiculo.descripcion == 'Inactivo' for vehiculo in vehiculos_conductor):
+            # Cambiar el tipo de usuario a pasajero
             usuario.id_tipo_usuario = 1
             db.session.commit()
-            return usuario
+
+            # Devolver True para indicar que la conversión fue exitosa
+            return True
+        else:
+            # Devolver False si al menos un vehículo está activo
+            return False
     else:
+        # Devolver False si el usuario no es un conductor
         return False
     
 def ConvertirEnConductor(idUsuario):

@@ -3,6 +3,7 @@ from flask_login import login_user,logout_user,login_required,current_user
 from datetime import datetime, timedelta
 import models as model
 import Vehiculo.forms as formulario
+from app import db
 
 import Vehiculo.functions.f_EliminarVehiculo as felv
 import Vehiculo.functions.f_NuevoVehiculo as fnuv
@@ -39,18 +40,29 @@ def Vehiculo():
 @login_required
 def ListadoVehiculos():
     idUsuario = current_user.get_id()
-    vehiculos = model.Conductor.query.filter_by(id_usuario=idUsuario).all()
+    # Obtener solo los vehículos activos
+    vehiculos = (
+        db.session.query(model.Vehiculo)
+        .join(model.Conductor)
+        .filter(
+            model.Conductor.id_usuario == idUsuario,
+            model.Vehiculo.id_estado_vehiculo == 1
+        )
+        .all()
+    )
     return render_template('listado_vehiculos.html', vehiculos = vehiculos)
     
 @vehiculo_bp.route('/eliminar/<idVehiculo>', methods=['GET', 'POST'])
 @login_required
 def EliminarVehiculo(idVehiculo):
 
-    felv.eliminarVehiculo(idVehiculo)
+    eliminar = felv.eliminarVehiculo(idVehiculo)
     convertir = faccu.ConvertirEnPasajero(current_user.id)
-    if not convertir:
+    if (not convertir) and eliminar:
         flash('Se eliminó el vehiculo del listado de vehiculos.')
         return redirect(url_for('vehiculo_bp.ListadoVehiculos'))
-    else:
+    elif eliminar:
         flash('Se eliminó el vehiculo del listado de vehiculos. Ahora estás en modo pasajero, para volver a ser un conductor, crea un nuevo vehículo')
         return redirect(url_for('viaje_bp.BuscarViaje'))
+    else:
+        return redirect(url_for('vehiculo_bp.ListadoVehiculos'))

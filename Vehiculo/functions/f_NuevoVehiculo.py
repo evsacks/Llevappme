@@ -19,7 +19,8 @@ def CrearVehiculo(patente,cantidad_asientos,descripcion):
             cantidad_asientos=cantidad_asientos,
             descripcion = descripcion,
             fecha_actualizacion=datetime.now(),
-            fecha_creacion=datetime.now()
+            fecha_creacion=datetime.now(),
+            id_estado_vehiculo=1
         )
     model.Vehiculo.save_to_db(nuevoVehiculo)
     vehiculo = model.Vehiculo.query.get(nuevoVehiculo.id)
