@@ -49,6 +49,8 @@ def EliminarVehiculo(idVehiculo):
     felv.eliminarVehiculo(idVehiculo)
     convertir = faccu.ConvertirEnPasajero(current_user.id)
     if not convertir:
+        flash('Se eliminó el vehiculo del listado de vehiculos.')
         return redirect(url_for('vehiculo_bp.ListadoVehiculos'))
     else:
+        flash('Se eliminó el vehiculo del listado de vehiculos. Ahora estás en modo pasajero, para volver a ser un conductor, crea un nuevo vehículo')
         return redirect(url_for('viaje_bp.BuscarViaje'))
