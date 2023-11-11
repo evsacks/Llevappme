@@ -353,7 +353,11 @@ def MisSolicitudes():
 @login_required
 def ViajesFinalizados():
     idUsuario = current_user.get_id()
-    viajesPasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario, id_estado_pasajero=6).all()
+    viajesPasajero = []
+    pasajero = [p.id_viaje for p in model.Pasajero.query.filter_by(id_usuario=idUsuario, id_estado_pasajero=6).all()]
+    for viajes in pasajero:
+        v = model.Viaje.query.get(viajes)
+        viajesPasajero.append(v)
     viajesConductor = facc.viajes_finalizados_como_conductor(idUsuario)
     
     mensaje_pasajero = 'Usted aún no ha finalizado viajes como pasajero.'
