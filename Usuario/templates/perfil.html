@@ -37,24 +37,4 @@
     </div>
 </section>
 
-{% if not modo_conductor() %}
-    <section>
-        <div class="features">
-            <article>
-                <span class="icon solid fa-car"></span>
-                <div class="content">
-                    <h3>Conviertete en conductor</h3>
-                    <p>Se un conductor en un simple paso, registra el vehículo con el que vas a conducir y listo!</p>
-                    <ul class="actions">
-                        <li>
-                            <a href="{{url_for('vehiculo_bp.Vehiculo')}}" class="button fit">¡Vamos!</a>
-                        </li>
-                    </ul>
-                </div>
-            </article>
-            
-        </div>
-    </section>
-{% endif %}
-
 {% endblock %}
