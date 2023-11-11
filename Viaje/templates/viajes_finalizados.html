@@ -1,65 +1,73 @@
 {% extends 'layout.html' %}
 {% block section %}
 
-{% if viajesPasajero %}
     <section style = "padding-top: 20px;">    
         <h2 class="major">PASAJERO</h2>
-        <div class="table-wrapper">
-            <table class="alt">
-                <thead>
-                    <tr>
-                        <th scope="col">Origen</th>
-                        <th scope="col">Destino</th>
-                        <th scope="col">Conductor</th>
-                        <th scope="col">Fecha viaje</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for viaje in viajesPasajero %}
+        {% if viajesPasajero %}
+            <div class="table-wrapper">
+                <table class="alt">
+                    <thead>
                         <tr>
-                            <td> {{ viaje.ubicacion.direccion_inicial}}</td>
-                            <td> {{ viaje.ubicacion.direccion_final}}</td>
-                            <td> {{ viaje.conductor.usuario.email }}</td>
-                            <td> {{ viaje.fecha_inicio_real.date() }}</td>
+                            <th scope="col">Origen</th>
+                            <th scope="col">Destino</th>
+                            <th scope="col">Conductor</th>
+                            <th scope="col">Fecha viaje</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {% for viaje in viajesPasajero %}
+                            <tr>
+                                <td> {{ viaje.ubicacion.direccion_inicial}}</td>
+                                <td> {{ viaje.ubicacion.direccion_final}}</td>
+                                <td> {{ viaje.conductor.usuario.email }}</td>
+                                <td> {{ viaje.fecha_inicio_real.date() }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <h4>{{ mensaje_pasajero }}</h4>
+        {% endif %}
     </section>
-{% endif %}
 
-{% if viajesConductor %}
-    <section>
+    <section style="padding-top: 20px;">
         <h2 class="major">CONDUCTOR</h2>
-        <div class="table-wrapper">
-            <table class="alt">
-                <thead>
-                    <tr>
-                        <th scope="col">Origen</th>
-                        <th scope="col">Destino</th>
-                        <th scope="col">Conductor</th>
-                        <th scope="col">Fecha viaje</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for viaje in viajesConductor %}
+        {% if viajesConductor %}
+            <div class="table-wrapper">
+                <table class="alt">
+                    <thead>
                         <tr>
-                            <td> {{ viaje.ubicacion.direccion_inicial}}</td>
-                            <td> {{ viaje.ubicacion.direccion_final}}</td>
-                            <td> {{ viaje.conductor.usuario.email }}</td>
-                            <td> {{ viaje.fecha_inicio_real.date() }}</td>
+                            <th scope="col">Origen</th>
+                            <th scope="col">Destino</th>
+                            <th scope="col">Conductor</th>
+                            <th scope="col">Fecha viaje</th>
+                            <th scope="col">Acciones</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {% for viaje in viajesConductor %}
+                            <tr>
+                                <td> {{ viaje.ubicacion.direccion_inicial}}</td>
+                                <td> {{ viaje.ubicacion.direccion_final}}</td>
+                                <td> {{ viaje.conductor.usuario.email }}</td>
+                                <td> {{ viaje.fecha_inicio_real.date() }}</td>
+                                <td> 
+                                    <a href="{{url_for('viaje_bp.VerViaje', idViaje=viaje.id)}}">Ver viaje</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <h4>{{ mensaje_conductor }}</h4>
+        {% endif %}
     </section>
-{% endif %}
 
-{% if (not viajesPasajero) and (not viajesConductor) %}
-    <h4 id="elements">Usted aún no ha finalizado ningún viaje</h4>
-{% endif %}
+    {% if (not viajesPasajero) and (not viajesConductor) %}
+        <h4 id="elements">Usted aún no ha finalizado ningún viaje</h4>
+    {% endif %}
 
 {% endblock %}
 

@@ -319,9 +319,25 @@ def MisSolicitudes():
 @login_required
 def ViajesFinalizados():
     idUsuario = current_user.get_id()
-    viajesPasajero = model.Pasajero.query.filter_by(id_usuario = idUsuario, id_estado_pasajero = 6).all()
+    viajesPasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario, id_estado_pasajero=6).all()
     viajesConductor = facc.viajes_finalizados_como_conductor(idUsuario)
-    return render_template('viajes_finalizados.html', viajesPasajero = viajesPasajero, viajesConductor = viajesConductor)
+    
+    mensaje_pasajero = 'Usted aún no ha finalizado viajes como pasajero.'
+    mensaje_conductor = 'Usted aún no ha finalizado viajes como conductor.'
+
+    template_data = {}
+
+    if viajesConductor and viajesPasajero:
+        template_data['viajesPasajero'] = viajesPasajero
+        template_data['viajesConductor'] = viajesConductor
+    elif viajesConductor:
+        template_data['viajesConductor'] = viajesConductor
+        template_data['mensaje_pasajero'] = mensaje_pasajero
+    elif viajesPasajero:
+        template_data['viajesPasajero'] = viajesPasajero
+        template_data['mensaje_conductor'] = mensaje_conductor
+
+    return render_template('viajes_finalizados.html', **template_data)
 
 @viaje_bp.route("/guardar/ubicacion", methods=["POST"])
 @login_required
