@@ -1,7 +1,6 @@
 {% extends 'layout.html' %}
 {% block section %}
 <section style = "padding-top: 20px;">
-    <!-- Elements -->
     <h2 class="major">Mis solicitudes de viaje</h2>
         {% if solicitudesPasajero %}
             <div class="table-wrapper">
@@ -35,11 +34,7 @@
                 </table>
             </div>
         {% else %}
-            <h4>No tiene solicitudes</h4>
-        {% endif %}
-
-        {% if mensaje %}
-            <a>{{mensaje}}</a>
+            <h4>{{ mensaje }}</h4>
         {% endif %}
 </section>
 {% endblock %}

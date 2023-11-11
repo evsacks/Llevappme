@@ -308,8 +308,12 @@ def CancelarSolicitudViaje(idViaje):
 @login_required
 def MisSolicitudes():
     idUsuario = current_user.get_id()
-    solicitudesPasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario)
-    return render_template('listado_solicitudes.html', solicitudesPasajero=solicitudesPasajero)
+    solicitudesPasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario).all()
+    if solicitudesPasajero:
+        return render_template('listado_solicitudes.html', solicitudesPasajero=solicitudesPasajero)
+    else:
+        mensaje = 'Usted aún no ha enviado solicitudes para unirse a un viaje.'
+        return render_template('listado_solicitudes.html', mensaje = mensaje)
 
 @viaje_bp.route("/finalizados", methods=["get"])
 @login_required
