@@ -2,19 +2,14 @@ from flask import redirect, url_for, flash, render_template
 from flask_login import current_user
 from datetime import datetime
 from app import model, maps, db
-from sqlalchemy import or_
-from datetime import datetime, timedelta
+from sqlalchemy import func
+from datetime import datetime, timedelta,time
 import Viaje.forms as formulario
 import random
 
-def comparacion_fecha(fechaInicio,horaInicio):
-    if horaInicio:
-        fechaInicio0000 = datetime.combine(fechaInicio,horaInicio)
-        fechaInicio2359 = datetime.combine(fechaInicio,datetime.strptime('23:59:59', '%H:%M:%S').time())
-    else:
-        fechaInicio0000 = datetime.combine(fechaInicio,datetime.strptime('00:00:00', '%H:%M:%S').time())
-        fechaInicio2359 = datetime.combine(fechaInicio,datetime.strptime('23:59:59', '%H:%M:%S').time())
-
+def comparacion_fecha(fechaInicio):
+    fechaInicio0000 = datetime.combine(fechaInicio,datetime.strptime('00:00:00', '%H:%M:%S').time())
+    fechaInicio2359 = datetime.combine(fechaInicio,datetime.strptime('23:59:59', '%H:%M:%S').time())
     return (fechaInicio0000, fechaInicio2359)
 
 def buscar_viaje():
@@ -41,11 +36,21 @@ def buscar_viaje():
             ubicaciones_destino = model.Ubicacion.query.filter(model.Ubicacion.direccion_final.ilike(f"%{destino}%"))
             viajes_query = viajes_query.filter(model.Viaje.id_ubicacion.in_(u.id for u in ubicaciones_destino))
 
-        if fechaInicio:
-            comparacionFecha = comparacion_fecha(fechaInicio, horaInicio)
+        if fechaInicio and horaInicio:
+            # Buscar por fecha y hora
+            fecha_inicio = datetime.combine(fechaInicio, horaInicio)
+            viajes_query = viajes_query.filter(model.Viaje.fecha_inicio == fecha_inicio)
+        elif fechaInicio:
+            # Buscar solo por fecha
+            comparacionFecha = comparacion_fecha(fechaInicio)
             fechaInicio0000 = comparacionFecha[0]
             fechaInicio2359 = comparacionFecha[1]
             viajes_query = viajes_query.filter(model.Viaje.fecha_inicio.between(fechaInicio0000, fechaInicio2359))
+        elif horaInicio:
+            # Buscar solo por hora
+            hora_inicio = datetime.combine(datetime.today().date(), horaInicio)
+            viajes_query = viajes_query.filter(func.extract('hour', model.Viaje.fecha_inicio) == hora_inicio.hour)
+            viajes_query = viajes_query.filter(func.extract('minute', model.Viaje.fecha_inicio) == hora_inicio.minute)
 
         viajes = viajes_query.all()
 
