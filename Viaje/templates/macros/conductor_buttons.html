@@ -6,6 +6,8 @@
             </li>
         </ul>
     </div>
+    {% if not (viaje.id_estado_viaje == 2) %}
+    {% if not (viaje.id_estado_viaje == 4) %}
     {% if not viaje.fecha_inicio_real %}
         <div class="col-6 col-12-medium">
             <ul class="actions stacked">
@@ -21,5 +23,7 @@
                 </li>
             </ul>
         </div>
+    {% endif %}
+    {% endif %}
     {% endif %}
 </div>
