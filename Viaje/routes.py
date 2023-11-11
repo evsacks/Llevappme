@@ -16,7 +16,7 @@ import Viaje.functions.f_BuscarViaje as fbuv
 import Viaje.functions.f_IniciarViaje as finv
 
 viaje_bp = Blueprint('viaje_bp', __name__, url_prefix='/viaje', template_folder='templates', static_folder='static')
-
+ 
 
 
 ######################    
