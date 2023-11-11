@@ -55,7 +55,8 @@ def buscar_viaje():
         viajes = viajes_query.all()
 
         if not viajes:
-            resultado = "No se encontraron resultados"
+            flash('No se encontraron coincidencias, por favor modifica los filtros de búsqueda.')
+            return redirect(url_for('viaje_bp.BuscarViaje'))
         else:
             return resultados_busqueda(viajes)
     
