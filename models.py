@@ -606,6 +606,8 @@ class Vehiculo(db.Model):
     fecha_actualizacion = db.Column(db.DateTime, default = datetime.utcnow)
 
     conductores =  relationship('Conductor', backref = 'vehiculo')
+    
+    id_estado_vehiculo = db.Column(db.Integer, db.ForeignKey('estado_vehiculo.id'), nullable = False)
 
     def __init__(self, patente, cantidad_asientos, descripcion, fecha_creacion, fecha_actualizacion):
         self.patente = patente
@@ -644,6 +646,42 @@ class Vehiculo(db.Model):
         db.session.delete(self)
         db.session.commit()
         
+    def update_from_db():
+        db.session.commit()
+
+class EstadoVehiculo(db.Model):
+    __tablename__ = 'estado_vehiculo'
+    __table_args__ = {'extend_existing': True} 
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    descripcion = db.Column(db.String(30), unique = True, nullable = False)
+    vehiculos = relationship('Vehiculo', backref = 'estado_vehiculo')
+    
+
+    def __init__(self, descripcion):
+        self.descripcion = descripcion
+
+    def __repr__(self):
+        id = self.id,
+        descripcion = self.descripcion
+        est_usu = '<Estado Vehiculo(id={}, descripcion={})>'.format(id,descripcion)
+        return est_usu
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'descripcion': self.descripcion
+    }
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
     def update_from_db():
         db.session.commit()
 
