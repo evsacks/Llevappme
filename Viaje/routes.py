@@ -123,7 +123,7 @@ def ViajesPublicados():
         viajes_por_conductor = []
 
         for conductor in conductores:
-            viajes = model.Viaje.query.filter_by(id_conductor=conductor.id).all()
+            viajes = model.Viaje.query.filter_by(id_conductor=conductor.id, id_estado_viaje = 3).order_by(model.Viaje.id.desc()).all()
             viajes_por_conductor.extend(viajes)
 
         if not viajes_por_conductor:
