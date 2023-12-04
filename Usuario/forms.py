@@ -22,6 +22,14 @@ class RegistroUsuario(FlaskForm):
     confirm = PasswordField('Repite la contraseña', [DataRequired(), Length(min=6, max=20)])
     submit = SubmitField('Registrarse')
 
+class EditarPerfil(FlaskForm):
+    nombre = StringField('Nombre', validators=[DataRequired(), Length(min=2, max=100)])
+    apellido = StringField('Apellido', validators=[DataRequired(), Length(min=2, max=100)])
+    email = StringField('Email', validators=[DataRequired(), Email('Ingresa un formato de email válido.')])
+    telefono = IntegerField('Telefono', validators=[DataRequired()])
+    fecha_nacimiento = DateField('Fecha de Nacimiento', validators=[DataRequired()])
+    submit = SubmitField('Guardar')
+
 class ReseteoContrasenia(FlaskForm):
     emailUsuario = StringField('Email', validators=[Email('Ingresa un formato de email válido.')])
     submit = SubmitField('Resetear Contraseña')

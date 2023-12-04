@@ -2,9 +2,12 @@ from flask import Blueprint, render_template, redirect,url_for,flash
 from flask_login import login_user,logout_user,login_required,current_user
 from datetime import datetime, timedelta
 from authentication import auth
+from sqlalchemy.exc import SQLAlchemyError
+from app import db
 import models as model
 import Usuario.forms as formulario
 import Usuario.functions.f_perfil as fper
+import Usuario.functions.f_editarPerfil as fedp
 
 usuario_bp = Blueprint('usuario_bp', __name__, url_prefix='/usuario', template_folder='templates', static_folder='static')
 
@@ -35,27 +38,31 @@ def Registro():
             flash("El número de teléfono especificado ya esta en uso.")
             return render_template('registro.html', form=form)
         else:
-            nuevoUsuario_firebase = auth.create_user_with_email_and_password(email, passw)
-            print(nuevoUsuario_firebase)
-            nuevoUsuario = model.Usuario(
-                nombre=nombre,
-                apellido=apellido,
-                email=email,
-                contrasenia=nuevoUsuario_firebase['idToken'],
-                telefono=telefono,
-                fecha_nacimiento=fecha_nacimiento,
-                fecha_actualizacion=datetime.now(),
-                fecha_creacion= datetime.now(),
-                id_tipo_usuario=1,
-                id_estado_usuario=1
-            )
-            model.Usuario.save_to_db(nuevoUsuario)
-            if model.Usuario.query.get(nuevoUsuario.id):
-                flash("Usuario creado exitosamente, complete sus credenciales para ingresar.")
-                return redirect(url_for('usuario_bp.Login'))
-            else:
-                flash("Hubo un error al crear la cuenta, vuelve a intentarlo más tarde.")
-                return render_template('registro.html', form=form)
+            try:
+                nuevoUsuario_firebase = auth.create_user_with_email_and_password(email, passw)
+                nuevoUsuario = model.Usuario(
+                    nombre=nombre,
+                    apellido=apellido,
+                    email=email,
+                    contrasenia=nuevoUsuario_firebase['idToken'],
+                    telefono=telefono,
+                    fecha_nacimiento=fecha_nacimiento,
+                    fecha_actualizacion=datetime.now(),
+                    fecha_creacion= datetime.now(),
+                    id_tipo_usuario=1,
+                    id_estado_usuario=1
+                )
+                model.Usuario.save_to_db(nuevoUsuario)
+                if model.Usuario.query.get(nuevoUsuario.id):
+                    flash("Usuario creado exitosamente, complete sus credenciales para ingresar.")
+                    return redirect(url_for('usuario_bp.Login'))
+                else:
+                    auth.delete_user_account(nuevoUsuario_firebase['idToken'])
+                    flash("Hubo un error al crear la cuenta, vuelve a intentarlo más tarde.")
+                    return redirect(url_for('usuario_bp.Registro'))
+            except:
+                flash('Hubo un error con tu cuenta, revisa nuevamente los datos ingresados.')
+                return redirect(url_for('usuario_bp.Registro'))
     return render_template('registro.html', form=form)
 
 @usuario_bp.route('/login', methods=['GET', 'POST'])
@@ -70,17 +77,19 @@ def Login():
         passw = form.contrasenia.data
         email = form.nombreUsuario.data.strip()
         
-        usuario = model.Usuario.find_by_email(email)
+        try:
+            usuario = model.Usuario.find_by_email(email)
 
-        if usuario:
-            inicio = auth.sign_in_with_email_and_password(email, passw)
-            if inicio:
-                login_user(usuario)
-                return redirect(url_for('viaje_bp.BuscarViaje'))
-            else: 
-                flash("La contraseña ingresada es incorrecta")
-                return redirect(url_for('usuario_bp.Login'))
-        else: 
+            if usuario:
+                inicio = auth.sign_in_with_email_and_password(email, passw)
+                if inicio:
+                    login_user(usuario)
+                    return redirect(url_for('viaje_bp.BuscarViaje'))
+                else: 
+                    flash("La contraseña ingresada es incorrecta")
+                    return redirect(url_for('usuario_bp.Login'))
+        except:
+            print("exception")
             flash("El usuario ingresado es incorrecto")
             return redirect(url_for('usuario_bp.Login'))
     return render_template('login.html', form=form)
@@ -125,7 +134,29 @@ def Perfil():
 @usuario_bp.route('/perfil/editar', methods=['GET', 'POST'])
 @login_required
 def EditarPerfil():
-    return True
+    idUsuario = current_user.get_id()
+    usuario = model.Usuario.query.get(idUsuario)
+    print(usuario)
+    form = formulario.EditarPerfil()
+    
+    try:
+        if form.validate_on_submit():
+            telefono = model.Usuario.query.filter(model.Usuario.telefono == form.telefono.data,
+                                                  model.Usuario.id != idUsuario).all()
+            if telefono:
+                 flash('El teléfono ingresado se encuentra registrado en otra cuenta.')
+
+            fedp.actualizar_usuario_con_formulario(usuario, form)
+            db.session.commit()
+            flash('Perfil editado con éxito')
+            return redirect(url_for('usuario_bp.Perfil'))
+        else:
+            fedp.cargar_datos_del_usuario_en_formulario(form, usuario)
+            return render_template('editar_perfil.html', form=form, usuario = usuario)
+    except SQLAlchemyError as e:
+        print('Error al editar el perfil:', str(e))
+        return redirect(url_for('usuario_bp.EditarPerfil'))
+    
 
 @usuario_bp.route('/perfil/eliminar', methods=['GET', 'POST'])
 @login_required

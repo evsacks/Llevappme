@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+{% block banner %}
+<!-- Banner -->
+<section style = "padding-top: 20px;">
+        <header class="major">
+            <h2 style="margin-bottom: 20px;">Editar Perfil</h2>
+        </header>
+        
+        {% if form %}
+            <form method="post" action="{{url_for('usuario_bp.EditarPerfil')}}">
+            {{ form.hidden_tag() }}
+            <div class="row gtr-uniform">
+                <div class="col-6 col-12-xsmall">
+                    <h5>Nombre</h5>
+                    {{ form.nombre(type="text",  id="nombre") }}
+                    <div>
+                        {% for error in form.nombre.errors %}
+                            <span>{{ error }}</span> 
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-6 col-12-xsmall">
+                    <h5>Apellido</h5>
+                    {{ form.apellido(type="text",  id="apellido") }}
+                    <div>
+                        {% for error in form.apellido.errors %}
+                            <span>{{ error }}</span> 
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-12">
+                    <h5>Email</h5>
+                    {{ form.email(type="email",  id="email", readonly=true) }}
+                    <div>
+                        {% for error in form.email.errors %}
+                            <span>{{ error }}</span> 
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-6 col-12-xsmall">
+                    <h5>Teléfono</h5>
+                    {{ form.telefono(type="tel",  id="telefono") }}
+                    <div>
+                        {% for error in form.telefono.errors %}
+                            <span>{{ error }}</span> 
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-6 col-12-xsmall">
+                    <h5>Fecha de nacimiento</h5>
+                    {{ form.fecha_nacimiento(type="date",  id="fecha_nacimiento") }}
+                    <div>
+                        {% for error in form.fecha_nacimiento.errors %}
+                            <span>{{ error }}</span> 
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Break -->
+                <div class="col-12">
+                    <ul class="actions">
+                        <li>{{ form.submit(type="submit") }}</li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+        {% endif %}
+        <a href="{{url_for('usuario_bp.Perfil')}}">Volver</a>
+</section>
+{% endblock %}
