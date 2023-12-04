@@ -23,4 +23,4 @@ def cancelarIncumplidos(idViaje):
             pasajero.id_estado_pasajero = 4
             pasajero.fecha_actualizacion = datetime.now()
             db.session.commit() 
-    return
+    return True

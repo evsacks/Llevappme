@@ -1,5 +1,17 @@
 from app import model, db
 from flask_login import login_user,logout_user,login_required,current_user
+from datetime import datetime, timedelta
+
+def mayorEdad(fecha_objetivo):
+    # Obtén la fecha y hora actuales
+    fecha_actual = datetime.now()
+    # Calcula la diferencia entre la fecha objetivo y la fecha actual
+    diferencia = fecha_objetivo - fecha_actual
+    # Define la mayoría de edad como 18 años
+    mayoria_edad = timedelta(days=365 * 18)
+    
+    # Compara la diferencia con la mayoría de edad
+    return diferencia >= mayoria_edad
 
 def esConductor():
     idUsuario = current_user.get_id()

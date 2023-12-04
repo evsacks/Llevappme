@@ -8,6 +8,7 @@ import models as model
 import Usuario.forms as formulario
 import Usuario.functions.f_perfil as fper
 import Usuario.functions.f_editarPerfil as fedp
+import Usuario.functions.f_AccionesUsuario as facu
 
 usuario_bp = Blueprint('usuario_bp', __name__, url_prefix='/usuario', template_folder='templates', static_folder='static')
 
@@ -144,7 +145,8 @@ def EditarPerfil():
             telefono = model.Usuario.query.filter(model.Usuario.telefono == form.telefono.data,
                                                   model.Usuario.id != idUsuario).all()
             if telefono:
-                 flash('El teléfono ingresado se encuentra registrado en otra cuenta.')
+                flash("El número de teléfono especificado ya esta en uso.")
+                return redirect(url_for('usuario_bp.EditarPerfil'))
 
             fedp.actualizar_usuario_con_formulario(usuario, form)
             db.session.commit()

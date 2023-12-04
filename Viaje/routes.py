@@ -47,6 +47,10 @@ def PublicarViaje():
 
 
         if form.validate_on_submit():
+            fecha_inicial = datetime.combine(form.fecha_inicio.data, form.hora_inicio.data)
+            if not fpuv.mayorOigualEdad(fecha_inicial):
+                flash('Fecha de inicio del viaje errónea.')
+                return redirect(url_for('viaje_bp.PublicarViaje'))
             vehiculo, origen, destino, cantidad_asientos, fecha_inicio, hora_inicio, equipaje, mascota, alimentos = fpuv.obtener_datos_del_formulario(form)
             coordenadas_y_distancia = fpuv.obtener_coordenadas_y_distancia(origen, destino)
 
@@ -106,7 +110,7 @@ def EliminarViaje(idViaje):
         return fedv.redireccionar_y_mostrar_error('Viaje no encontrado', 'error', 'viaje_bp.BuscarViaje')
 
     if not felv.tiene_permiso_para_eliminar(viaje):
-        return fedv.redireccionar_y_mostrar_error('No tienes permiso para eliminar este viaje', 'error', 'viaje_bp.BuscarViaje')
+        return fedv.redireccionar_y_mostrar_error('No tienes permiso para cancelar este viaje', 'error', 'viaje_bp.BuscarViaje')
 
     felv.eliminar_viaje(viaje)
 

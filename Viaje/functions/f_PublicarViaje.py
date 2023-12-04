@@ -11,6 +11,14 @@ import Viaje.forms as formulario
 ### PUBLICAR VIAJE ###
 ######################
 
+def mayorOigualEdad(fecha_objetivo):
+    # Obtén la fecha y hora actuales
+    fecha_actual = datetime.now()
+    # Calcula la diferencia entre la fecha objetivo y la fecha actual
+    diferencia = fecha_objetivo - fecha_actual
+    
+    # Verifica si la fecha objetivo es mayor o igual a la fecha actual
+    return diferencia.total_seconds() >= 0
 
 def obtener_datos_del_formulario(form):
     vehiculo = form.vehiculo.data
