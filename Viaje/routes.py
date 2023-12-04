@@ -416,3 +416,16 @@ def GuardarUbicacion():
     
     return "Ubicación guardada con éxito", 200
 
+@viaje_bp.route("/en_curso", methods=["get"])
+@login_required
+def ViajeEnCurso():
+    idUsuario = current_user.get_id()
+    conductor = facc.viaje_en_curso_como_conductor(idUsuario)
+    pasajero = facc.viaje_en_curso_como_pasajero(idUsuario)
+
+    if conductor:
+        return redirect(url_for("viaje_bp.VerViaje", idViaje = conductor))
+    elif pasajero:
+        return redirect(url_for("viaje_bp.VerViaje", idViaje = pasajero))
+
+    

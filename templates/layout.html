@@ -68,6 +68,9 @@
 									</header>
 									<ul>
 										<li><a href="{{url_for('viaje_bp.BuscarViaje')}}">Inicio</a></li>
+										{% if viaje_en_curso(current_user.id) %}
+											<li><a href="{{url_for('viaje_bp.ViajeEnCurso')}}">Viaje en curso</a></li>
+										{% endif %}
 										{% if modo_conductor() %}
 											<li><a href="{{url_for('viaje_bp.PublicarViaje')}}">Publicar Viaje</a></li>
 										{% endif %}
