@@ -15,9 +15,13 @@ class Login(FlaskForm):
 class RegistroUsuario(FlaskForm):
     nombreUsuario = StringField('Nombre', validators=[DataRequired(), Length(min=2, max=100)])
     apellidoUsuario = StringField('Apellido', validators=[DataRequired(), Length(min=2, max=100)])
-    email = StringField('Email', validators=[DataRequired(), Email()])
+    email = StringField('Email', validators=[DataRequired(), Email('Ingresa un formato de email válido.')])
     telefono = IntegerField('Telefono', validators=[DataRequired()])
     fecha_nacimiento = DateField('Fecha de Nacimiento', validators=[DataRequired()])
-    password = PasswordField('Contraseña', [DataRequired(), EqualTo('confirm', message='Las contraseñas deben coincidir')])
-    confirm = PasswordField('Repite la contraseña')
+    password = PasswordField('Contraseña', [DataRequired(), Length(min=6, max=20), EqualTo('confirm', message='Las contraseñas deben coincidir')])
+    confirm = PasswordField('Repite la contraseña', [DataRequired(), Length(min=6, max=20)])
     submit = SubmitField('Registrarse')
+
+class ReseteoContrasenia(FlaskForm):
+    emailUsuario = StringField('Email', validators=[Email('Ingresa un formato de email válido.')])
+    submit = SubmitField('Resetear Contraseña')

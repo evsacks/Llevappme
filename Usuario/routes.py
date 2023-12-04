@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect,url_for,flash
 from flask_login import login_user,logout_user,login_required,current_user
 from datetime import datetime, timedelta
-
+from authentication import auth
 import models as model
 import Usuario.forms as formulario
 import Usuario.functions.f_perfil as fper
@@ -28,7 +28,6 @@ def Registro():
         usuario_email = model.Usuario.find_by_email(email)
         usuario_telefono = model.Usuario.find_by_telefono(telefono)
 
-
         if usuario_email:
             flash("El email especificado ya esta en uso.")
             return render_template('registro.html', form=form)
@@ -36,11 +35,13 @@ def Registro():
             flash("El número de teléfono especificado ya esta en uso.")
             return render_template('registro.html', form=form)
         else:
+            nuevoUsuario_firebase = auth.create_user_with_email_and_password(email, passw)
+            print(nuevoUsuario_firebase)
             nuevoUsuario = model.Usuario(
                 nombre=nombre,
                 apellido=apellido,
                 email=email,
-                contrasenia=passw,
+                contrasenia=nuevoUsuario_firebase['idToken'],
                 telefono=telefono,
                 fecha_nacimiento=fecha_nacimiento,
                 fecha_actualizacion=datetime.now(),
@@ -48,11 +49,13 @@ def Registro():
                 id_tipo_usuario=1,
                 id_estado_usuario=1
             )
-
             model.Usuario.save_to_db(nuevoUsuario)
-            flash("Usuario creado exitosamente, complete sus credenciales para ingresar.")
-            return redirect(url_for('viaje_bp.Login'))
-        
+            if model.Usuario.query.get(nuevoUsuario.id):
+                flash("Usuario creado exitosamente, complete sus credenciales para ingresar.")
+                return redirect(url_for('usuario_bp.Login'))
+            else:
+                flash("Hubo un error al crear la cuenta, vuelve a intentarlo más tarde.")
+                return render_template('registro.html', form=form)
     return render_template('registro.html', form=form)
 
 @usuario_bp.route('/login', methods=['GET', 'POST'])
@@ -70,8 +73,8 @@ def Login():
         usuario = model.Usuario.find_by_email(email)
 
         if usuario:
-            contrasenia = usuario.validar_contrasenia(passw)
-            if contrasenia:
+            inicio = auth.sign_in_with_email_and_password(email, passw)
+            if inicio:
                 login_user(usuario)
                 return redirect(url_for('viaje_bp.BuscarViaje'))
             else: 
@@ -81,6 +84,24 @@ def Login():
             flash("El usuario ingresado es incorrecto")
             return redirect(url_for('usuario_bp.Login'))
     return render_template('login.html', form=form)
+
+@usuario_bp.route('/reset/contrasenia', methods=['GET', 'POST'])
+def ResetearContrasenia():
+    if current_user.is_authenticated:
+        return redirect(url_for('viaje_bp.BuscarViaje'))
+
+    form = formulario.ReseteoContrasenia()
+
+    if form.validate_on_submit():
+        email = form.emailUsuario.data.strip()
+        try:
+            auth.send_password_reset_email(email)
+            flash('Te enviamos un email a la cuenta de correo para que puedas resetear tu contraseña.')
+            return redirect(url_for('usuario_bp.Login'))
+        except:
+            flash('El correo ingresado no pertenece a una cuenta existente.')
+            return redirect(url_for('usuario_bp.ResetearContrasenia'))
+    return render_template('reseteoContrasenia.html', form=form)
 
 @usuario_bp.route('/logout', methods=['GET', 'POST'])
 @login_required

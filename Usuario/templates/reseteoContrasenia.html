@@ -1,0 +1,41 @@
+{% extends 'layout_login.html' %}
+{% block banner %}
+<!-- Banner -->
+<section id="banner">
+    <div class="content">
+        <header>
+            <h1>Resetear Contraseña</h1>
+        </header>
+        {% if resultado %}
+            <a> {{resultado}} </a>
+        {% endif%}    
+        {% if form %}
+            <form method="post" action="{{url_for('usuario_bp.ResetearContrasenia')}}">
+            {{ form.hidden_tag() }}
+            <div class="row gtr-uniform">
+                <div class="col-12 col-12-xsmall">
+                    <h5>Ingresa tu email para poder resetear tu contraseña.</h5>
+                    {{ form.emailUsuario(type="text",  id="usuario_lgn", value="", placeholder="Email") }}
+                    <div>
+                        {% for error in form.emailUsuario.errors %}
+                            <span>{{ error }}</span> 
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Break -->
+                <div class="col-12">
+                    <ul class="actions">
+                        <li>{{ form.submit(type="submit", value="Enviar") }}</li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+        {% endif %}
+        <a href="{{url_for('usuario_bp.Login')}}">Volver</a>
+    </div>
+    <span class="image fit">
+        <img src="{{url_for('static', filename = 'images/logo.png')}}" alt="" />
+    </span>
+    
+</section>
+{% endblock %}

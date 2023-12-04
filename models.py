@@ -42,7 +42,7 @@ class Usuario(db.Model, UserMixin):
         self.nombre = nombre
         self.apellido = apellido
         self.email = email
-        self.contrasenia = generate_password_hash(contrasenia)
+        self.contrasenia = contrasenia
         self.telefono = telefono
         self.fecha_nacimiento = fecha_nacimiento
         self.fecha_creacion = fecha_creacion

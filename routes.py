@@ -1,6 +1,6 @@
 from app import app, login_manager
 from app import maps
-
+from authentication import auth
 from Usuario.routes import usuario_bp
 from Viaje.routes import viaje_bp
 from Vehiculo.routes import vehiculo_bp
