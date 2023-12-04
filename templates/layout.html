@@ -21,7 +21,7 @@
 										{% if session.ubicacion_activada|default(False) %}
 											<li><a style="color: rgba(3, 177, 61, 0.493)"><span>Ubicación activada</span></a></li>
 											<li><a href="{{url_for('viaje_bp.DesactivarUbicacion')}}" style="color: rgba(3, 177, 61, 0.493)" class="fa-solid fa-toggle-on"><span class="label"></span></a></li>
-											<li><a href="#" style="color: rgba(3, 177, 61, 0.493)" class="fa-brands fa-whatsapp"><span class="label"></span></a></li>
+											<li><a href="{{url_for('viaje_bp.VerUbicacion', idUsuario = current_user.id)}}" style="color: rgba(3, 177, 61, 0.493)" class="fa-brands fa-whatsapp"><span class="label"></span></a></li>
 										{% else %}
 											<li><a style="color: rgba(177, 3, 3, 0.493)"><span>Ubicación desactivada</span></a></li>
 											<li><a href="{{url_for('viaje_bp.ActivarUbicacion')}}" style="color: rgba(177, 3, 3, 0.493)" class="fa-solid fa-toggle-off"><span class="label"></span></a></li>

@@ -1,0 +1,93 @@
+{% extends 'layout_ubicacion.html' %}
+{% block section %}
+    {% if viaje %}
+        <section style = "padding-top: 20px;">
+            <div class="row gtr-200" id="idViaje" data-id-viaje="{{viaje.id}}">
+                <div class="col-6 col-12-medium">
+                    <ul class="alt">
+                        <li>
+                            <h3 style="margin-bottom: 0px;">
+                                <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
+                                {{viaje.ubicacion.direccion_inicial}}
+                            </h3>
+                            <h3 style="margin-bottom: 0px;">
+                                <a class="fas fa-chevron-down fa-xs"></a>
+                            </h3>
+                            <h3>
+                                <a class="fas fa-map-marker-alt" style="margin-right: 10px;"></a>
+                                {{viaje.ubicacion.direccion_final}}
+                            </h3>
+                        </li>
+
+                        <div class="row">
+                            <div class="col-6 col-12-medium">
+                                <h4 style="color: #6e99ff;margin-top: 14px;margin-bottom: 5px;">Fecha y hora de salida</h4>
+                                <div>
+                                    <ul class="icons" style="display: inline;">
+                                        <li><a class="icon solid fa-calendar-day"></a></li>
+                                    </ul>
+                                    <p id="fecha_inicio" data-fecha-hora="{{viaje.fecha_inicio_real}}" style="display: inline;margin-bottom: 0px;">{{ formato_fecha(viaje.fecha_inicio_real) }}</p>
+                                </div>
+                                <div>
+                                    <ul class="icons" style="display: inline;">
+                                        <li><a class="icon solid fa-clock"></a></li>
+                                    </ul>
+                                    <p style="display: inline;">{{ formato_hora(viaje.fecha_inicio_real) }}</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-12-medium">
+                                <h4 style="color: #6e99ff;margin-top: 14px;margin-bottom: 5px;">Ruta</h4>
+                                <div>
+                                    <ul class="icons" style="display: inline;">
+                                        <li><a class="icon solid fa-route"></a></li>
+                                    </ul>
+                                    <p style="display: inline;margin-bottom: 0px;">{{distancia}} de distancia</p>
+                                </div>
+                                <div>
+                                    <ul class="icons" style="display: inline;">
+                                        <li><a class="icon solid fa-stopwatch"></a></li>
+                                    </ul>
+                                    <p style="display: inline;">{{ (duracion / 60) | round }} mins al destino.</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-12-medium">
+                                <h4 style="color: #6e99ff;margin-top: 14px;margin-bottom: 5px;">Viaje</h4>
+                                <div>
+                                    <ul class="icons" style="display: inline;">
+                                        <li><a class="icon regular fa-id-card"></a></li>
+                                    </ul>
+                                    <p style="display: inline;margin-bottom: 0px;">{{viaje.conductor.usuario.nombre}} {{viaje.conductor.usuario.apellido}}</p>
+                                </div>
+                                <div>
+                                    <ul class="icons" style="display: inline;">
+                                        <li><a class="icon solid fa-car"></a></li>
+                                    </ul>
+                                    <p style="display: inline;margin-bottom: 0px;">Patente: {{viaje.conductor.vehiculo.patente}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </ul>
+                    <div>
+                        <p style="display: inline;margin-bottom: 10px;">
+                            A: Punto de partida <br>
+                            B: Ubicación actual <br>
+                            La ubicación se actualizará cada 30 segundos.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-6 col-12-medium">
+                    <h3>Mapa</h3>
+                    <div class="map-container" style="height: 300px;"
+                        data-map-id = "{{viaje.id}}"
+                        data-lat-inicial="{{ viaje.ubicacion.latitud_inicial }}"
+                        data-lng-inicial="{{ viaje.ubicacion.longitud_inicial }}"
+                        data-lat-final="{{ ubicacion_actual.latitud }}"
+                        data-lng-final="{{ ubicacion_actual.longitud }}">
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+    
+{% endblock %}
+

@@ -164,14 +164,14 @@ def AceptarPasajero(idPasajero):
         asientosActuales = pasajero.viaje.asientos_disponibles
         pasajero.viaje.asientos_disponibles = asientosActuales - 1
         db.session.commit()
-    return redirect(url_for('viaje_bp.GrupoDeViaje', idViaje=pasajero.id_viaje))
+    return redirect(url_for('viaje_bp.VerViaje', idViaje=pasajero.id_viaje))
 
 @viaje_bp.route('pasajero/<idPasajero>/rechazar', methods=['GET', 'POST'])
 @login_required
 def RechazarPasajero(idPasajero):
     pasajero = model.Pasajero.query.get(idPasajero)
     if facc.modificar_estado_pasajero(idPasajero, 'Rechazado'):
-        return redirect(url_for('viaje_bp.GrupoDeViaje', idViaje=pasajero.id_viaje))
+        return redirect(url_for('viaje_bp.VerViaje', idViaje=pasajero.id_viaje))
 
 @viaje_bp.route('/<idViaje>/pasajeros/<idEstado>', methods=['GET', 'POST'])
 @login_required
@@ -210,6 +210,24 @@ def VerViaje(idViaje):
     except Exception as e:
         mensaje = str(e) 
         return render_template('ver_viaje.html', fechaInicio = viaje.fecha_inicio)
+
+@viaje_bp.route('/ubicacion/<idUsuario>', methods=['GET', 'POST'])
+def VerUbicacion(idUsuario):
+
+        conductor = facc.viaje_en_curso_como_conductor(idUsuario)
+        pasajero = facc.viaje_en_curso_como_pasajero(idUsuario)
+
+        if conductor:
+            viaje = model.Viaje.query.get(conductor) 
+        elif pasajero:
+            viaje = model.Viaje.query.get(pasajero)
+        else:
+            return False
+        ubicacion = model.Tracking.query.filter_by(id_viaje=viaje.id).order_by(model.Tracking.fecha.desc()).first()
+        direccion = fpuv.obtener_direccion_desde_coordenadas(ubicacion.latitud, ubicacion.longitud)
+        coordenadas_y_distancia = fpuv.obtener_coordenadas_y_distancia(direccion, viaje.ubicacion.direccion_final)
+        _, _, _, _, distancia, duracion = coordenadas_y_distancia
+        return render_template('ver_ubicacion_viaje.html', viaje=viaje, ubicacion_actual = ubicacion, distancia = distancia, duracion = duracion)
 
 @viaje_bp.route('/buscar', methods=['GET', 'POST'])
 @login_required

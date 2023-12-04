@@ -2,6 +2,7 @@ from flask import redirect, url_for, flash
 from flask_login import current_user
 from datetime import datetime
 from app import model, maps
+import requests
 
 from datetime import datetime, timedelta
 import Viaje.forms as formulario
@@ -40,6 +41,19 @@ def obtener_coordenadas_y_distancia(origen, destino):
         return latitud_origen, longitud_origen, latitud_destino, longitud_destino, distancia, duracion
 
     return None
+
+def obtener_direccion_desde_coordenadas(latitud, longitud):
+    url = f'https://maps.googleapis.com/maps/api/geocode/json?latlng={latitud},{longitud}&key=AIzaSyBPrNn6olS4yqaOK9v7ppvXnu4kXQ_x_98'
+
+    response = requests.get(url)
+    data = response.json()
+
+    if 'results' in data and data['results']:
+        direccion = data['results'][0]['formatted_address']
+        return direccion
+    else:
+        return None
+
 
 def guardar_datos_en_la_base_de_datos(vehiculo, origen, destino, cantidad_asientos, fecha_inicio, hora_inicio, latitud_origen, longitud_origen, latitud_destino, longitud_destino, distancia, duracion, equipaje, mascota, alimentos):
     fecha_inicial = datetime.combine(fecha_inicio, hora_inicio)
