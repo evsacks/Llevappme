@@ -21,7 +21,7 @@
 										{% if session.ubicacion_activada|default(False) %}
 											<li><a style="color: rgba(3, 177, 61, 0.493)"><span>Ubicación activada</span></a></li>
 											<li><a href="{{url_for('viaje_bp.DesactivarUbicacion')}}" style="color: rgba(3, 177, 61, 0.493)" class="fa-solid fa-toggle-on"><span class="label"></span></a></li>
-											<li><a href="{{url_for('viaje_bp.VerUbicacion', idUsuario = current_user.id)}}" style="color: rgba(3, 177, 61, 0.493)" class="fa-brands fa-whatsapp"><span class="label"></span></a></li>
+											<li><a href="{{url_for('viaje_bp.VerUbicacion', idUsuario = current_user.id)}}" style="color: rgba(3, 177, 61, 0.493)" class="fa-solid fa-share"><span class="label"></span></a></li>
 										{% else %}
 											<li><a style="color: rgba(177, 3, 3, 0.493)"><span>Ubicación desactivada</span></a></li>
 											<li><a href="{{url_for('viaje_bp.ActivarUbicacion')}}" style="color: rgba(177, 3, 3, 0.493)" class="fa-solid fa-toggle-off"><span class="label"></span></a></li>
@@ -35,11 +35,11 @@
 								{% if messages %}
 									<ul class=flashes>
 									{% for message in messages %}
-										<div id= "alerta" class="box" style="background-color: bisque;margin-top: 25px;margin-bottom: 0px;">
-											<ul class="icons" style="margin-bottom: 0px;">
-												<li><a href="" onclick="ocultarAlerta()" class="icon solid fa-xmark"></a></li>
-											</ul>
-											<p style="margin-top: 0px;">{{ message }}</p>
+										<div id= "alerta" class="box" style="background-color: rgb(201, 192, 236);margin-top: 25px;margin-bottom: 0px;">
+											<h5 style="margin-bottom: 0px;">
+												<a href='' onclick="ocultarAlerta()" class="icon solid fa-xmark"></a>
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ message }}
+											</h5>
 										</div>
 									{% endfor %}
 									</ul>
