@@ -318,7 +318,7 @@ def SolicitudViaje(idViaje):
         conductor = viaje.conductor.id_usuario == idUsuario
 
         if pasajero:
-            mensaje = "Ya solicitaste ese viaje, por favor busca uno nuevo"
+            flash('Ya has enviado una solicitud para unirte a este viaje.')
         elif conductor:
             mensaje = "Eres el conductor de este viaje"
         else:
@@ -329,11 +329,11 @@ def SolicitudViaje(idViaje):
             if viaje.asientos_disponibles == 0:
                 mensaje = 'No hay asientos disponibles'
             elif fsov.hay_conflictos_de_horario(mis_viajes, viaje):
-                mensaje = "Ya existe viaje pendiente / confirmado en esa fecha."
+                flash('Ya has enviado una solicitud para unirte a un viaje en esta misma fecha.')
             else:
                 pasajero = fsov.solicitar_viaje(idUsuario, idViaje)
                 if pasajero:
-                    mensaje = "Solicitaste el viaje"
+                    flash('La solicitud para unirte al viaje se envió con éxito. Dirígete a mis solicitudes para ver el estado de la misma.')
                     return redirect(url_for("viaje_bp.VerViaje", idViaje = idViaje))
 
     return render_template('ver_viaje.html', viaje=viaje)
@@ -354,7 +354,7 @@ def CancelarSolicitudViaje(idViaje):
             mensaje = "Eres el conductor de este viaje"
         elif pasajero:
             pasajero_cancelado = fsov.cancelar_solicitud_viaje(idUsuario, idViaje)
-            mensaje = "cancelaste tu solicitud"
+            flash('La solicitud para unirte al viaje se ha cancelado con éxito.')
             return redirect(url_for("viaje_bp.VerViaje", idViaje = idViaje))
         else:
             return redirect(url_for("viaje_bp.VerViaje", idViaje = idViaje))

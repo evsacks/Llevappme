@@ -29,6 +29,7 @@
                         {% endfor %}
                     </div>
                 </div>
+                
                 <!-- Break -->
                 <div class="col-12">
                     <ul class="actions">
@@ -39,6 +40,8 @@
         </form>
         {% endif %}
         <a href="{{url_for('usuario_bp.Registro')}}">Registrarse</a>
+        <br><br><a href="{{url_for('usuario_bp.ResetearContrasenia')}}">Olvidé mi contraseña</a>
+        
     </div>
     <span class="image fit">
         <img src="{{url_for('static', filename = 'images/logo.png')}}" alt="" />
