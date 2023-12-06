@@ -188,6 +188,24 @@ def VerPasajeros(idViaje, idEstado):
 
     return render_template('pasajeros_viaje.html', pasajeros = pasajeros, viaje = viaje)
 
+@viaje_bp.route('/solicitudes/recibidas', methods=['GET', 'POST'])
+@login_required
+def SolicitudesRecibidas():
+    idUsuario = current_user.get_id()
+    viajes_conductor = facc.viajes_pendientes_como_conductor(idUsuario)
+
+    solicitudes = []
+        
+    for viaje in viajes_conductor:
+        pasajero_pendiente = model.Pasajero.query.filter_by(id_viaje = viaje.id, id_estado_pasajero = 2).first()
+        if pasajero_pendiente:
+            # Agrega el viaje que tiene pasajeros pendientes de confirmación o rechazo
+            solicitudes.append(pasajero_pendiente.viaje)
+    if solicitudes:     
+        return render_template('solicitudes_recibidas.html', solicitudes = solicitudes)
+    else:
+        mensaje = 'Usted no ha recibido solicitudes'
+        return render_template('solicitudes_recibidas.html', mensaje = mensaje)
 
 ######################    
 ####### AMBOS ########
@@ -360,16 +378,16 @@ def CancelarSolicitudViaje(idViaje):
             return redirect(url_for("viaje_bp.VerViaje", idViaje = idViaje))
     return render_template('ver_viaje.html', viaje=viaje)
 
-@viaje_bp.route('/ver/solicitudes', methods=['GET', 'POST'])
+@viaje_bp.route('/solicitudes/enviadas', methods=['GET', 'POST'])
 @login_required
-def MisSolicitudes():
+def SolicitudesEnviadas():
     idUsuario = current_user.get_id()
     solicitudesPasajero = model.Pasajero.query.filter_by(id_usuario=idUsuario).all()
     if solicitudesPasajero:
-        return render_template('listado_solicitudes.html', solicitudesPasajero=solicitudesPasajero)
+        return render_template('solicitudes_enviadas.html', solicitudesPasajero=solicitudesPasajero)
     else:
         mensaje = 'Usted aún no ha enviado solicitudes para unirse a un viaje.'
-        return render_template('listado_solicitudes.html', mensaje = mensaje)
+        return render_template('solicitudes_enviadas.html', mensaje = mensaje)
 
 @viaje_bp.route("/finalizados", methods=["get"])
 @login_required

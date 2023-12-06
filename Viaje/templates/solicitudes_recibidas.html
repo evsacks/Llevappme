@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+{% block section %}
+<section style = "padding-top: 20px;">
+    <h2 class="major">Solicitudes recibidas</h2>
+        {% if solicitudes %}
+            <div class="table-wrapper">
+                <table class="alt">
+                    <thead>
+                        <tr>
+                            <th scope="col">Origen</th>
+                            <th scope="col">Destino</th>
+                            <th scope="col">Fecha Salida</th>
+                            <th scope="col">Pasajeros Pendientes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for solicitud in solicitudes %}
+                            <tr>
+                                <td> {{ solicitud.ubicacion.direccion_inicial}}</td>
+                                <td> {{ solicitud.ubicacion.direccion_final}}</td>
+                                <td> {{ solicitud.fecha_inicio.date()}}</td>
+                                <td> 
+                                    <a href="{{url_for('viaje_bp.VerPasajeros', idViaje=solicitud.id, idEstado = 2)}}">Ver solicitudes</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <h4>{{ mensaje }}</h4>
+        {% endif %}
+</section>
+{% endblock %}

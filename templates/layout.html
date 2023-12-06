@@ -68,20 +68,28 @@
 									</header>
 									<ul>
 										<li><a href="{{url_for('viaje_bp.BuscarViaje')}}">Inicio</a></li>
-										{% if viaje_en_curso(current_user.id) %}
-											<li><a href="{{url_for('viaje_bp.ViajeEnCurso')}}">Viaje en curso</a></li>
-										{% endif %}
 										{% if modo_conductor() %}
 											<li><a href="{{url_for('viaje_bp.PublicarViaje')}}">Publicar Viaje</a></li>
 										{% endif %}
 										<li>
 											<span class="opener">Mis viajes</span>
 											<ul>
-												<li><a href="{{url_for('viaje_bp.MisSolicitudes')}}">Mis solicitudes</a></li>
+												{% if viaje_en_curso(current_user.id) %}
+													<li><a href="{{url_for('viaje_bp.ViajeEnCurso')}}">Viaje en curso</a></li>
+												{% endif %}
 												<li><a href="{{url_for('viaje_bp.ViajesFinalizados')}}">Viajes Finalizados</a></li>
 												{% if modo_conductor() %}
 													<li><a href="{{url_for('viaje_bp.ViajesPublicados')}}">Viajes Publicados</a></li>
 													<li><a href="{{url_for('viaje_bp.ViajesCancelados')}}">Viajes Cancelados</a></li>
+												{% endif %}
+											</ul>
+										</li>
+										<li>
+											<span class="opener">Mis Solicitudes</span>
+											<ul>
+												<li><a href="{{url_for('viaje_bp.SolicitudesEnviadas')}}">Solicitudes enviadas</a></li>
+												{% if modo_conductor() %}
+													<li><a href="{{url_for('viaje_bp.SolicitudesRecibidas')}}">Solicitudes recibidas</a></li>
 												{% endif %}
 											</ul>
 										</li>

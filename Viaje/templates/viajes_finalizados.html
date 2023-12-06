@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
 {% block section %}
-
+{% if viajesPasajero %}
     <section style = "padding-top: 20px;">    
         <h2 class="major">PASAJERO</h2>
-        {% if viajesPasajero %}
+        
             <div class="table-wrapper">
                 <table class="alt">
                     <thead>
@@ -26,21 +26,18 @@
                     </tbody>
                 </table>
             </div>
-        {% else %}
-            <h4>{{ mensaje_pasajero }}</h4>
-        {% endif %}
     </section>
+{% endif %} 
 
+{% if viajesConductor %}
     <section style="padding-top: 20px;">
         <h2 class="major">CONDUCTOR</h2>
-        {% if viajesConductor %}
             <div class="table-wrapper">
                 <table class="alt">
                     <thead>
                         <tr>
                             <th scope="col">Origen</th>
                             <th scope="col">Destino</th>
-                            <th scope="col">Conductor</th>
                             <th scope="col">Fecha viaje</th>
                             <th scope="col">Acciones</th>
                         </tr>
@@ -50,7 +47,6 @@
                             <tr>
                                 <td> {{ viaje.ubicacion.direccion_inicial}}</td>
                                 <td> {{ viaje.ubicacion.direccion_final}}</td>
-                                <td> {{ viaje.conductor.usuario.email }}</td>
                                 <td> {{ viaje.fecha_inicio_real.date() }}</td>
                                 <td> 
                                     <a href="{{url_for('viaje_bp.VerViaje', idViaje=viaje.id)}}">Ver viaje</a>
@@ -59,15 +55,12 @@
                         {% endfor %}
                     </tbody>
                 </table>
-            </div>
-        {% else %}
-            <h4>{{ mensaje_conductor }}</h4>
-        {% endif %}
+            </div>       
     </section>
-
-    {% if (not viajesPasajero) and (not viajesConductor) %}
-        <h4 id="elements">Usted aún no ha finalizado ningún viaje</h4>
-    {% endif %}
+{% endif %}
+{% if (not viajesPasajero) and (not viajesConductor) %}
+    <h4 id="elements" style="margin-top: 20px;">Usted aún no ha realizado viajes.</h4>
+{% endif %}
 
 {% endblock %}
 
