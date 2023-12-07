@@ -4,7 +4,9 @@
 <section style = "padding-top: 20px;">
 
     <header class="major">
-        <h3 style="display: inline;"><a href="{{url_for('usuario_bp.EditarPerfil')}}" class="fa-solid fa-edit"></a></h3>
+        {% if current_user.id == usuario.id%}
+            <h3 style="display: inline;"><a href="{{url_for('usuario_bp.EditarPerfil')}}" class="fa-solid fa-edit"></a></h3>
+        {% endif %}
         <h2 style="margin-bottom: 5px;">{{ usuario.nombre }} {{ usuario.apellido }}</h2>
     </header>
     <p> Registrado desde: {{ formato_fecha(usuario.fecha_creacion) }} </p>
