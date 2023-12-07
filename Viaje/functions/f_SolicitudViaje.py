@@ -44,11 +44,15 @@ def cancelar_solicitud_viaje(idUsuario,idViaje):
     
     pasajero = model.Pasajero.query.filter_by(id_usuario = idUsuario, id_viaje = idViaje).first()
     estado_cancelado = model.EstadoPasajero.query.filter_by(descripcion = "Cancelado").first()
+    if pasajero.estado.id == 1:
+        asientosActuales = pasajero.viaje.asientos_disponibles 
+        pasajero.viaje.asientos_disponibles = asientosActuales + 1
+        db.session.commit()
+
     pasajero.fecha_actualizacion = datetime.now()
     pasajero.id_estado_pasajero = estado_cancelado.id
 
     db.session.commit()
-    print(pasajero)
     return pasajero
 
 def viajes_pendientes_como_conductor(idUsuario):
