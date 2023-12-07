@@ -133,6 +133,19 @@ def Perfil():
     edad = fper.calcular_edad(usuario.fecha_nacimiento)
     return render_template('perfil.html', edad = edad, viajesPasajero = viajesPasajero, viajesConductor = viajesConductor, usuario = usuario)
 
+@usuario_bp.route('/perfil/<idUsuario>', methods=['GET', 'POST'])
+@login_required
+def PerfilUsuario(idUsuario):
+
+    usuario = model.Usuario.query.get(idUsuario)
+
+    viajesPasajero = len(model.Pasajero.query.filter_by(id_usuario = idUsuario, id_estado_pasajero = 6).all())
+    viajesConductor = len(vfac.viajes_finalizados_como_conductor(idUsuario))
+
+    edad = fper.calcular_edad(usuario.fecha_nacimiento)
+    return render_template('perfil.html', edad = edad, viajesPasajero = viajesPasajero, viajesConductor = viajesConductor, usuario = usuario)
+
+
 @usuario_bp.route('/perfil/editar', methods=['GET', 'POST'])
 @login_required
 def EditarPerfil():

@@ -9,7 +9,11 @@
             <article>
                 <span class="icon solid fa-car"></span>
                 <div class="content">
-                    <h3> {{viaje.conductor.usuario.nombre}} {{viaje.conductor.usuario.apellido}} </h3>
+                    <h3> 
+                        <a href="{{url_for('usuario_bp.PerfilUsuario', idUsuario = viaje.conductor.id_usuario)}}">
+                            {{viaje.conductor.usuario.nombre}} {{viaje.conductor.usuario.apellido}}
+                        </a>
+                    </h3>
                     <h5> Conductor </h5>
                     <p> E-mail: {{viaje.conductor.usuario.email|default("N/A") }} 
                         <BR>
@@ -21,7 +25,11 @@
                 <article>
                     <span class="icon solid fa-user-check"></span>
                     <div class="content">
-                        <h3> {{pasajero.usuario.nombre}} {{pasajero.usuario.apellido}} </h3>
+                        <h3>
+                            <a href="{{url_for('usuario_bp.PerfilUsuario', idUsuario = pasajero.usuario.id)}}"> 
+                                {{pasajero.usuario.nombre}} {{pasajero.usuario.apellido}} 
+                            </a>
+                        </h3>
                         <h5> Pasajero </h5>
                         <p> E-mail: {{pasajero.usuario.email|default("N/A") }} 
                             <BR>
@@ -34,24 +42,17 @@
         {% if viaje.conductor.id_usuario == current_user.id %}
             <h2>Pasajeros</h2>
             <div class="row">
-                <div class="col-4 col-12-medium">
+                <div class="col-6 col-12-medium">
                     <ul class="actions stacked">
                         <li>
                             <a href="{{url_for('viaje_bp.VerPasajeros', idViaje = viaje.id, idEstado = 2)}}" class="button fit">Pendientes</a>
                         </li>
                     </ul>
                 </div>
-                <div class="col-4 col-12-medium">
+                <div class="col-6 col-12-medium">
                     <ul class="actions stacked">
                         <li>
                             <a href="{{url_for('viaje_bp.VerPasajeros', idViaje = viaje.id, idEstado = 3)}}" class="button fit">Rechazados</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-4 col-12-medium">
-                    <ul class="actions stacked">
-                        <li>
-                            <a href="{{url_for('viaje_bp.VerPasajeros', idViaje = viaje.id, idEstado = 4)}}" class="button fit">Cancelados</a>
                         </li>
                     </ul>
                 </div>

@@ -34,10 +34,12 @@
                 <article>
                     <span class="icon solid {{ icono }}"></span>
                     <div class="content">
-                        <h3> {{ pasajero.usuario.nombre }} {{ pasajero.usuario.apellido }} </h3>
+                        <h3>
+                            <a href="{{url_for('usuario_bp.PerfilUsuario', idUsuario = pasajero.usuario.id)}}"> 
+                                {{pasajero.usuario.nombre}} {{pasajero.usuario.apellido}} 
+                            </a>
+                        </h3>
                         <p> {{ mensaje }} {{ formato_fecha_corta(pasajero.fecha_actualizacion) }}
-                            <BR>
-                            Hora: {{ formato_hora(pasajero.fecha_actualizacion) }}
                         </p>
                         {% if acciones_html %}
                             {{ acciones_html|safe }}
