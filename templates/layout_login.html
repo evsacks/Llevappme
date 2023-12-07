@@ -22,11 +22,11 @@
 								{% if messages %}
 									<ul class=flashes>
 									{% for message in messages %}
-										<div id= "alerta" class="box" style="background-color: bisque;margin-top: 25px;margin-bottom: 0px;">
-											<ul class="icons" style="margin-bottom: 0px;">
-												<li><a href="" onclick="ocultarAlerta()" class="icon solid fa-xmark"></a></li>
-											</ul>
-											<p style="margin-top: 0px;">{{ message }}</p>
+										<div id= "alerta" class="box" style="background-color: rgb(201, 192, 236);margin-top: 25px;margin-bottom: 0px;">
+											<h5 style="margin-bottom: 0px;">
+												<a href='' onclick="ocultarAlerta()" class="icon solid fa-xmark"></a>
+												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ message }}
+											</h5>
 										</div>
 									{% endfor %}
 									</ul>
